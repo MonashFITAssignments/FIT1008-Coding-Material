@@ -1,23 +1,58 @@
+from __future__ import annotations
 from data_structures.abstract_list import List, T
 from data_structures.node import Node
 
 
 class LinkedListIterator:
     """ Iterator for LinkedList. """
-    def __init__(self, head_node: Node):
-        self.__current = head_node
+    def __init__(self, head_node: Node[T], parent_list:LinkedList[T]):
+        self.__next = head_node
+        self.__curr = None
+        self.__prev = None
+        self.__parent = parent_list
 
     def __iter__(self):
         return self
 
-    def __next__(self):
-        if self.__current is None:
+    def __next__(self) -> T:
+        if self.__next is None:
             raise StopIteration
         else:
-            item = self.__current.item
-            self.__current = self.__current.link
+            item = self.__next.item
+            if self.__curr is not self.__next:
+                self.__prev = self.__curr
+            self.__curr = self.__next
+            self.__next = self.__next.link
             return item
+        
+    def insert_before(self, item:T):
+        new_node = self.__parent._insert_after_node(item, self.__prev)
+        self.__prev = new_node
 
+    def insert_after(self, item:T):
+        self.__parent._insert_after_node(item, self.__curr)
+        if self.__curr is None:
+            self.__next = self.__parent._LinkedList__head
+        else:
+            self.__next = self.__curr.link
+
+    def delete_current(self):
+        self.__parent._delete_after_node(self.__prev)
+        self.__curr = self.__curr.link
+        self.__next = self.__curr
+
+    def delete_next(self):
+        self.__parent._delete_after_node(self.__curr)
+        self.__next = self.__next.link
+
+    def set_current(self, item):
+        self.__curr.item = item
+
+    def has_next(self) -> bool:
+        return self.__next is not None
+
+    def peek(self) -> T:
+        return self.__next.item
 
 class LinkedList(List[T]):
     """ Linked-node based implementation of List ADT. """
@@ -51,7 +86,7 @@ class LinkedList(List[T]):
 
     def __iter__(self):
         """ Iterate through the list. """
-        return LinkedListIterator(self.__head)
+        return LinkedListIterator(self.__head, self)
 
     def __contains__(self, item: T) -> bool:
         """ Check if the item is in the list. """
@@ -82,6 +117,28 @@ class LinkedList(List[T]):
             return current
         else:
             raise IndexError('Out of bounds access in list.')
+    
+    def _insert_after_node(self, item:T, node:Node[T]):
+        if node is None:
+            self.insert(0, item)
+            return self.__head
+        else:
+            new_node = Node(item)
+            new_node.link = node.link
+            node.link = new_node
+            self.__length += 1
+            if node is self.__rear:
+                self.__rear = new_node
+            return new_node
+
+    def _delete_after_node(self, node:Node[T]):
+        if node is None:
+            self.delete_at_index(0)
+        else:
+            node.link = node.link.link
+            self.__length -= 1
+            if node.link is None:
+                self.__rear = node
 
     def index(self, item: T) -> int:
         """ Find the position of a given item in the list. """

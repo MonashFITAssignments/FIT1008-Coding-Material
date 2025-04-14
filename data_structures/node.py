@@ -10,4 +10,4 @@ class Node(Generic[T]):
 
     def __init__(self, item: T = None):
         self.item = item
-        self.link = None
+        self.link:Node[T] | None = None
