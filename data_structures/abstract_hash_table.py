@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Tuple
 from data_structures.referential_array import ArrayR
 
 K = TypeVar('K')
@@ -16,14 +16,21 @@ class HashTable(ABC, Generic[K, V]):
     @abstractmethod
     def __len__(self) -> int:
         pass
-    
     @abstractmethod
-    def keys(self) -> ArrayR[K]:
+    def items(self) -> ArrayR[Tuple[K, V]]:
         pass
 
-    @abstractmethod
+    def keys(self) -> ArrayR[K]:
+        array = self.items()
+        for i in range(len(array)):
+            array[i] = array[i][0]
+        return array
+
     def values(self) -> ArrayR[V]:
-        pass
+        array = self.items()
+        for i in range(len(array)):
+            array[i] = array[i][1]
+        return array
 
     @abstractmethod
     def __contains__(self, key: K) -> bool:
