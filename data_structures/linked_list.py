@@ -1,23 +1,69 @@
+from __future__ import annotations
 from data_structures.abstract_list import List, T
 from data_structures.node import Node
 
 
 class LinkedListIterator:
     """ Iterator for LinkedList. """
-    def __init__(self, head_node: Node):
-        self.__current = head_node
+    def __init__(self, parent_list:LinkedList[T]):
+        self.__curr:Node[T] | None = None
+        self.__prev:Node[T] | None = None
+        self.__parent = parent_list
 
     def __iter__(self):
         return self
 
-    def __next__(self):
-        if self.__current is None:
-            raise StopIteration
-        else:
-            item = self.__current.item
-            self.__current = self.__current.link
-            return item
+    def __next__(self) -> T:
+        if self.__curr is None:
+            self.__curr = self.__parent._LinkedList__head
+            if self.__curr is None:
+                raise StopIteration
+            return self.__curr.item
 
+        else:
+            if self.__curr.link is None:
+                raise StopIteration
+            self.__prev = self.__curr
+            self.__curr = self.__curr.link
+            return self.__curr.item
+        
+    def insert_before(self, item:T):
+        """
+        Inserts a node before the current node.
+        :Invariant: The number of nodes after the current node remains the same
+                Inserting a node before the head of the list makes current the end of the list.
+        """
+        new_node = self.__parent._insert_after_node(item, self.__prev)
+        self.__prev = new_node
+
+    def insert_after(self, item:T):
+        self.__parent._insert_after_node(item, self.__curr)
+        
+
+    def delete_current(self):
+        self.__parent._delete_after_node(self.__prev)
+        self.__curr = self.__prev
+        
+
+    def delete_next(self):
+        self.__parent._delete_after_node(self.__curr)
+        
+
+    def set_current(self, item):
+        self.__curr.item = item
+
+    def has_next(self) -> bool:
+        return self.__get_next_node() is not None
+
+    def peek(self) -> T:
+        return self.__get_next_node().item
+    
+    def __get_next_node(self) -> Node[T] | None:
+        if self.__curr is None:
+            if self.__prev is None:
+                return self.__parent._LinkedList__head
+            return None
+        return self.__curr.link
 
 class LinkedList(List[T]):
     """ Linked-node based implementation of List ADT. """
@@ -51,7 +97,7 @@ class LinkedList(List[T]):
 
     def __iter__(self):
         """ Iterate through the list. """
-        return LinkedListIterator(self.__head)
+        return LinkedListIterator(self)
 
     def __contains__(self, item: T) -> bool:
         """ Check if the item is in the list. """
@@ -82,6 +128,28 @@ class LinkedList(List[T]):
             return current
         else:
             raise IndexError('Out of bounds access in list.')
+    
+    def _insert_after_node(self, item:T, node:Node[T]):
+        if node is None:
+            self.insert(0, item)
+            return self.__head
+        else:
+            new_node = Node(item)
+            new_node.link = node.link
+            node.link = new_node
+            self.__length += 1
+            if node is self.__rear:
+                self.__rear = new_node
+            return new_node
+
+    def _delete_after_node(self, node:Node[T]):
+        if node is None:
+            self.delete_at_index(0)
+        else:
+            node.link = node.link.link
+            self.__length -= 1
+            if node.link is None:
+                self.__rear = node
 
     def index(self, item: T) -> int:
         """
