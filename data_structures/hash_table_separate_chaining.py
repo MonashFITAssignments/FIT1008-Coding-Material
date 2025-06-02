@@ -1,7 +1,7 @@
 from data_structures.abstract_hash_table import HashTable
 from data_structures.referential_array import ArrayR
 from data_structures.linked_list import LinkedList
-from typing import TypeVar
+from typing import TypeVar, Tuple
 
 V = TypeVar('V')
 
@@ -30,7 +30,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
             raise ValueError("Table size should be larger than 0.")
         
         self.__length = 0
-        self.__table = ArrayR(table_size)
+        self.__table:ArrayR[LinkedList | None] = ArrayR(table_size)
 
     def __len__(self) -> int:
         """
@@ -154,6 +154,23 @@ class HashTableSeparateChaining(HashTable[str, V]):
                 for item in list:
                     yield item[1]
 
+    def items(self) -> ArrayR[Tuple[str, V]]:
+        """
+        Returns all keys in the hash table
+        :complexity: O(N + S) where N is the number of items in our hash table
+        and S is the table size. Depending on how the table is created, if the table size
+        is not variable (e.g. it's always using the default size), then S can be ignored as
+        a constant, simplifying the complexity to O(N).
+        """
+        res = ArrayR(self.__length)
+        i = 0
+        for list in self.__table:
+            if list is not None:
+                for item in list:
+                    res[i] = item
+                    i += 1
+        return res
+    
     def keys(self) -> ArrayR[str]:
         """
         Returns all keys in the hash table

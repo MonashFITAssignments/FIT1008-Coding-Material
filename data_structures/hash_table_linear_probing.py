@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TypeVar
+from typing import TypeVar, Tuple
 from data_structures.abstract_hash_table import HashTable
 from data_structures.referential_array import ArrayR
 
@@ -92,6 +92,19 @@ class LinearProbeTable(HashTable[str, V]):
             raise RuntimeError("Table is full!")
         else:
             raise KeyError(key)
+
+    def items(self) -> ArrayR[Tuple[str, V]]:
+        """
+        Returns all keys in the hash table.
+        :complexity: O(N) where N is the table size.
+        """
+        res = ArrayR(self.__length)
+        i = 0
+        for x in range(self.table_size):
+            if self.__array[x] is not None:
+                res[i] = self.__array[x]
+                i += 1
+        return res
 
     def keys(self) -> ArrayR[str]:
         """
