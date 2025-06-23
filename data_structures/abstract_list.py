@@ -1,5 +1,7 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
+import data_structures.referential_array as ArrayR
 
 T = TypeVar('T')
 
@@ -65,4 +67,10 @@ class List(ABC, Generic[T]):
     @abstractmethod
     def clear(self) -> None:
         """ Clear the list. """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def from_arrayR(cls, array:ArrayR.ArrayR[T]) -> List[T]:
+        """ Creates a list containing everything in the ArrayR, including any Nones """
         pass

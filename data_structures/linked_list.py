@@ -151,3 +151,10 @@ class LinkedList(List[T]):
 
     def __repr__(self) -> str:
         return str(self)
+
+    @classmethod
+    def from_arrayR(cls, array):
+        new_list = cls()
+        for i in range(len(array)):
+            new_list.append(array[i])
+        return new_list
