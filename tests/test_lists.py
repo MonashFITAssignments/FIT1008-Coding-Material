@@ -204,3 +204,143 @@ class TestLinkedList(TestCase):
         for _ in range(len(self.list)):
             next(iter2)
         self.assertRaises(StopIteration, next, iter2)
+
+    def test_node_iterator(self):
+        list_iter = iter(self.list)
+        self.assertFalse(list_iter.has_next())
+        list_iter.insert_after(1)
+        self.assertTrue(list_iter.has_next())
+        self.assertEqual(len(self.list), 1)
+        self.assertIsNotNone(self.list._LinkedList__head)
+        self.assertIsNotNone(self.list._LinkedList__rear)
+        self.assertEqual(list_iter.peek(), 1)
+        
+        next(list_iter)
+        self.assertFalse(list_iter.has_next())
+        self.assertRaises(StopIteration, next, list_iter)
+        self.assertRaises(AttributeError, list_iter.delete_next)
+        self.assertRaises(AttributeError, list_iter.peek)
+
+        list_iter2 = iter(self.list)
+        list_iter2.insert_after(2)
+        self.assertIsNot(self.list._LinkedList__head, self.list._LinkedList__rear)
+        self.assertEqual([i for i in self.list], [2,1])
+        self.assertEqual(len(self.list), 2)
+
+        list_iter2.delete_next()
+        self.assertTrue(list_iter2.has_next())
+        self.assertIs(self.list._LinkedList__head, self.list._LinkedList__rear)
+        self.assertEqual([i for i in self.list], [1])
+        self.assertEqual(len(self.list), 1)
+
+        list_iter2.delete_next()
+        self.assertFalse(list_iter2.has_next())
+        self.assertIsNone(self.list._LinkedList__head)
+        self.assertIsNone(self.list._LinkedList__rear)
+        self.assertEqual(len(self.list), 0)
+
+        list_iter = iter(self.list)
+        list_iter.insert_after(1)
+        next(list_iter)
+        list_iter.insert_after(2)
+        self.assertIsNot(self.list._LinkedList__head, self.list._LinkedList__rear)
+
+    def test_delete_negatives(self):
+        for value in [-5, 2, 6, -4, -6, 4, 1, -3]:
+            self.list.append(value)
+        
+        list_iter = iter(self.list)
+        while list_iter.has_next():
+            if list_iter.peek() < 0:
+                list_iter.delete_next()
+            else:
+                next(list_iter)
+        
+        self.assertEqual([i for i in self.list], [2,6,4,1])
+        self.assertEqual(len(self.list), 4)
+
+        self.list = LinkedList()
+        for value in [-5, 2, 6, -4, -6, 4, 1, -3]:
+            self.list.append(value)
+        
+        list_iter = iter(self.list)
+        for value in list_iter:
+            if value < 0:
+                list_iter.delete_current()
+        
+        self.assertEqual([i for i in self.list], [2,6,4,1])
+        self.assertEqual(len(self.list), 4)
+
+
+        self.list = LinkedList()
+        for value in [-5, -4, -6, -3]:
+            self.list.append(value)
+        
+        list_iter = iter(self.list)
+        while list_iter.has_next():
+            if list_iter.peek() < 0:
+                list_iter.delete_next()
+            else:
+                next(list_iter)
+        
+        self.assertEqual([i for i in self.list], [])
+        self.assertEqual(len(self.list), 0)
+        self.assertIsNone(self.list._LinkedList__head)
+        self.assertIsNone(self.list._LinkedList__rear)
+
+        self.list = LinkedList()
+        for value in [-5, -4, -6, -3]:
+            self.list.append(value)
+        
+        list_iter = iter(self.list)
+        for value in list_iter:
+            if value < 0:
+                list_iter.delete_current()
+
+        self.assertEqual([i for i in self.list], [])
+        self.assertEqual(len(self.list), 0)
+        self.assertIsNone(self.list._LinkedList__head)
+        self.assertIsNone(self.list._LinkedList__rear)
+
+    
+    def test_insert_iterator(self):
+        list_iter = iter(self.list)
+        list_iter.insert_before(1)
+        self.assertEqual(len(self.list), 1)
+        self.assertIs(self.list._LinkedList__head, self.list._LinkedList__rear)
+        self.assertIsNotNone(self.list._LinkedList__head)
+        
+        list_iter.insert_before(1)
+        self.assertEqual(len(self.list), 2)
+        self.assertIsNot(self.list._LinkedList__head, self.list._LinkedList__rear)
+
+        self.list = LinkedList()
+
+        self.list.append(0)
+        list_iter = iter(self.list)
+        for v in list_iter:
+            list_iter.insert_after(v+1)
+            if v == 99:
+                break
+        
+        self.assertEqual(len(self.list), 101)
+        values = [i for i in self.list]
+
+        self.assertTrue(values == sorted(values[:]))
+        self.assertTrue(list_iter.has_next())
+
+        self.list = LinkedList()
+
+        list_iter = iter(self.list)
+        for i in range(10):
+            list_iter.insert_before(i)
+
+        values = [i for i in self.list]
+        
+        self.assertTrue(values == list(range(10)))
+        self.assertFalse(list_iter.has_next())
+
+
+        
+
+            
