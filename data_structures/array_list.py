@@ -133,3 +133,10 @@ class ArrayList(List[T]):
         self.__shuffle_right(index)
         self.__length += 1
         self[index] = item
+    
+    @classmethod
+    def from_arrayR(cls, array):
+        new_list = cls(len(array))
+        for i in range(len(array)):
+            new_list.append(array[i])
+        return new_list

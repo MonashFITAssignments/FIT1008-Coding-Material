@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from data_structures.linked_list import LinkedList
 from data_structures.array_list import ArrayList
+from data_structures.referential_array import ArrayR
 
 
 class TestArrayList(TestCase):
@@ -204,3 +205,46 @@ class TestLinkedList(TestCase):
         for _ in range(len(self.list)):
             next(iter2)
         self.assertRaises(StopIteration, next, iter2)
+
+class TestArrayRConversions(TestCase):
+    def test_from_ArrayList(self):
+        al = ArrayList(5)
+        for i in range(4):
+            al.append(i)
+        
+        ar = ArrayR.from_list(al)
+
+        for i in range(len(ar)):
+            self.assertEqual(ar[i], al[i])
+        
+        self.assertEqual(len(ar), 4)
+
+    def test_from_LinkedList(self):
+        ll = LinkedList()
+        for i in range(4):
+            ll.append(i)
+        
+        ar = ArrayR.from_list(ll)
+
+        for i in range(len(ar)):
+            self.assertEqual(ar[i], ll[i])
+        
+        self.assertEqual(len(ar), 4)
+
+    def test_to_array_list(self):
+        array = ArrayR(5)
+        for i in range(4):
+            array[i] = i
+        
+        array_list = ArrayList.from_arrayR(array)
+        self.assertEqual([n for n in array_list], [0,1,2,3, None])
+        self.assertEqual(len(array_list), 5)
+
+    def test_to_linked_list(self):
+        array = ArrayR(5)
+        for i in range(4):
+            array[i] = i
+        
+        linked_list = LinkedList.from_arrayR(array)
+        self.assertEqual([n for n in linked_list], [0,1,2,3, None])
+        self.assertEqual(len(linked_list), 5)
