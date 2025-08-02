@@ -106,12 +106,5 @@ class BitVectorSet(Set[int]):
 
     def __str__(self):
         """ Construct a nice string representation. """
-        bit_elems = self.__elems
-        out_elems = []
-        current = 0
-        while bit_elems:
-            if bit_elems & (1 << current):
-                out_elems.append(str(current+1))
-                bit_elems &= ~(1 << current)
-            current += 1
-        return '{' + ', '.join(out_elems) + '}'
+        values = [str(value) for value in self.values()]
+        return '{' + ', '.join(values) + '}'

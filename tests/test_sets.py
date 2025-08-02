@@ -428,3 +428,11 @@ class TestBitVectorSet(TestCase):
         self.assertIn(4, value_array)
         self.assertIn(15, value_array)
         self.assertIn(23, value_array)
+    
+    def test_string(self):
+        self.assertEqual(str(self.set), '{}')
+
+        self.set.add(1)
+        self.set.add(1)
+        self.set.add(3)
+        self.assertEqual(str(self.set), '{1, 3}')
