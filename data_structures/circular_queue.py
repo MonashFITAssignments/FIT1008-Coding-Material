@@ -82,8 +82,9 @@ class CircularQueue(Queue[T]):
         i = self.__front
         result = '['
         for _ in range(len(self)):
-            result += str(self.__array[i]) + ', '
+            result += '' if result == '[' else ', '
+            result += str(self.__array[i])
             i = (i + 1) % len(self.__array)
-        result = result[0:-2]
         result += ']'
+
         return result
