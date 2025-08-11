@@ -332,18 +332,18 @@ class BinarySearchTree(HashTable[K,V]):
         return super().values()
 
     def __str__(self):
-        buffer = self.__str_aux(self, self.__root, [], prefix='', postfix='')
+        buffer = self.__str_aux(self.__root, [], prefix='', postfix='')
         return '\n'.join(buffer)
     
-    def __str_aux(self, current:BinaryNode, buffer:list, prefix='', postfix=''):
+    def __str_aux(self, current:BinaryNode|None, buffer:list, prefix='', postfix=''):
         if current is not None:
             real_prefix = prefix[:-2] + postfix
             buffer.append(f'{real_prefix}{current.key}')
             if current._left or current._right:
-                self.__str_aux(current._left, buffer, prefix=prefix + '\u2551 ', final='\u255f\u2550')
-                self.__str_aux(current._right, buffer, prefix=prefix + '  ', final='\u2559\u2550')
+                self.__str_aux(current._left, buffer, prefix=prefix + '\u2551 ', postfix='\u255f\u2550')
+                self.__str_aux(current._right, buffer, prefix=prefix + '  ', postfix='\u2559\u2550')
         else:
-            real_prefix = prefix[:-2] + final
+            real_prefix = prefix[:-2] + postfix
             buffer.append(f'{real_prefix}')
         return buffer
 
