@@ -200,25 +200,22 @@ class BinarySearchTree(HashTable[K,V]):
             :complexity worst: O(CompK * D) item is not found, where D is the depth of the tree
             CompK is the complexity of comparing the keys
         """
-        return self.get_tree_node_by_key(key).item
+        return self.__get_tree_node_by_key_aux(self.__root, key).item
 
-    def get_tree_node_by_key(self, key: K) -> BinaryNode:
-        return self.get_tree_node_by_key_aux(self.__root, key)
-
-    def get_tree_node_by_key_aux(self, current: BinaryNode | None, key: K) -> BinaryNode:
+    def __get_tree_node_by_key_aux(self, current: BinaryNode | None, key: K) -> BinaryNode:
         if current is None:  # base case: empty
             raise KeyError(f'Key not found: {key}')
         elif key == current.key:  # base case: found
             return current
         elif key < current.key:
-            return self.get_tree_node_by_key_aux(current._left, key)
+            return self.__get_tree_node_by_key_aux(current._left, key)
         else:  # key > current.key
-            return self.get_tree_node_by_key_aux(current._right, key)
+            return self.__get_tree_node_by_key_aux(current._right, key)
 
     def __setitem__(self, key: K, item: V) -> None:
-        self.__root = self.insert_aux(self.__root, key, item, 1)
+        self.__root = self.__insert_aux(self.__root, key, item, 1)
 
-    def insert_aux(self, current: BinaryNode|None, key: K, item: V, current_depth: int) -> BinaryNode:
+    def __insert_aux(self, current: BinaryNode|None, key: K, item: V, current_depth: int) -> BinaryNode:
         """
             Attempts to insert an item into the tree, it uses the Key to insert it
             :complexity: 
@@ -231,17 +228,17 @@ class BinarySearchTree(HashTable[K,V]):
             current = BinaryNode(item, key)
             self.__length += 1
         elif key < current.key:
-            current._left = self.insert_aux(current._left, key, item, current_depth + 1)
+            current._left = self.__insert_aux(current._left, key, item, current_depth + 1)
         elif key > current.key:
-            current._right = self.insert_aux(current._right, key, item, current_depth + 1)
+            current._right = self.__insert_aux(current._right, key, item, current_depth + 1)
         else:  # key == current.key
             current.item = item
         return current
 
     def __delitem__(self, key: K) -> None:
-        self.__root = self.delete_aux(self.__root, key)
+        self.__root = self.__delete_aux(self.__root, key)
 
-    def delete_aux(self, current: BinaryNode|None, key: K) -> BinaryNode | None:
+    def __delete_aux(self, current: BinaryNode|None, key: K) -> BinaryNode | None:
         """
             Attempts to delete an item from the tree, it uses the Key to
             determine the node to delete.
@@ -250,9 +247,9 @@ class BinarySearchTree(HashTable[K,V]):
         if current is None:  # key not found
             raise ValueError('Deleting non-existent item')
         elif key < current.key:
-            current._left = self.delete_aux(current._left, key)
+            current._left = self.__delete_aux(current._left, key)
         elif key > current.key:
-            current._right = self.delete_aux(current._right, key)
+            current._right = self.__delete_aux(current._right, key)
         else:  # we found our key => do actual deletion
             if self.is_leaf(current):
                 self.__length -= 1
@@ -265,36 +262,14 @@ class BinarySearchTree(HashTable[K,V]):
                 return current._left
 
             # general case => find a successor
-            successor = self.get_minimal(current._right)
+            successor = self.__get_minimal(current._right)
             current.key = successor.key
             current.item = successor.item
-            current._right = self.delete_aux(current._right, successor.key)
+            current._right = self.__delete_aux(current._right, successor.key)
 
         return current
 
-    def get_successor(self, current: BinaryNode) -> BinaryNode | None:
-        """
-            Get successor of the current node.
-            It should be a node in the subtree rooted at current having the smallest key among all the
-            larger keys.
-            If no such node exists, then none should be returned.
-        """
-        if current is None or current._right is None:
-            return None
-        return self.get_minimal(current._right)
-    
-    def get_predecessor(self, current: BinaryNode) -> BinaryNode | None:
-        """
-            Get predecessor of the current node.
-            It should be a node in the subtree rooted at current having the largest key among all the
-            smaller keys.
-            If no such node exists, then none should be returned.
-        """
-        if current is None:
-            return None
-        return self.get_maximal(current._left)
-
-    def get_minimal(self, current: BinaryNode) -> BinaryNode:
+    def __get_minimal(self, current: BinaryNode) -> BinaryNode:
         """
             Get a node having the smallest key in the current sub-tree.
         """
@@ -304,7 +279,7 @@ class BinarySearchTree(HashTable[K,V]):
             current = current._left
         return current
 
-    def get_maximal(self, current: BinaryNode | None) -> BinaryNode | None:
+    def __get_maximal(self, current: BinaryNode | None) -> BinaryNode | None:
         """
             Get a node having the largest key in the current sub-tree.
         """
