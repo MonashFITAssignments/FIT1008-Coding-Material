@@ -12,7 +12,7 @@ import math
 from typing import TypeVar, Tuple
 
 from data_structures.linked_stack import LinkedStack
-from data_structures.node import BinaryNode
+from data_structures.node import BinaryNode, Generic
 from data_structures.abstract_hash_table import HashTable
 from data_structures.referential_array import ArrayR
 
@@ -22,7 +22,7 @@ V = TypeVar('V')
 T = TypeVar('T')
 
 
-class BSTPreOrderIterator:
+class BSTPreOrderIterator(Generic[K,V]):
     """ Pre-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
@@ -30,7 +30,7 @@ class BSTPreOrderIterator:
     def __init__(self, root: BinaryNode[K, V] | None) -> None:
         """ Iterator initialiser. """
 
-        self.stack = LinkedStack[BinaryNode]()
+        self.stack = LinkedStack[BinaryNode[K,V]]()
         if root is not None:
             self.stack.push(root)
 
@@ -54,15 +54,15 @@ class BSTPreOrderIterator:
         return current
 
 
-class BSTInOrderIterator:
+class BSTInOrderIterator(Generic[K,V]):
     """ In-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
 
-    def __init__(self, root: BinaryNode[K, V]) -> None:
+    def __init__(self, root: BinaryNode[K, V] | None) -> None:
         """ Iterator initialiser. """
 
-        self.stack = LinkedStack[BinaryNode]()
+        self.stack = LinkedStack[BinaryNode[K,V]]()
         self.current = root
 
     def __iter__(self) -> BSTInOrderIterator:
@@ -88,7 +88,7 @@ class BSTInOrderIterator:
         return result
 
 
-class BSTPostOrderIterator:
+class BSTPostOrderIterator(Generic[K,V]):
     """ Post-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
@@ -136,11 +136,12 @@ class BinarySearchTree(HashTable[K,V]):
         self.__length = 0
 
     @staticmethod
-    def from_node(node: BinaryNode[K, V] | None, length: int = None) -> BinarySearchTree[K, V]:
+    def from_node(node: BinaryNode[K, V] | None, length: int = 0) -> BinarySearchTree[K, V]:
         """
             Creates a binary search tree object from binary node.
             Useful if a bottom up construction of the tree can be done efficiently.
             Length argument is not checked if passed in.
+            Search invariant is not checked.
             :complexity: 
                 :best: O(1) when length is passed
                 :worst: O(N) where N is the number of nodes in the tree
@@ -204,7 +205,7 @@ class BinarySearchTree(HashTable[K,V]):
     def get_tree_node_by_key(self, key: K) -> BinaryNode:
         return self.get_tree_node_by_key_aux(self.__root, key)
 
-    def get_tree_node_by_key_aux(self, current: BinaryNode, key: K) -> BinaryNode:
+    def get_tree_node_by_key_aux(self, current: BinaryNode | None, key: K) -> BinaryNode:
         if current is None:  # base case: empty
             raise KeyError(f'Key not found: {key}')
         elif key == current.key:  # base case: found
@@ -217,7 +218,7 @@ class BinarySearchTree(HashTable[K,V]):
     def __setitem__(self, key: K, item: V) -> None:
         self.__root = self.insert_aux(self.__root, key, item, 1)
 
-    def insert_aux(self, current: BinaryNode, key: K, item: V, current_depth: int) -> BinaryNode:
+    def insert_aux(self, current: BinaryNode|None, key: K, item: V, current_depth: int) -> BinaryNode:
         """
             Attempts to insert an item into the tree, it uses the Key to insert it
             :complexity: 
@@ -240,7 +241,7 @@ class BinarySearchTree(HashTable[K,V]):
     def __delitem__(self, key: K) -> None:
         self.__root = self.delete_aux(self.__root, key)
 
-    def delete_aux(self, current: BinaryNode, key: K) -> BinaryNode:
+    def delete_aux(self, current: BinaryNode|None, key: K) -> BinaryNode | None:
         """
             Attempts to delete an item from the tree, it uses the Key to
             determine the node to delete.
@@ -264,25 +265,25 @@ class BinarySearchTree(HashTable[K,V]):
                 return current._left
 
             # general case => find a successor
-            successor = self.get_successor(current)
+            successor = self.get_minimal(current._right)
             current.key = successor.key
             current.item = successor.item
             current._right = self.delete_aux(current._right, successor.key)
 
         return current
 
-    def get_successor(self, current: BinaryNode) -> BinaryNode:
+    def get_successor(self, current: BinaryNode) -> BinaryNode | None:
         """
             Get successor of the current node.
             It should be a node in the subtree rooted at current having the smallest key among all the
             larger keys.
             If no such node exists, then none should be returned.
         """
-        if current is None:
+        if current is None or current._right is None:
             return None
         return self.get_minimal(current._right)
     
-    def get_predecessor(self, current: BinaryNode) -> BinaryNode:
+    def get_predecessor(self, current: BinaryNode) -> BinaryNode | None:
         """
             Get predecessor of the current node.
             It should be a node in the subtree rooted at current having the largest key among all the
@@ -293,7 +294,7 @@ class BinarySearchTree(HashTable[K,V]):
             return None
         return self.get_maximal(current._left)
 
-    def get_minimal(self, current: BinaryNode) -> BinaryNode | None:
+    def get_minimal(self, current: BinaryNode) -> BinaryNode:
         """
             Get a node having the smallest key in the current sub-tree.
         """
@@ -303,7 +304,7 @@ class BinarySearchTree(HashTable[K,V]):
             current = current._left
         return current
 
-    def get_maximal(self, current: BinaryNode) -> BinaryNode | None:
+    def get_maximal(self, current: BinaryNode | None) -> BinaryNode | None:
         """
             Get a node having the largest key in the current sub-tree.
         """
