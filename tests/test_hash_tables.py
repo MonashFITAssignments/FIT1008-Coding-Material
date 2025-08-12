@@ -220,13 +220,13 @@ class TestBinarySearchTree(TestCase):
     def test_iters(self):
         self.balance_tree()
 
-        infix = [n.item for n in self.table]
+        infix = [n[0] for n in self.table]
         self.assertEqual(infix, [1,2,3,4,5,6,7])
         
-        prefix = [n.item for n in self.table.pre_iter()]
+        prefix = [n[0] for n in self.table.pre_iter()]
         self.assertEqual(prefix, [4,2,1,3,6,5,7])
 
-        postfix = [n.item for n in self.table.post_iter()]
+        postfix = [n[0] for n in self.table.post_iter()]
         self.assertEqual(postfix, [1,3,2,5,7,6,4])
     
     def test_static(self):

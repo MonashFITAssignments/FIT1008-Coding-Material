@@ -11,6 +11,7 @@ __docformat__ = 'reStructuredText'
 import math
 from typing import TypeVar, Tuple
 
+from data_structures.linked_list import LinkedList
 from data_structures.linked_stack import LinkedStack
 from data_structures.node import BinaryNode, Generic
 from data_structures.abstract_hash_table import HashTable
@@ -39,7 +40,7 @@ class BSTPreOrderIterator(Generic[K,V]):
 
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the pre-order.
         """
@@ -51,7 +52,7 @@ class BSTPreOrderIterator(Generic[K,V]):
             self.stack.push(current._right)
         if current._left:
             self.stack.push(current._left)
-        return current
+        return (current.key, current.item)
 
 
 class BSTInOrderIterator(Generic[K,V]):
@@ -70,7 +71,7 @@ class BSTInOrderIterator(Generic[K,V]):
 
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the in-order.
         """
@@ -85,7 +86,7 @@ class BSTInOrderIterator(Generic[K,V]):
         result = self.stack.pop()
         self.current = result._right
 
-        return result
+        return (result.key, result.item)
 
 
 class BSTPostOrderIterator(Generic[K,V]):
@@ -104,7 +105,7 @@ class BSTPostOrderIterator(Generic[K,V]):
         """ Standard __iter__() method for initialisers. Returns itself. """
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the post-order.
         """
@@ -114,7 +115,7 @@ class BSTPostOrderIterator(Generic[K,V]):
                 raise StopIteration
             current, expanded = self.stack.pop()
             if expanded:
-                return current
+                return (current.key, current.item)
             else:
                 self.stack.push((current, True))
                 if current._right:
@@ -251,7 +252,7 @@ class BinarySearchTree(HashTable[K,V]):
         elif key > current.key:
             current._right = self.__delete_aux(current._right, key)
         else:  # we found our key => do actual deletion
-            if self.is_leaf(current):
+            if self._is_leaf(current):
                 self.__length -= 1
                 return None
             elif current._left is None:
@@ -289,37 +290,52 @@ class BinarySearchTree(HashTable[K,V]):
             current = current._right
         return current
 
-    def is_leaf(self, current: BinaryNode) -> bool:
+    def _is_leaf(self, current: BinaryNode) -> bool:
         """ Simple check whether or not the node is a leaf. """
 
         return current._left is None and current._right is None
 
     def items(self) -> ArrayR[Tuple[K, V]]:
         array = ArrayR(len(self))
-        for i, node in enumerate(self):
-            tup = (node.key, node.item)
+        for i, tup in enumerate(self):
             array[i] = tup
         return array
 
-    def keys(self):
-        return super().keys()
-    
-    def values(self):
-        return super().values()
-
     def __str__(self):
-        buffer = self.__str_aux(self.__root, [], prefix='', postfix='')
-        return '\n'.join(buffer)
+        return self.str(indent=0)
     
-    def __str_aux(self, current:BinaryNode|None, buffer:list, prefix='', postfix=''):
-        if current is not None:
-            real_prefix = prefix[:-2] + postfix
-            buffer.append(f'{real_prefix}{current.key}')
-            if current._left or current._right:
-                self.__str_aux(current._left, buffer, prefix=prefix + '\u2551 ', postfix='\u255f\u2550')
-                self.__str_aux(current._right, buffer, prefix=prefix + '  ', postfix='\u2559\u2550')
-        else:
-            real_prefix = prefix[:-2] + postfix
-            buffer.append(f'{real_prefix}')
-        return buffer
+    def str(self, indent = 0):
+        """Create string representing the binary tree
+        Can pass indent to make the tree depths easier to parse.
+        """
+        if self.__root is None:
+            return f"BinarySearchTree({self.__root})"
+        tree_str = self.__str_aux(self.__root, indent=indent, depth = 1)
+        return "BinarySearchTree" + tree_str + ""
+
+
+
+    def __str_aux(self, current: BinaryNode|None, indent, depth) -> str:
+        prefix = "\n" + " "*indent * depth if indent > 0 else ""
+        if current is None:
+            return  prefix[:-indent] + str(None)
+        return f"{prefix[:-indent]}({prefix}{current.key}, {prefix}{current.item}, {self.__str_aux(current._left, indent, depth+1)}, {self.__str_aux(current._right, indent, depth + 1)}{prefix[:-indent]})"
+
+    # def str_2d(self):
+    #     if self.__root is None:
+    #         return str(None)
+    #     buffer = self.__str_2d_aux(self.__root, LinkedList(), prefix='', postfix='')
+    #     return '\n'.join(buffer)
+    
+    # def __str_2d_aux(self, current:BinaryNode|None, buffer:LinkedList, prefix='', postfix=''):
+    #     if current is not None:
+    #         real_prefix = prefix[:-2] + postfix
+    #         buffer.append(f'{real_prefix}({current.key}, {current.item})')
+    #         if current._left or current._right:
+    #             self.__str_2d_aux(current._left, buffer, prefix=prefix + '\u2551 ', postfix='\u255f\u2550')
+    #             self.__str_2d_aux(current._right, buffer, prefix=prefix + '  ', postfix='\u2559\u2550')
+    #     else:
+    #         real_prefix = prefix[:-2] + postfix
+    #         buffer.append(f'{real_prefix}')
+    #     return buffer
 

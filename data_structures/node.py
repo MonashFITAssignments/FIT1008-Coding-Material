@@ -22,7 +22,7 @@ class BinaryNode(Generic[K, T]):
     """
     def __init__(self, item: T = None, key: K = None, size: int = 0):
         self.item = item
-        self.key = key if key else item
+        self.key = key if key is not None else item
         self._size = size
         self._left: BinaryNode[K, T] | None = None
         self._right: BinaryNode[K, T] | None = None
