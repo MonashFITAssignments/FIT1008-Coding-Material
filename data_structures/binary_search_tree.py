@@ -124,14 +124,13 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         self.__length = 0
 
     @staticmethod
-    def from_node(node: BinaryNode[K, V] | None, length: int = 0) -> BinarySearchTree[K, V]:
+    def from_node(node: BinaryNode[K, V] | None, length: int = 0, check_invariant: bool = False) -> BinarySearchTree[K, V]:
         """
             Creates a binary search tree object from binary node.
             Useful if a bottom up construction of the tree can be done efficiently.
             Length argument is not checked if passed in.
-            Search invariant is not checked.
             :complexity:
-                :best: O(1) when length is passed
+                :best: O(1) when length and search invariant are not checked.
                 :worst: O(N) where N is the number of nodes in the tree
         """
 
@@ -140,11 +139,26 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                 return 0
             return 1 + len_aux(current.left) + len_aux(current.right)
 
+        def check_bst_invariant(node: BinaryNode | None, l=None, r=None) -> bool:
+            if node is None:
+                return True
+            if not l is None:
+                if node.key < l: return False
+            if not r is None:
+                if node.key > r: return False
+            return (check_bst_invariant(node.left, l, node.key) and
+                    check_bst_invariant(node.right, node.key, r))
+
         if not isinstance(node, (BinaryNode, type(None))):
             raise TypeError(f"Cannot instantiate binary tree with node type: {type(node)}")
+        
+        if check_invariant:
+            if not check_bst_invariant(node):
+                raise ValueError("Constructed BinarySearchTree does not satisfy search invariant.")
+        
         tree = BinarySearchTree()
-        tree._BinarySearchTree__root = node
-        tree._BinarySearchTree__length = length if length else len_aux(node)
+        tree.__root = node
+        tree.__length = length if length else len_aux(node)
 
         return tree
 
@@ -231,18 +245,18 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         return BSTPreOrderIterator(self.__root)
 
     def __delitem__(self, key: K) -> None:
-        def delete_aux(bst: BinarySearchTree[K, V], current: BinaryNode[K, V], key: K) -> BinaryNode[K, V]:
+        def delete_aux(current: BinaryNode[K, V], key: K) -> BinaryNode[K, V]:
             """
                 Attempts to delete an item from the tree, it uses the Key to
                 determine the node to delete.
             """
 
             if current is None:  # key not found
-                raise ValueError('Deleting non-existent item')
+                raise KeyError('Deleting non-existent item')
             elif key < current.key:
-                current.left = delete_aux(bst, current.left, key)
+                current.left = delete_aux(current.left, key)
             elif key > current.key:
-                current.right = delete_aux(bst, current.right, key)
+                current.right = delete_aux(current.right, key)
             else:  # we found our key => do actual deletion
                 if self.is_leaf(current):
                     self.__length -= 1
@@ -255,14 +269,14 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                     return current.left
 
                 # general case => find a successor
-                successor = bst.__get_successor(current)
+                successor = self.__get_successor(current)
                 current.key = successor.key
                 current.item = successor.item
                 current.right = delete_aux(current.right, successor.key)
 
             return current
 
-        self.__root = delete_aux(self, self.__root, key)
+        self.__root = delete_aux(self.__root, key)
 
     def __getitem__(self, key: K) -> V:
         """
