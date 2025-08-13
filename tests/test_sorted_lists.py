@@ -73,5 +73,3 @@ class TestArraySortedList(TestCase):
         # Running operations with a different type should raise TypeError
         self.assertRaises(TypeError, lambda: "string" in self.list)
         self.assertFalse(0.5 in self.list)
-
-

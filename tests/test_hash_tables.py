@@ -235,10 +235,8 @@ class TestBinarySearchTree(TestCase):
         self.assertEqual(len(tree), 0)
 
         node = BinaryNode(1)
-        node._left = BinaryNode(2)
-        node._right = BinaryNode(3)
-        
-        
+        node.left = BinaryNode(2)
+        node.right = BinaryNode(3)
+
         tree = BinarySearchTree.from_node(node)
         self.assertEqual(len(tree), 3)
-

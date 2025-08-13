@@ -54,12 +54,6 @@ class LinearProbeTable(HashTable[str, V]):
     def table_size(self) -> int:
         return len(self.__array)
 
-    def __len__(self) -> int:
-        """
-        Returns the number of elements in the hash table
-        """
-        return self.__length
-
     def __linear_probe(self, key: str, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using linear probing.
@@ -106,45 +100,36 @@ class LinearProbeTable(HashTable[str, V]):
                 i += 1
         return res
 
-    def keys(self) -> ArrayR[str]:
-        """
-        Returns all keys in the hash table.
-        :complexity: O(N) where N is the table size.
-        """
-        res = ArrayR(self.__length)
-        i = 0
-        for x in range(self.table_size):
-            if self.__array[x] is not None:
-                res[i] = self.__array[x][0]
-                i += 1
-        return res
+    def is_empty(self) -> bool:
+        return self.__length == 0
 
-    def values(self) -> ArrayR[V]:
+    def __delitem__(self, key: str) -> None:
         """
-        Returns all values in the hash table.
+        Deletes a (key, value) pair in our hash table.
 
-        :complexity: O(N) where N is the table size.
-        """
-        res = ArrayR(self.__length)
-        i = 0
-        for x in range(self.table_size):
-            if self.__array[x] is not None:
-                res[i] = self.__array[x][1]
-                i += 1
-        return res
+        :complexity: 
+            Best: O(K) when the key is at the beginning of the table and no cluster is present to rehash.
+            Worst: O(N * (N + K)) when the key is at the beginning of a large cluster and we have to effectively
+                rehash all elements. And each element has to linear probe over all (or a factor of) other elements currently
+                in the table. This is assuming K here is representing an average key length.
+            N is the number of items in the table.
+            K is the length of the key.
 
-    def __contains__(self, key: str) -> bool:
+        :raises KeyError: when the key doesn't exist.
         """
-        Checks to see if the given key is in the Hash Table
-
-        :complexity: See linear probe.
-        """
-        try:
-            _ = self[key]
-        except KeyError:
-            return False
-        else:
-            return True
+        position = self.__linear_probe(key, False)
+        # Remove the element
+        self.__array[position] = None
+        self.__length -= 1
+        # Start moving over the cluster
+        position = (position + 1) % self.table_size
+        while self.__array[position] is not None:
+            key2, value = self.__array[position]
+            self.__array[position] = None
+            # Reinsert.
+            newpos = self.__linear_probe(key2, True)
+            self.__array[newpos] = (key2, value)
+            position = (position + 1) % self.table_size
 
     def __getitem__(self, key: str) -> V:
         """
@@ -176,37 +161,6 @@ class LinearProbeTable(HashTable[str, V]):
         if len(self) > self.table_size / 2:
             self.__rehash()
 
-    def __delitem__(self, key: str) -> None:
-        """
-        Deletes a (key, value) pair in our hash table.
-
-        :complexity: 
-            Best: O(K) when the key is at the beginning of the table and no cluster is present to rehash.
-            Worst: O(N * (N + K)) when the key is at the beginning of a large cluster and we have to effectively
-                rehash all elements. And each element has to linear probe over all (or a factor of) other elements currently
-                in the table. This is assuming K here is representing an average key length.
-            N is the number of items in the table.
-            K is the length of the key.
-
-        :raises KeyError: when the key doesn't exist.
-        """
-        position = self.__linear_probe(key, False)
-        # Remove the element
-        self.__array[position] = None
-        self.__length -= 1
-        # Start moving over the cluster
-        position = (position + 1) % self.table_size
-        while self.__array[position] is not None:
-            key2, value = self.__array[position]
-            self.__array[position] = None
-            # Reinsert.
-            newpos = self.__linear_probe(key2, True)
-            self.__array[newpos] = (key2, value)
-            position = (position + 1) % self.table_size
-
-    def is_empty(self) -> bool:
-        return self.__length == 0
-
     def __rehash(self) -> None:
         """
         Need to resize table and reinsert all values
@@ -235,6 +189,12 @@ class LinearProbeTable(HashTable[str, V]):
                 key, value = item
                 self[key] = value
 
+    def __len__(self) -> int:
+        """
+        Returns the number of elements in the hash table
+        """
+        return self.__length
+
     def __str__(self) -> str:
         """
         Returns all they key/value pairs in our hash table (no particular
@@ -245,4 +205,4 @@ class LinearProbeTable(HashTable[str, V]):
             if item is not None:
                 (key, value) = item
                 result += "(" + str(key) + "," + str(value) + ")\n"
-        return result
+        return f"<LinearProbeTable \n{result}>"

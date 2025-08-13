@@ -10,7 +10,7 @@ class Node(Generic[T]):
 
     def __init__(self, item: T = None):
         self.item = item
-        self.link:Node[T] | None = None
+        self.link: Node[T] | None = None
 
     def __str__(self) -> str:
         return f"Node({self.item}, {'...' if self.link else 'None'})"
@@ -21,11 +21,43 @@ class BinaryNode(Generic[K, T]):
     Has general attribute size which may store depth, number of nodes in subtree or any other metadata.
     """
     def __init__(self, item: T = None, key: K = None, size: int = 0):
-        self.item = item
-        self.key = key if key else item
-        self._size = size
-        self._left: BinaryNode[K, T] | None = None
-        self._right: BinaryNode[K, T] | None = None
-    
+        self.__item = item
+        self.__key = key if key else item
+        self.__size = size
+        self.__left: BinaryNode[K, T] | None = None
+        self.__right: BinaryNode[K, T] | None = None
+
+    @property
+    def item(self) -> T:
+        return self.__item
+
+    @property
+    def key(self) -> K:
+        return self.__key
+
+    @property
+    def size(self) -> int:
+        return self.__size
+
+    @size.setter
+    def size(self, size: int) -> None:
+        self.__size = size
+
+    @property
+    def left(self):
+        return self.__left
+
+    @left.setter
+    def left(self, value: 'BinaryNode[K, T]') -> None:
+        self.__left = value
+
+    @property
+    def right(self):
+        return self.__right
+
+    @right.setter
+    def right(self, value: 'BinaryNode[K, T]') -> None:
+        self.__right = value
+
     def __str__(self):
-        return f"BinaryNode({self.item}, {self.key}, {self._size}, {'...' if self._left else 'None'}, {'...' if self._right else 'None'})"
+        return f"BinaryNode({self.item}, {self.key}, {self.size}, {'...' if self.left else 'None'}, {'...' if self.right else 'None'})"

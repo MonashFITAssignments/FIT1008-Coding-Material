@@ -8,39 +8,12 @@ class ArraySet(Set[T]):
     Array-based implementation of the set ADT.
     """
 
-    def __init__(self, capacity: int) -> None:
+    def __init__(self, capacity: int = 1) -> None:
         if capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
 
-        Set.__init__(self)
-        self.__length = 0
         self.__array = ArrayR(capacity)
-
-    def __len__(self) -> int:
-        """ Returns the number of elements in the set. """
-        return self.__length
-
-    def is_empty(self) -> bool:
-        """ True if the set is empty. """
-        return len(self) == 0
-
-    def __contains__(self, item: T) -> bool:
-        """ True if the set contains the item. """
-        for i in range(self.__length):
-            if item == self.__array[i]:
-                return True
-        return False
-
-    def clear(self) -> None:
-        """ Makes the set empty. 
-        We do this by simply setting the size to 0, which means the next items will
-        write over the existing array.
-        """
         self.__length = 0
-
-    def is_full(self) -> bool:
-        """ True if the set is full and no element can be added. """
-        return len(self) == len(self.__array)
 
     def add(self, item: T) -> None:
         """
@@ -81,6 +54,21 @@ class ArraySet(Set[T]):
         for i in range(self.__length):
             res[i] = self.__array[i]
         return res
+
+    def clear(self) -> None:
+        """ Makes the set empty.
+        We do this by simply setting the size to 0, which means the next items will
+        write over the existing array.
+        """
+        self.__length = 0
+
+    def is_empty(self) -> bool:
+        """ True if the set is empty. """
+        return len(self) == 0
+
+    def is_full(self) -> bool:
+        """ True if the set is full and no element can be added. """
+        return len(self) == len(self.__array)
 
     def union(self, other: ArraySet[T]) -> ArraySet[T]:
         """
@@ -131,9 +119,17 @@ class ArraySet(Set[T]):
 
         return res
 
+    def __contains__(self, item: T) -> bool:
+        """ True if the set contains the item. """
+        for i in range(self.__length):
+            if item == self.__array[i]:
+                return True
+        return False
+
+    def __len__(self) -> int:
+        """ Returns the number of elements in the set. """
+        return self.__length
+
     def __str__(self):
-        """ Magic method constructing a string representation of the list object. """
-        elems = []
-        for i in range(len(self)):
-            elems.append(str(self.__array[i]) if type(self.__array[i]) != str else f"'{self.__array[i]}'")
-        return '{' + ', '.join(elems) + '}'
+        """ Returns a string representation of the set. """
+        return f'<ArraySet {Set.__str__(self)}>'

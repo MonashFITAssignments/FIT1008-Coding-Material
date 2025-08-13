@@ -28,40 +28,25 @@ class LinkedList(List[T]):
         self.__rear = None
         self.__length = 0
 
-    def clear(self):
-        """ Clear the list. """
-        List.clear(self)
-        self.__head = None
-        self.__rear = None
-        self.__length = 0
+    def insert(self, index: int, item: T) -> None:
+        new_node = Node(item)
+        if index == 0:
+            new_node.link = self.__head
+            self.__head = new_node
+        else:
+            previous_node = self.__get_node_at_index(index-1)
+            new_node.link = previous_node.link
+            previous_node.link = new_node
 
-    def __setitem__(self, index: int, item: T) -> None:
-        """ Insert the item at a given position. """
-        node_at_index = self.__get_node_at_index(index)
-        node_at_index.item = item
+        if index == len(self):
+            if len(self) > 0:
+                self.__rear.link = new_node
+            self.__rear = new_node
 
-    def __getitem__(self, index: int) -> T:
-        """ Return the element at a given position. """
-        node_at_index = self.__get_node_at_index(index)
-        return node_at_index.item
-
-    def __len__(self) -> int:
-        """ Return the number of elements in the list. """
-        return self.__length
-
-    def __iter__(self):
-        """ Iterate through the list. """
-        return LinkedListIterator(self.__head)
-
-    def __contains__(self, item: T) -> bool:
-        """ Check if the item is in the list. """
-        current = self.__head
-        while current is not None and current.item != item:
-            current = current.link
-        return current is not None
+        self.__length += 1
 
     def append(self, item: T) -> None:
-        """ Append the item to the end of the list. 
+        """ Append the item to the end of the list.
         :complexity: Given we have a reference to the rear of the list, this is O(1).
         """
         new_node = Node(item)
@@ -72,34 +57,12 @@ class LinkedList(List[T]):
         self.__rear = new_node
         self.__length += 1
 
-    def __get_node_at_index(self, index: int) -> Node[T]:
-        if -1 * len(self) <= index and index < len(self):
-            if index < 0:
-                index = len(self) + index
-            current = self.__head
-            for _ in range(index):
-                current = current.link
-            return current
-        else:
-            raise IndexError('Out of bounds access in list.')
-
-    def index(self, item: T) -> int:
-        """
-        Find the position of a given item in the list.
-        :complexity:
-            Best: O(1) if the item is at the head of the list.
-            Worst: O(N) where N is the number of items in the list. Happens when the item is at
-                the end of the list or it doesn't exist in the list.
-        """
-        current = self.__head
-        index = 0
-        while current is not None and current.item != item:
-            current = current.link
-            index += 1
-        if current is None:
-            raise ValueError('Item is not in list')
-        else:
-            return index
+    def clear(self):
+        """ Clear the list. """
+        List.clear(self)
+        self.__head = None
+        self.__rear = None
+        self.__length = 0
 
     def delete_at_index(self, index: int) -> T:
         if not self.is_empty():
@@ -122,32 +85,56 @@ class LinkedList(List[T]):
         else:
             raise ValueError("Index out of bounds: list is empty")
 
-    def insert(self, index: int, item: T) -> None:
-        new_node = Node(item)
-        if index == 0:
-            new_node.link = self.__head
-            self.__head = new_node
+    def index(self, item: T) -> int:
+        """
+        Find the position of a given item in the list.
+        :complexity:
+            Best: O(1) if the item is at the head of the list.
+            Worst: O(N) where N is the number of items in the list. Happens when the item is at
+                the end of the list or it doesn't exist in the list.
+        """
+        current = self.__head
+        index = 0
+        while current is not None and current.item != item:
+            current = current.link
+            index += 1
+        if current is None:
+            raise ValueError('Item is not in list')
         else:
-            previous_node = self.__get_node_at_index(index-1)
-            new_node.link = previous_node.link
-            previous_node.link = new_node
+            return index
 
-        if index == len(self):
-            if len(self) > 0:
-                self.__rear.link = new_node
-            self.__rear = new_node
+    def __get_node_at_index(self, index: int) -> Node[T]:
+        if -1 * len(self) <= index and index < len(self):
+            if index < 0:
+                index = len(self) + index
+            current = self.__head
+            for _ in range(index):
+                current = current.link
+            return current
+        else:
+            raise IndexError('Out of bounds access in list.')
 
-        self.__length += 1
+    def __getitem__(self, index: int) -> T:
+        """ Return the element at a given position. """
+        node_at_index = self.__get_node_at_index(index)
+        return node_at_index.item
 
-    def is_empty(self) -> bool:
-        """ Check if the list is empty. """
-        return len(self) == 0
+
+    def __setitem__(self, index: int, item: T) -> None:
+        """ Insert the item at a given position. """
+        node_at_index = self.__get_node_at_index(index)
+        node_at_index.item = item
+
+    def __iter__(self):
+        """ Iterate through the list. """
+        return LinkedListIterator(self.__head)
+
+    def __len__(self) -> int:
+        """ Return the length of the list. """
+        return self.__length
 
     def __str__(self) -> str:
         if not len(self):
-            return "Linked List []"
+            return "<LinkedList []>"
 
-        return "Linked List [" + ", ".join(str(item) for item in self) + "]"
-
-    def __repr__(self) -> str:
-        return str(self)
+        return "<LinkedList [" + ", ".join(str(item) for item in self) + "]>"

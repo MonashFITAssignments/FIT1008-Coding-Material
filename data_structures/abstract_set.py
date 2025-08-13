@@ -13,26 +13,6 @@ class Set(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def __len__(self) -> int:
-        """ Returns the number of elements in the set. """
-        pass
-
-    @abstractmethod
-    def is_empty(self) -> bool:
-        """ True if the set is empty. """
-        pass
-
-    @abstractmethod
-    def clear(self) -> None:
-        """ Clear the set. """
-        pass
-
-    @abstractmethod
-    def __contains__(self, item: T) -> bool:
-        """ True if the set contains the item. """
-        pass
-
-    @abstractmethod
     def add(self, item: T) -> None:
         """
         Adds an element to the set.
@@ -49,10 +29,20 @@ class Set(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def values(self) -> ArrayR[T]:
+    def values(self) -> Generic[T]:
         """
         Returns an array of all the items in the set in no particular order.
         """
+        pass
+
+    @abstractmethod
+    def clear(self) -> None:
+        """ Clear the set. """
+        pass
+
+    @abstractmethod
+    def is_empty(self) -> bool:
+        """ True if the set is empty. """
         pass
 
     @abstractmethod
@@ -81,4 +71,22 @@ class Set(ABC, Generic[T]):
     def __sub__(self, other: Set[T]) -> Set[T]:
         """ Magic method alias for difference """
         return self.difference(other)
-    
+
+    @abstractmethod
+    def __contains__(self, item: T) -> bool:
+        """ True if the set contains the item. """
+        pass
+
+    @abstractmethod
+    def __len__(self) -> int:
+        """ Returns the number of elements in the set. """
+        pass
+
+    def __str__(self) -> str:
+        """ Returns a string representation of the set. """
+        values = [str(value) for value in self.values()]
+        return '{' + ', '.join(values) + '}'
+
+    def __repr__(self) -> str:
+        """ Returns a string representation of the set. """
+        return str(self)
