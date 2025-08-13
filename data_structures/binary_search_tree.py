@@ -8,27 +8,23 @@ from __future__ import annotations
 __author__ = 'Brendon Taylor, modified by Alexey Ignatiev, further modified by Jackson Goerner'
 __docformat__ = 'reStructuredText'
 
-from typing import Generic, TypeVar, Tuple
+from typing import Tuple
 
-from data_structures.abstract_binary_search_tree import AbstractBinarySearchTree
+from data_structures.abstract_binary_search_tree import AbstractBinarySearchTree, K, V
 from data_structures.abstract_hash_table import HashTable
 from data_structures.linked_stack import LinkedStack
-from data_structures.node import BinaryNode
+from data_structures.node import BinaryNode, Generic
 from data_structures.referential_array import ArrayR
 
-# generic types
-K = TypeVar('K')
-V = TypeVar('V')
-T = TypeVar('T')
 
-class BSTPreOrderIterator:
+class BSTPreOrderIterator(Generic[K,V]):
     """ Pre-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
 
     def __init__(self, root: BinaryNode[K, V] | None) -> None:
         """ Iterator initialiser. """
-        self.__stack = LinkedStack[BinaryNode]()
+        self.__stack = LinkedStack[BinaryNode[K,V]]()
         if root is not None:
             self.__stack.push(root)
 
@@ -36,7 +32,7 @@ class BSTPreOrderIterator:
         """ Standard __iter__() method for initialisers. Returns itself. """
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the pre-order.
         """
@@ -47,24 +43,25 @@ class BSTPreOrderIterator:
             self.__stack.push(current.right)
         if current.left:
             self.__stack.push(current.left)
-        return current
 
-class BSTInOrderIterator:
+        return current.key, current.item
+
+class BSTInOrderIterator(Generic[K,V]):
     """ In-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
 
-    def __init__(self, root: BinaryNode[K, V]) -> None:
+    def __init__(self, root: BinaryNode[K, V] | None) -> None:
         """ Iterator initialiser. """
 
-        self.__stack = LinkedStack[BinaryNode]()
+        self.__stack = LinkedStack[BinaryNode[K,V]]()
         self.__current = root
 
     def __iter__(self) -> BSTInOrderIterator:
         """ Standard __iter__() method for initialisers. Returns itself. """
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the in-order.
         """
@@ -78,10 +75,10 @@ class BSTInOrderIterator:
         result = self.__stack.pop()
         self.__current = result.right
 
-        return result
+        return result.key, result.item
 
 
-class BSTPostOrderIterator:
+class BSTPostOrderIterator(Generic[K,V]):
     """ Post-order iterator for the binary search tree.
         Performs stack-based BST traversal.
     """
@@ -96,7 +93,7 @@ class BSTPostOrderIterator:
         """ Standard __iter__() method for initialisers. Returns itself. """
         return self
 
-    def __next__(self) -> BinaryNode[K, V]:
+    def __next__(self) -> Tuple[K, V]:
         """ The main body of the iterator.
             Returns keys of the BST one by one respecting the post-order.
         """
@@ -105,7 +102,7 @@ class BSTPostOrderIterator:
                 raise StopIteration
             current, expanded = self.__stack.pop()
             if expanded:
-                return current
+                return current.key, current.item
             else:
                 self.__stack.push((current, True))
                 if current.right:
@@ -127,29 +124,31 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         self.__length = 0
 
     @staticmethod
-    def from_node(node: BinaryNode[K, V] | None, length: int = None) -> BinarySearchTree[K, V]:
+    def from_node(node: BinaryNode[K, V] | None, length: int = 0) -> BinarySearchTree[K, V]:
         """
             Creates a binary search tree object from binary node.
             Useful if a bottom up construction of the tree can be done efficiently.
             Length argument is not checked if passed in.
-            :complexity: 
+            Search invariant is not checked.
+            :complexity:
                 :best: O(1) when length is passed
                 :worst: O(N) where N is the number of nodes in the tree
         """
+
         def len_aux(current: BinaryNode | None) -> int:
             if current is None:
                 return 0
             return 1 + len_aux(current.left) + len_aux(current.right)
-        
+
         if not isinstance(node, (BinaryNode, type(None))):
             raise TypeError(f"Cannot instantiate binary tree with node type: {type(node)}")
         tree = BinarySearchTree()
-        tree.__root = node
-        tree.__length = length if length else len_aux(node)
+        tree._BinarySearchTree__root = node
+        tree._BinarySearchTree__length = length if length else len_aux(node)
 
         return tree
 
-    def get_successor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
+    def __get_successor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
             Get successor of the current node.
             It should be a node in the subtree rooted at current having the smallest key among all the
@@ -158,9 +157,9 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         """
         if current is None:
             return None
-        return self.get_min_node(current.right)
+        return self.__get_min_node(current.right)
     
-    def get_predecessor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
+    def __get_predecessor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
             Get predecessor of the current node.
             It should be a node in the subtree rooted at current having the largest key among all the
@@ -169,9 +168,9 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         """
         if current is None:
             return None
-        return self.get_max_node(current.left)
+        return self.__get_max_node(current.left)
 
-    def get_min_node(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
+    def __get_min_node(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
             Get a node having the smallest key in the current sub-tree.
         """
@@ -181,7 +180,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
             current = current.left
         return current
 
-    def get_max_node(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
+    def __get_max_node(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
             Get a node having the largest key in the current sub-tree.
         """
@@ -198,7 +197,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
     def items(self) -> ArrayR[Tuple[K, V]]:
         array = ArrayR(len(self))
         for i, node in enumerate(self):
-            tup = (node.key, node.item)
+            tup = (node[0], node[1])
             array[i] = tup
         return array
 
@@ -256,7 +255,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                     return current.left
 
                 # general case => find a successor
-                successor = bst.get_successor(current)
+                successor = bst.__get_successor(current)
                 current.key = successor.key
                 current.item = successor.item
                 current.right = delete_aux(current.right, successor.key)
@@ -312,18 +311,17 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         """ Returns the number of nodes in the tree. """
         return self.__length
 
-    def __str__(self):
-        def str_aux(current: BinaryNode[K, V] | None, buffer: list, prefix='', postfix=''):
-            if current is not None:
-                real_prefix = prefix[:-2] + postfix
-                buffer.append(f'{real_prefix}{current.key}')
-                if current.left or current.right:
-                    str_aux(current.left, buffer, prefix=prefix + '\u2551 ', postfix='\u255f\u2550')
-                    str_aux(current.right, buffer, prefix=prefix + '  ', postfix='\u2559\u2550')
-            else:
-                real_prefix = prefix[:-2] + postfix
-                buffer.append(f'{real_prefix}')
-            return buffer
+    def str(self, indent: int) -> str:
+        def str_aux(current: BinaryNode[K, V] | None, indent, depth) -> str:
+            prefix = "\n" + " " * indent * depth if indent > 0 else ""
+            if current is None:
+                return prefix[:-indent] + str(None)
+            return f"{prefix[:-indent]}({prefix}{current.key}, {prefix}{current.item}, {str_aux(current.left, indent, depth + 1)}, {str_aux(current.right, indent, depth + 1)}{prefix[:-indent]})"
 
-        buffer = str_aux(self.__root, [], prefix='', postfix='')
-        return '\n'.join(buffer)
+        if self.__root is None:
+            return f"<BinarySearchTree({self.__root})>"
+        tree_str = str_aux(self.__root, indent = indent, depth = 1)
+        return f"<BinarySearchTree{tree_str}>"
+
+    def __str__(self) -> str:
+        return self.str(0)

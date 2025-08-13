@@ -12,23 +12,6 @@ class AbstractBinarySearchTree(ABC, Generic[K, V]):
     """
     Hash Table (Map/Dictionary) ADT.
     """
-
-    @abstractmethod
-    def get_successor(self, current: BinaryNode) -> BinaryNode[K, V] | None:
-        pass
-
-    @abstractmethod
-    def get_predecessor(self, current: BinaryNode) -> BinaryNode[K, V] | None:
-        pass
-
-    @abstractmethod
-    def get_min_node(self) -> BinaryNode[K, V] | None:
-        pass
-
-    @abstractmethod
-    def get_max_node(self) -> BinaryNode[K, V] | None:
-        pass
-
     @abstractmethod
     def is_leaf(self):
         pass
