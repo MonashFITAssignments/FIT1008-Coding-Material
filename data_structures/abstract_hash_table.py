@@ -43,7 +43,6 @@ class HashTable(ABC, Generic[K, V]):
             array[i] = array[i][1]
         return array
 
-    @abstractmethod
     def is_empty(self) -> bool:
         return len(self) == 0
 
