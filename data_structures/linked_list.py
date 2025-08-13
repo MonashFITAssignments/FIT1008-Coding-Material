@@ -23,27 +23,24 @@ class LinkedList(List[T]):
     """ Linked-node based implementation of List ADT. """
 
     def __init__(self):
-        List.__init__(self)
         self.__head = None
         self.__rear = None
         self.__length = 0
 
     def insert(self, index: int, item: T) -> None:
-        new_node = Node(item)
-        if index == 0:
-            new_node.link = self.__head
-            self.__head = new_node
-        else:
-            previous_node = self.__get_node_at_index(index-1)
-            new_node.link = previous_node.link
-            previous_node.link = new_node
-
         if index == len(self):
-            if len(self) > 0:
-                self.__rear.link = new_node
-            self.__rear = new_node
+            self.append(item)
+        else:
+            new_node = Node(item)
+            if index == 0:
+                new_node.link = self.__head
+                self.__head = new_node
+            else:
+                previous_node = self.__get_node_at_index(index-1)
+                new_node.link = previous_node.link
+                previous_node.link = new_node
 
-        self.__length += 1
+            self.__length += 1
 
     def append(self, item: T) -> None:
         """ Append the item to the end of the list.
