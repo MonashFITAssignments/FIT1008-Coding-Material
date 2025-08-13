@@ -35,6 +35,8 @@ class TestBinarySearchTree(TestCase):
             self.balanced[balanced_items[i]] = balanced_items[i]
 
         self.trees = [self.empty, self.one, self.left_tree, self.right_tree, self.balanced]
+        
+        self.table = BinarySearchTree()
 
     def test_len(self):
         self.assertEqual(len(self.empty), 0)
@@ -105,6 +107,83 @@ class TestBinarySearchTree(TestCase):
         self.assertEqual(lists[3], list(double(range(self.NUM_ITEMS - 1, -1, -1))))
 
         self.assertEqual(lists[4], list(double([0, 2, 1, 4, 6, 5, 3, 8, 10, 9, 12, 14, 13, 11, 7])))
+
+    def test_remove(self):
+        self.table["Key Three"] = 3
+        self.table["Key One"] = 1
+        self.table["Key Two"] = 2
+        self.assertEqual(len(self.table), 3)
+        
+        del self.table["Key One"]
+        self.assertEqual(len(self.table), 2)
+        self.assertFalse("Key One" in self.table)
+        self.assertTrue("Key Two" in self.table)
+        self.assertTrue("Key Three" in self.table)
+        
+        del self.table["Key Three"]
+        self.assertEqual(len(self.table), 1)
+        self.assertTrue("Key Two" in self.table)
+        self.assertFalse("Key Three" in self.table)
+        
+        del self.table["Key Two"]
+        self.assertEqual(len(self.table), 0)
+        self.assertTrue(self.table.is_empty())
+        self.assertFalse("Key Two" in self.table)
+    
+    def test_keys(self):
+        self.table["Key One"] = 1
+        self.table["Key Two"] = 2
+        self.table["Key Three"] = 3
+        self.assertEqual(len(self.table), 3)
+
+        keys = self.table.keys()
+        self.assertTrue("Key One" in keys)
+        self.assertTrue("Key Two" in keys)
+        self.assertTrue("Key Three" in keys)
+        self.assertEqual(len(keys), 3)
+    
+    def test_values(self):
+        self.table["Key One"] = 1
+        self.table["Key Two"] = 2
+        self.table["Key Three"] = 3
+        self.assertEqual(len(self.table), 3)
+
+        values = self.table.values()
+        self.assertTrue(1 in values)
+        self.assertTrue(2 in values)
+        self.assertTrue(3 in values)
+        self.assertEqual(len(values), 3)
+      
+    def test_get(self):
+        self.table["Key One"] = 1
+        self.table["Key Two"] = 2
+        self.table["Key Three"] = 3
+        self.assertEqual(len(self.table), 3)
+
+        self.assertEqual(self.table["Key One"], 1)
+        self.assertEqual(self.table["Key Two"], 2)
+        self.assertEqual(self.table["Key Three"], 3)
+    
+    def test_static(self):
+        tree = BinarySearchTree.from_node(None)
+        self.assertIs(type(tree), BinarySearchTree)
+        self.assertEqual(len(tree), 0)
+
+        node = BinaryNode(1)
+        node.left = BinaryNode(2)
+        node.right = BinaryNode(3)
+        
+        tree = BinarySearchTree.from_node(node)
+        self.assertEqual(len(tree), 3)
+
+        #Passed bst doesn't satisfy BST invariant so cannot find 2
+        self.assertNotIn(2, tree)
+        self.assertIn(3, tree)
+
+        self.assertRaises(ValueError, lambda: BinarySearchTree.from_node(node, check_invariant=True))
+
+        self.assertRaises(TypeError, lambda: BinarySearchTree.from_node("hello"))
+
 
     def test_str(self):
         empty_str = str(self.empty)
