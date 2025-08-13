@@ -30,6 +30,10 @@ class BinaryNode(Generic[K, T]):
     @property
     def item(self) -> T:
         return self.__item
+    
+    @item.setter
+    def item(self, item:T) -> None:
+        self.__item = item
 
     @property
     def key(self) -> K:
