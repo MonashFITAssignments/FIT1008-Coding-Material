@@ -29,101 +29,8 @@ class HashTableSeparateChaining(HashTable[str, V]):
         if table_size <= 0:
             raise ValueError("Table size should be larger than 0.")
         
+        self.__table: ArrayR[LinkedList | None] = ArrayR(table_size)
         self.__length = 0
-        self.__table:ArrayR[LinkedList | None] = ArrayR(table_size)
-
-    def __len__(self) -> int:
-        """
-        Returns number of elements in the hash table
-        """
-        return self.__length
-
-    def __delitem__(self, key: str) -> None:
-        """
-        Deletes an item from our hash table
-        :raises KeyError: when the key doesn't exist
-        :complexity:
-            Best: O(K) where K is the length of the key (for hashing). Happens when the chain (linked list) does
-                not have many elements.
-            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
-                Happens when the position has many elements and we have to traverse the linked list.
-        """
-        position = self.hash(key)
-        if self.__table[position] is None:
-            raise KeyError(key)
-
-        for index, item in enumerate(self.__table[position]):
-            if item[0] == key:
-                if len(self.__table[position]) <= 1:
-                    self.__table[position] = None
-                else:
-                    self.__table[position].delete_at_index(index)
-
-                self.__length -= 1
-                return
-
-        raise KeyError(key)
-
-    def __setitem__(self, key: str, data: V) -> None:
-        """
-        Set a (key, data) pair in our hash table
-        :complexity:
-            Best: O(K) where K is the length of the key (for hashing). Happens when the position is empty.
-            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
-                Happens when the position is not empty and we have to traverse the linked list.
-        """
-        position = self.hash(key)
-        if self.__table[position] is None:
-            self.__table[position] = LinkedList()
-
-        # Attempt to find the key in our linked list
-        if len(self.__table[position]) > 0:
-            for index, item in enumerate(self.__table[position]):
-                if item[0] == key:
-                    # If found update the data
-                    self.__table[position][index] = (key, data)
-                    return
-                
-        # Insert at the beginning for better time complexity
-        self.__table[position].insert(0, (key, data))
-        self.__length += 1
-
-    def __contains__(self, key: str) -> bool:
-        """
-        Checks to see if the given key is in the Hash Table
-        """
-        try:
-            _ = self[key]
-        except KeyError:
-            return False
-        else:
-            return True
-
-    def __getitem__(self, key: str) -> V:
-        """
-        Get the data associated with a key
-        :raises KeyError: when the key doesn't exist
-        :complexity:
-            Best: O(K) where K is the length of the key (for hashing). Happens when the chain at the position
-                doesn't have many items.
-            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
-                Happens when we have to traverse a long chain to find the key.
-        """
-        position = self.hash(key)
-        if self.__table[position] is None:
-            raise KeyError(key)
-        for item in self.__table[position]:
-            if item[0] == key:
-                return item[1]
-
-        raise KeyError(key)
-
-    def is_empty(self):
-        """
-        Returns whether the hash table is empty
-        :complexity: O(1)
-        """
-        return self.__length == 0
 
     def hash(self, key: str) -> int:
         """
@@ -138,21 +45,9 @@ class HashTableSeparateChaining(HashTable[str, V]):
             a = a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)
         return value
 
-    def insert(self, key: str, data: V) -> None:
-        """
-        Utility method to call our setitem method
-        """
-        self[key] = data
-
-    def __iter__(self):
-        """
-        Returns an iterator for the hash table
-        :complexity: O(N) where N n is the number of items in our hash table
-        """
-        for list in self.__table:
-            if list is not None:
-                for item in list:
-                    yield item[1]
+    @property
+    def table_size(self) -> int:
+        return len(self.__array)
 
     def items(self) -> ArrayR[Tuple[str, V]]:
         """
@@ -205,6 +100,98 @@ class HashTableSeparateChaining(HashTable[str, V]):
                     i += 1
         return res
 
+    def is_empty(self):
+        """
+        Returns whether the hash table is empty
+        :complexity: O(1)
+        """
+        return self.__length == 0
+
+    def __delitem__(self, key: str) -> None:
+        """
+        Deletes an item from our hash table
+        :raises KeyError: when the key doesn't exist
+        :complexity:
+            Best: O(K) where K is the length of the key (for hashing). Happens when the chain (linked list) does
+                not have many elements.
+            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
+                Happens when the position has many elements and we have to traverse the linked list.
+        """
+        position = self.hash(key)
+        if self.__table[position] is None:
+            raise KeyError(key)
+
+        for index, item in enumerate(self.__table[position]):
+            if item[0] == key:
+                if len(self.__table[position]) <= 1:
+                    self.__table[position] = None
+                else:
+                    self.__table[position].delete_at_index(index)
+
+                self.__length -= 1
+                return
+
+        raise KeyError(key)
+
+    def __getitem__(self, key: str) -> V:
+        """
+        Get the data associated with a key
+        :raises KeyError: when the key doesn't exist
+        :complexity:
+            Best: O(K) where K is the length of the key (for hashing). Happens when the chain at the position
+                doesn't have many items.
+            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
+                Happens when we have to traverse a long chain to find the key.
+        """
+        position = self.hash(key)
+        if self.__table[position] is None:
+            raise KeyError(key)
+        for item in self.__table[position]:
+            if item[0] == key:
+                return item[1]
+
+        raise KeyError(key)
+
+    def __setitem__(self, key: str, data: V) -> None:
+        """
+        Set a (key, data) pair in our hash table
+        :complexity:
+            Best: O(K) where K is the length of the key (for hashing). Happens when the position is empty.
+            Worst: O(N + K) where N is the number of items in the hash table and K is the length of the key.
+                Happens when the position is not empty and we have to traverse the linked list.
+        """
+        position = self.hash(key)
+        if self.__table[position] is None:
+            self.__table[position] = LinkedList()
+
+        # Attempt to find the key in our linked list
+        if len(self.__table[position]) > 0:
+            for index, item in enumerate(self.__table[position]):
+                if item[0] == key:
+                    # If found update the data
+                    self.__table[position][index] = (key, data)
+                    return
+
+        # Insert at the beginning for better time complexity
+        self.__table[position].insert(0, (key, data))
+        self.__length += 1
+
+    def __iter__(self):
+        """
+        Returns an iterator for the hash table
+        :complexity: O(N) where N n is the number of items in our hash table
+        """
+        for list in self.__table:
+            if list is not None:
+                for item in list:
+                    yield item[1]
+
+    def __len__(self) -> int:
+        """
+        Returns number of elements in the hash table
+        """
+        return self.__length
+
     def __str__(self) -> str:
         """
         Returns all they key/value pairs in our hash table (no particular order)
@@ -221,7 +208,4 @@ class HashTableSeparateChaining(HashTable[str, V]):
                     result += "(" + str(key) + "," + str(value) + ")"
                     first = False
                 result += '\n'
-        return result
-    
-    def __repr__(self) -> str:
-        return str(self)
+        return f"<HashTableSeparateChaining \n{result}>"

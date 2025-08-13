@@ -6,27 +6,8 @@ class LinkedStack(Stack[T]):
     """ Implementation of a stack with linked nodes. """
 
     def __init__(self, _=None) -> None:
-        Stack.__init__(self)
         self.__top = None
         self.__length = 0
-
-    def clear(self) -> None:
-        """" Resets the stack to an empty state. """
-        Stack.clear(self)
-        self.__top = None
-        self.__length = 0
-
-    def __len__(self) -> int:
-        """ Returns the number of elements in the stack.
-        :complexity: O(1)
-        """
-        return self.__length
-
-    def is_full(self) -> bool:
-        """ Returns whether the stack is full
-        The linked implementation is never full.
-        """
-        return False
 
     def push(self, item: T) -> None:
         """ Pushes an element to the top of the stack.
@@ -58,3 +39,20 @@ class LinkedStack(Stack[T]):
         if self.is_empty():
             raise Exception('Stack is empty')
         return self.__top.item
+
+    def is_full(self) -> bool:
+        """ Returns whether the stack is full
+        The linked implementation is never full.
+        """
+        return False
+
+    def clear(self) -> None:
+        """" Resets the stack to an empty state. """
+        self.__top = None
+        self.__length = 0
+
+    def __len__(self) -> int:
+        """ Returns the number of elements in the stack.
+        :complexity: O(1)
+        """
+        return self.__length

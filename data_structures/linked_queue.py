@@ -17,15 +17,8 @@ class LinkedQueue(Queue[T]):
         Constructor for the LinkedQueue class.
         :complexity: O(1)
         """
-        Queue.__init__(self)
-        self.__front = None
-        self.__rear = None
-        self.__length = 0
+        self.clear()
 
-    def __len__(self) -> int:
-        """ Returns the number of elements in the queue. """
-        return self.__length
-    
     def append(self, item: T) -> None:
         """ Adds an element to the rear of the queue.
         :raises Exception: if the queueu is full.
@@ -93,25 +86,23 @@ class LinkedQueue(Queue[T]):
 
     def clear(self) -> None:
         """ Clears all elements from the queue. """
-        Queue.__init__(self)
         self.__front = None
         self.__rear = None
         self.__length = 0
 
+    def __len__(self) -> int:
+        """ Returns the number of elements in the queue. """
+        return self.__length
+
     def __str__(self) -> str:
         """ Returns a string representation of the queue."""
         i = self.__front
-        result = ""
+        result = "<LinkedQueue ["
         count = 1  # 1-based counting
         while i is not None:
-            result += f"p{count}: " + (str(i.item) if type(i.item) != str else "'{0}'".format(i.item))
+            result += str(i.item)
             if i.link is not None:
                 result += ", "
             i = i.link
             count += 1
-        return result
-
-    def __repr__(self) -> str:
-        """Returns a string representation of the queue object.
-        Useful for debugging or when the queue is held in another data structure."""
-        return str(self)
+        return f"{result}]>"

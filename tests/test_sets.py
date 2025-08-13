@@ -130,8 +130,13 @@ class TestArraySet(TestCase):
         self.assertIn('hello', value_array)
         self.assertIn('goodbye', value_array)
 
+    def test_string(self):
+        self.assertEqual(str(self.set), '<ArraySet {}>')
 
-
+        self.set.add(1)
+        self.set.add(1)
+        self.set.add(3)
+        self.assertEqual(str(self.set), '<ArraySet {1, 3}>')
 
 class TestSortedArraySet(TestCase):
     def setUp(self):
@@ -309,6 +314,13 @@ class TestSortedArraySet(TestCase):
         self.assertIn('hello', value_array)
         self.assertIn('goodbye', value_array)
 
+    def test_string(self):
+        self.assertEqual(str(self.set), '<ArraySortedSet {}>')
+
+        self.set.add(3)
+        self.set.add(1)
+        self.assertEqual(str(self.set), '<ArraySortedSet {1, 3}>')
+
 class TestBitVectorSet(TestCase):
     def setUp(self):
         self.set = BitVectorSet()
@@ -430,9 +442,9 @@ class TestBitVectorSet(TestCase):
         self.assertIn(23, value_array)
     
     def test_string(self):
-        self.assertEqual(str(self.set), '{}')
+        self.assertEqual(str(self.set), '<BitVectorSet {}>')
 
         self.set.add(1)
         self.set.add(1)
         self.set.add(3)
-        self.assertEqual(str(self.set), '{1, 3}')
+        self.assertEqual(str(self.set), '<BitVectorSet {1, 3}>')

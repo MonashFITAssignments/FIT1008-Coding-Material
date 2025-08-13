@@ -1,30 +1,36 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Tuple
+from data_structures.node import BinaryNode
 from data_structures.referential_array import ArrayR
 
 K = TypeVar('K')
 V = TypeVar('V')
 
 
-class HashTable(ABC, Generic[K, V]):
+class AbstractBinarySearchTree(ABC, Generic[K, V]):
     """
-    Hash Table (Map/Dictionary) ADT. 
+    Hash Table (Map/Dictionary) ADT.
     """
-
-    def insert(self, key: str, data: V) -> None:
-        """
-        Utility method to call our setitem method
-        """
-        self[key] = data
 
     @abstractmethod
-    def hash(self, key: K) -> int:
+    def get_successor(self, current: BinaryNode) -> BinaryNode[K, V] | None:
         pass
 
-    @property
     @abstractmethod
-    def table_size(self) -> int:
+    def get_predecessor(self, current: BinaryNode) -> BinaryNode[K, V] | None:
+        pass
+
+    @abstractmethod
+    def get_min_node(self) -> BinaryNode[K, V] | None:
+        pass
+
+    @abstractmethod
+    def get_max_node(self) -> BinaryNode[K, V] | None:
+        pass
+
+    @abstractmethod
+    def is_leaf(self):
         pass
 
     @abstractmethod
@@ -47,16 +53,9 @@ class HashTable(ABC, Generic[K, V]):
     def is_empty(self) -> bool:
         return len(self) == 0
 
-    def __contains__(self, key: str) -> bool:
-        """
-        Checks to see if the given key is in the Hash Table
-        """
-        try:
-            _ = self[key]
-        except KeyError:
-            return False
-        else:
-            return True
+    @abstractmethod
+    def __contains__(self, key: K) -> bool:
+        pass
 
     @abstractmethod
     def __delitem__(self, key: K) -> None:
@@ -77,6 +76,3 @@ class HashTable(ABC, Generic[K, V]):
     @abstractmethod
     def __str__(self) -> str:
         pass
-
-    def __repr__(self) -> str:
-        return str(self)

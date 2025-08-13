@@ -6,10 +6,10 @@ class CircularQueue(Queue[T]):
     """ Circular implementation of a queue with arrays.
 
     Attributes:
-         length (int): number of elements in the stack (inherited)
-         front (int): index of the element at the front of the queue
-         rear (int): index of the first empty space at the back of the queue
-         array (ArrayR[T]): array storing the elements of the queue
+         __length (int): number of elements in the stack (inherited)
+         __front (int): index of the element at the front of the queue
+         __rear (int): index of the first empty space at the back of the queue
+         __array (ArrayR[T]): array storing the elements of the queue
     """
 
     def __init__(self, max_capacity: int) -> None:
@@ -21,11 +21,10 @@ class CircularQueue(Queue[T]):
         if max_capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
 
-        Queue.__init__(self)
         self.__front = 0
         self.__rear = 0
-        self.__length = 0
         self.__array = ArrayR(max_capacity)
+        self.__length = 0
 
     def append(self, item: T) -> None:
         """ Adds an element to the rear of the queue.
@@ -49,7 +48,7 @@ class CircularQueue(Queue[T]):
 
         self.__length -= 1
         item = self.__array[self.__front]
-        self.__front = (self.__front+1) % len(self.__array)
+        self.__front = (self.__front + 1) % len(self.__array)
         return item
 
     def peek(self) -> T:
@@ -79,7 +78,6 @@ class CircularQueue(Queue[T]):
 
     def __str__(self) -> str:
         """ Returns the string representation of the queue """
-        return '[' + ', '.join(
+        return '<CircularQueue [' + ', '.join(
             str(self.__array[(i + self.__front) % len(self.__array)]) for i in range(len(self))
-        ) + ']'
-        
+        ) + ']>'
