@@ -79,12 +79,6 @@ class CircularQueue(Queue[T]):
 
     def __str__(self) -> str:
         """ Returns the string representation of the queue """
-        i = self.__front
-        result = '['
-        for _ in range(len(self)):
-            result += '' if result == '[' else ', '
-            result += str(self.__array[i])
-            i = (i + 1) % len(self.__array)
-        result += ']'
-
-        return result
+        return '[' + ', '.join(
+            str(self.__array[(i + self.__front) % len(self.__array)]) for i in range(len(self))
+        ) + ']'

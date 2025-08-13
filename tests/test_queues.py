@@ -86,6 +86,22 @@ class TestCircularQueue(TestCase):
             self.assertEqual(len(queue), 0)
             self.assertTrue(queue.is_empty())
 
+    def test_str(self) -> None:
+        empty_str = '[]'
+        self.assertEqual(empty_str, str(self.empty_queue))
+
+        roomy_str = '[0, 1, 2, 3, 4]'
+        self.assertEqual(roomy_str, str(self.roomy_queue))
+        for _ in range(3):
+            self.roomy_queue.append(self.roomy_queue.serve())
+        roomy_str = '[3, 4, 0, 1, 2]'
+        self.assertEqual(roomy_str, str(self.roomy_queue))
+
+        #make sure the modulus code works
+        for _ in range(self.CAPACITY - self.ROOMY):
+            self.roomy_queue.append(self.roomy_queue.serve())
+        roomy_str = '[3, 4, 0, 1, 2]'
+        self.assertEqual(roomy_str, str(self.roomy_queue))
 
 
 class TestLinkedQueue(TestCase):
