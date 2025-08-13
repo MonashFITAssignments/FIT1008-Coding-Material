@@ -28,6 +28,12 @@ class LinkedList(List[T]):
         self.__length = 0
 
     def insert(self, index: int, item: T) -> None:
+        """
+        Inserts a new item before position index.
+        :complexity:
+            Best: O(1) if adding to the beginning or end of the list.
+            Worst: O(N) where N is the number of items in the list. Occurs when inserting towards the end of the list (but not at the end).
+        """
         if index == len(self):
             self.append(item)
         else:
@@ -62,6 +68,12 @@ class LinkedList(List[T]):
         self.__length = 0
 
     def delete_at_index(self, index: int) -> T:
+        """
+        Deletes an item at position index.
+        :complexity:
+            Best: O(1) Deleting the first item in the list.
+            Worst: O(N) Deleting the last item in the list, where N is the number of items in the list.
+        """
         if not self.is_empty():
             if index > 0:
                 previous_node = self.__get_node_at_index(index-1)
@@ -101,9 +113,18 @@ class LinkedList(List[T]):
             return index
 
     def __get_node_at_index(self, index: int) -> Node[T]:
+        """
+        Gets the nodes at a given index
+        :complexity:
+            Best: O(1) if the index is 0 or len(list) - 1
+            Worst: O(N) where N is the number of items in the list. Happens when the item is at
+                the end of the list or it doesn't exist in the list.
+        """
         if -1 * len(self) <= index and index < len(self):
             if index < 0:
                 index = len(self) + index
+            elif index == len(self) - 1:
+                return self.__rear
             current = self.__head
             for _ in range(index):
                 current = current.link
@@ -112,13 +133,16 @@ class LinkedList(List[T]):
             raise IndexError('Out of bounds access in list.')
 
     def __getitem__(self, index: int) -> T:
-        """ Return the element at a given position. """
+        """ Return the element at a given position.
+        :complexity: See self.__get_node_at_index().
+        """
         node_at_index = self.__get_node_at_index(index)
         return node_at_index.item
 
-
     def __setitem__(self, index: int, item: T) -> None:
-        """ Insert the item at a given position. """
+        """ Insert the item at a given position.
+        :complexity: See self.__get_node_at_index().
+        """
         node_at_index = self.__get_node_at_index(index)
         node_at_index.item = item
 
