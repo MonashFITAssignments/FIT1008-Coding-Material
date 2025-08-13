@@ -19,9 +19,13 @@ class ArraySortedSet(Set[T]):
 
     def add(self, item: T) -> None:
         """ Add new element to the set. """
+        index = self.__index_of_item(item)
+        if self.__array[index] == item:
+            return
+        
         if len(self) == len(self.__array):
             self.__resize()
-        index = self.__index_of_item(item)
+        
         self.__shuffle_right(index)
         self.__array[index] = item
         self.__length += 1
@@ -128,7 +132,7 @@ class ArraySortedSet(Set[T]):
         sorted_values = mergesort(other_values)
 
         # merge the two arrays discarding duplicates
-        i = 0;
+        i = 0
         j = 0
         while i < len(self) and j < len(sorted_values):
             i_value = self.__array[i]
