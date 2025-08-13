@@ -143,8 +143,8 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         if not isinstance(node, (BinaryNode, type(None))):
             raise TypeError(f"Cannot instantiate binary tree with node type: {type(node)}")
         tree = BinarySearchTree()
-        tree._BinarySearchTree__root = node
-        tree._BinarySearchTree__length = length if length else len_aux(node)
+        tree.__root = node
+        tree.__length = length if length else len_aux(node)
 
         return tree
 
