@@ -14,7 +14,8 @@ python -m unittest
 
 ### Todo Items
 
-- Add implementations for BST and Heap.
+- Add tests for binary search tree
+- Add str method for linked heap
 
 ### Acknowledgements
 

@@ -222,120 +222,21 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         """
         return self.__root is None
 
-    def __contains__(self, key: K) -> bool:
-        """
-            Checks to see if the key is in the BST
-            :complexity: see __getitem__(self, key: K) -> (K, I)
-        """
-        try:
-            _ = self[key]
-        except KeyError:
-            return False
+    def __str__(self):
+        buffer = self.__str_aux(self.__root, [], prefix='', postfix='')
+        return '\n'.join(buffer)
+    
+    def __str_aux(self, current:BinaryNode, buffer:list, prefix='', postfix=''):
+        if current is not None:
+            real_prefix = prefix[:-2] + postfix
+            buffer.append(f'{real_prefix}{current.key}')
+            if current._left or current._right:
+                self.__str_aux(current._left, buffer, prefix=prefix + '\u2551 ', postfix='\u255f\u2550')
+                self.__str_aux(current._right, buffer, prefix=prefix + '  ', postfix='\u2559\u2550')
         else:
-            return True
-
-    def __iter__(self) -> BSTInOrderIterator:
-        """ Create an in-order iterator. """
-        return BSTInOrderIterator(self.__root)
-
-    def post_iter(self) -> BSTPostOrderIterator:
-        return BSTPostOrderIterator(self.__root)
-
-    def pre_iter(self) -> BSTPreOrderIterator:
-        return BSTPreOrderIterator(self.__root)
-
-    def __delitem__(self, key: K) -> None:
-        def delete_aux(current: BinaryNode[K, V], key: K) -> BinaryNode[K, V]:
-            """
-                Attempts to delete an item from the tree, it uses the Key to
-                determine the node to delete.
-            """
-
-            if current is None:  # key not found
-                raise KeyError('Deleting non-existent item')
-            elif key < current.key:
-                current.left = delete_aux(current.left, key)
-            elif key > current.key:
-                current.right = delete_aux(current.right, key)
-            else:  # we found our key => do actual deletion
-                if self.is_leaf(current):
-                    self.__length -= 1
-                    return None
-                elif current.left is None:
-                    self.__length -= 1
-                    return current.right
-                elif current.right is None:
-                    self.__length -= 1
-                    return current.left
-
-                # general case => find a successor
-                successor = self.__get_successor(current)
-                current.key = successor.key
-                current.item = successor.item
-                current.right = delete_aux(current.right, successor.key)
-
-            return current
-
-        self.__root = delete_aux(self.__root, key)
-
-    def __getitem__(self, key: K) -> V:
-        """
-            Attempts to get an item in the tree, it uses the Key to attempt to find it
-            :complexity best: O(CompK) finds the item in the root of the tree
-            :complexity worst: O(CompK * D) item is not found, where D is the depth of the tree
-            CompK is the complexity of comparing the keys
-        """
-
-        def get_tree_node_by_key(current: BinaryNode[K, V], key: K) -> BinaryNode[K, V]:
-            if current is None:  # base case: empty
-                raise KeyError(f'Key not found: {key}')
-            elif key == current.key:  # base case: found
-                return current
-            elif key < current.key:
-                return get_tree_node_by_key(current.left, key)
-            else:  # key > current.key
-                return get_tree_node_by_key(current.right, key)
-
-        return get_tree_node_by_key(self.__root, key).item
-
-    def __setitem__(self, key: K, item: V) -> None:
-        def insert_aux(current: BinaryNode[K, V], key: K, item: V, current_depth: int) -> BinaryNode[K, V] | None:
-            """
-                Attempts to insert an item into the tree, it uses the Key to insert it
-                :complexity:
-                    :best: O(CompK) inserts the item at the root.
-                    :worst: O(CompK * D) inserting at the bottom of the tree
-                where D is the depth of the tree
-                CompK is the complexity of comparing the keys
-            """
-            if current is None:  # base case: at the leaf
-                current = BinaryNode(item, key)
-                self.__length += 1
-            elif key < current.key:
-                current.left = insert_aux(current.left, key, item, current_depth + 1)
-            elif key > current.key:
-                current.right = insert_aux(current.right, key, item, current_depth + 1)
-            else:  # key == current.key
-                current.item = item
-            return current
-
-        self.__root = insert_aux(self.__root, key, item, 1)
-
-    def __len__(self) -> int:
-        """ Returns the number of nodes in the tree. """
-        return self.__length
-
-    def str(self, indent: int) -> str:
-        def str_aux(current: BinaryNode[K, V] | None, indent, depth) -> str:
-            prefix = "\n" + " " * indent * depth if indent > 0 else ""
-            if current is None:
-                return prefix[:-indent] + str(None)
-            return f"{prefix[:-indent]}({prefix}{current.key}, {prefix}{current.item}, {str_aux(current.left, indent, depth + 1)}, {str_aux(current.right, indent, depth + 1)}{prefix[:-indent]})"
-
-        if self.__root is None:
-            return f"<BinarySearchTree({self.__root})>"
-        tree_str = str_aux(self.__root, indent = indent, depth = 1)
-        return f"<BinarySearchTree{tree_str}>"
+            real_prefix = prefix[:-2] + postfix
+            buffer.append(f'{real_prefix}')
+        return buffer
 
     def __str__(self) -> str:
         return self.str(0)
