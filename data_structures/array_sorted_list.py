@@ -12,75 +12,23 @@ class ArraySortedList(SortedList[T]):
         if initial_capacity < 0:
             raise ValueError("Capacity cannot be negative.")
 
-        # Call the base class constructor
-        SortedList.__init__(self)
-
-        # Initialize the length of the list
-        self.__length = 0
-
-        # Create the internal array where the items will be stored
         self.__array = ArrayR(initial_capacity)
-
-    def clear(self):
-        """ Clear the list.
-        All we need to do is reset the length of the list to 0.
-        This will start writing elements from the beginning of the array.
-        :complexity: O(1)
-        """
         self.__length = 0
 
-    def __len__(self):
-        return self.__length
-
-    def __getitem__(self, index: int) -> T:
-        """ Return the element at the given position.
-        :raises IndexError: if the index is out of bounds.
-        :complexity: O(1)
+    def add(self, item: T) -> None:
         """
-        if index < -1 * len(self) or len(self) <= index:
-            raise IndexError('Out of bounds access in list.')
-        if index < 0:
-            index = len(self) + index
-        return self.__array[index]
-
-    def __contains__(self, item):
-        """ Checks if the item is in the list.
-        :returns: True if the item is in the list, False otherwise.
-        :complexity: See _index
+        Add new element to the list.
+        :complexity:
+            Best case: O(log N) when the item is added at the end of the list.
+            Worst case: O(N) when the item is added at the beginning of the list.
+            N is the number of items in the list.
         """
-        try:
-            _ = self.index(item)
-            return True
-        except ValueError:
-            return False
-
-    def __shuffle_right(self, index: int) -> None:
-        """
-        Shuffle items to the right up to a given position.
-        """
-        for i in range(len(self), index, -1):
-            self.__array[i] = self.__array[i - 1]
-
-    def __shuffle_left(self, index: int) -> None:
-        """
-        Shuffle items starting at the given position to the left.
-        """
-        for i in range(index, len(self)):
-            self.__array[i] = self.__array[i + 1]
-
-    def __resize(self) -> None:
-        """ Resize the list.
-        It only sizes up, so should only be called when adding new items.
-        """
-        # Double the size of the array
-        new_array = ArrayR(2 * len(self.__array) + 1)
-
-        # copying the contents
-        for i in range(self.__length):
-            new_array[i] = self.__array[i]
-
-        # referring to the new array
-        self.__array = new_array
+        if len(self) == len(self.__array):
+            self.__resize()
+        index = self.__index_to_add(item)
+        self.__shuffle_right(index)
+        self.__array[index] = item
+        self.__length += 1
 
     def delete_at_index(self, index: int) -> T:
         """
@@ -110,20 +58,37 @@ class ArraySortedList(SortedList[T]):
 
         raise ValueError(f"{item} not found")
 
-    def add(self, item: T) -> None:
+    def clear(self) -> None:
+        """ Clear the list. """
+        self.__length = 0
+
+    def __shuffle_right(self, index: int) -> None:
         """
-        Add new element to the list.
-        :complexity:
-            Best case: O(log N) when the item is added at the end of the list.
-            Worst case: O(N) when the item is added at the beginning of the list.
-            N is the number of items in the list.
+        Shuffle items to the right up to a given position.
         """
-        if len(self) == len(self.__array):
-            self.__resize()
-        index = self.__index_to_add(item)
-        self.__shuffle_right(index)
-        self.__array[index] = item
-        self.__length += 1
+        for i in range(len(self), index, -1):
+            self.__array[i] = self.__array[i - 1]
+
+    def __shuffle_left(self, index: int) -> None:
+        """
+        Shuffle items starting at the given position to the left.
+        """
+        for i in range(index, len(self)):
+            self.__array[i] = self.__array[i + 1]
+
+    def __resize(self) -> None:
+        """ Resize the list.
+        It only sizes up, so should only be called when adding new items.
+        """
+        # Double the size of the array
+        new_array = ArrayR(2 * len(self.__array) + 1)
+
+        # copying the contents
+        for i in range(self.__length):
+            new_array[i] = self.__array[i]
+
+        # referring to the new array
+        self.__array = new_array
 
     def __index_to_add(self, item: T) -> int:
         """
@@ -153,3 +118,22 @@ class ArraySortedList(SortedList[T]):
                 high = mid - 1
 
         return low
+
+    def __len__(self) -> int:
+        """ Return the length of the list. """
+        return self.__length
+
+    def __getitem__(self, index: int) -> T:
+        """ Return the element at the given position.
+        :raises IndexError: if the index is out of bounds.
+        :complexity: O(1)
+        """
+        if index < -1 * len(self) or len(self) <= index:
+            raise IndexError('Out of bounds access in list.')
+        if index < 0:
+            index = len(self) + index
+        return self.__array[index]
+
+    def __str__(self) -> str:
+        """ Returns a string representation of the list. """
+        return f'<ArraySortedList {SortedList.__str__(self)}>'

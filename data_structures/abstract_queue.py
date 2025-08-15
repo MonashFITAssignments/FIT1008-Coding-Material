@@ -10,13 +10,18 @@ class Queue(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def append(self, item:T) -> None:
+    def append(self, item: T) -> None:
         """ Adds an element to the rear of the queue."""
         pass
 
     @abstractmethod
     def serve(self) -> T:
         """ Deletes and returns the element at the queue's front."""
+        pass
+
+    @abstractmethod
+    def peek(self) -> T:
+        """ Returns the element at the queue's front. """
         pass
 
     @abstractmethod
@@ -41,3 +46,6 @@ class Queue(ABC, Generic[T]):
     @abstractmethod
     def __str__(self) -> str:
         """ Returns the string representation of the queue """
+
+    def __repr__(self) -> str:
+        return str(self)

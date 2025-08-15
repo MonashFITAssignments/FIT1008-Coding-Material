@@ -13,46 +13,6 @@ class BitVectorSet(Set[int]):
         Set.__init__(self)
         self.__elems = 0
 
-    def clear(self) -> None:
-        """ Makes the set empty. """
-        self.__elems = 0
-
-    def is_empty(self) -> bool:
-        """ True if the set is empty. """
-        return self.__elems == 0
-    
-    def values(self) -> ArrayR[int]:
-        """
-        Returns the elements of the set as an array.
-        """
-        res = ArrayR(len(self))
-        count = 0
-        for item in range(1, int.bit_length(self.__elems) + 1):
-            if item in self:
-                res[count] = item
-                count += 1
-        return res
-
-    def __contains__(self, item: int) -> bool:
-        """
-        True if the set contains the item. False otherwise.
-        :raises TypeError: if the item is not a positive integer.
-        """
-        if not isinstance(item, int) or item <= 0:
-            raise TypeError('Set elements should be positive integers.')
-        return (self.__elems >> (item - 1)) & 1 == 1
-
-    def __len__(self) -> int:
-        """
-        Size computation. The most expensive operation.
-        Use int.bit_length(your_integer) to calculate the bit length.
-        """
-        res = 0
-        for item in range(1, int.bit_length(self.__elems) + 1):
-            if item in self:
-                res += 1
-        return res
-
     def add(self, item: int) -> None:
         """
         Adds an element to the set.
@@ -74,6 +34,26 @@ class BitVectorSet(Set[int]):
             self.__elems ^= 1 << (item - 1)
         else:
             raise KeyError(item)
+
+    def values(self) -> ArrayR[int]:
+        """
+        Returns the elements of the set as an array.
+        """
+        res = ArrayR(len(self))
+        count = 0
+        for item in range(1, int.bit_length(self.__elems) + 1):
+            if item in self:
+                res[count] = item
+                count += 1
+        return res
+
+    def clear(self) -> None:
+        """ Makes the set empty. """
+        self.__elems = 0
+
+    def is_empty(self) -> bool:
+        """ True if the set is empty. """
+        return self.__elems == 0
 
     def union(self, other: BitVectorSet[int]) -> BitVectorSet[int]:
         """
@@ -104,7 +84,26 @@ class BitVectorSet(Set[int]):
         res.__elems = self.__elems & ~other.__elems
         return res
 
+    def __contains__(self, item: int) -> bool:
+        """
+        True if the set contains the item. False otherwise.
+        :raises TypeError: if the item is not a positive integer.
+        """
+        if not isinstance(item, int) or item <= 0:
+            raise TypeError('Set elements should be positive integers.')
+        return (self.__elems >> (item - 1)) & 1 == 1
+
+    def __len__(self) -> int:
+        """
+        Size computation. The most expensive operation.
+        Use int.bit_length(your_integer) to calculate the bit length.
+        """
+        res = 0
+        for item in range(1, int.bit_length(self.__elems) + 1):
+            if item in self:
+                res += 1
+        return res
+
     def __str__(self):
-        """ Construct a nice string representation. """
-        values = [str(value) for value in self.values()]
-        return '{' + ', '.join(values) + '}'
+        """ Returns a string representation of the set. """
+        return f'<BitVectorSet {Set.__str__(self)}>'

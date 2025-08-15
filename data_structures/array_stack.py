@@ -10,7 +10,7 @@ class ArrayStack(Stack[T]):
          array (ArrayR[T]): array storing the elements of the queue
     """
 
-    def __init__(self, max_capacity: int) -> None:
+    def __init__(self, max_capacity: int = 1) -> None:
         """
         Constructor for the ArrayStack class.
         :param max_capacity: maximum capacity of the stack
@@ -18,13 +18,9 @@ class ArrayStack(Stack[T]):
         """
         if max_capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
-        Stack.__init__(self)
+
         self.__array = ArrayR(max_capacity)
         self.__length = 0
-
-    def is_full(self) -> bool:
-        """ True if the stack is full and no element can be pushed. """
-        return len(self) == len(self.__array)
 
     def push(self, item: T) -> None:
         """ Pushes an element to the top of the stack.
@@ -54,10 +50,14 @@ class ArrayStack(Stack[T]):
         if self.is_empty():
             raise Exception("Stack is empty")
         return self.__array[self.__length-1]
-    
+
+    def is_full(self) -> bool:
+        """ True if the stack is full and no element can be pushed. """
+        return len(self) == len(self.__array)
+
     def clear(self):
         self.__length = 0
-    
+
     def __len__(self) -> int:
         """ Returns the number of items in the stack"""
         return self.__length

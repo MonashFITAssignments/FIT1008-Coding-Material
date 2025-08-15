@@ -24,11 +24,6 @@ class Stack(ABC, Generic[T]):
         """ Pops the element at the top of the stack."""
         pass
 
-    @abstractmethod
-    def __len__(self) -> int:
-        """ Returns the number of elements in the stack."""
-        pass
-
     def is_empty(self) -> bool:
         """ Returns True iff the stack is empty. """
         return len(self) == 0
@@ -41,4 +36,9 @@ class Stack(ABC, Generic[T]):
     @abstractmethod
     def clear(self):
         """ Clears all elements from the stack. """
+        pass
+
+    @abstractmethod
+    def __len__(self) -> int:
+        """ Returns the number of elements in the stack."""
         pass

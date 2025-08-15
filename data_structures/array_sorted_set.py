@@ -14,35 +14,36 @@ class ArraySortedSet(Set[T]):
         if initial_capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
 
-        # Call the base class constructor
-        Set.__init__(self)
-
-        # Initialize the length of the list
-        self.__length = 0
-
-        # Create the internal array where the items will be stored
         self.__array = ArrayR(initial_capacity)
-
-    def clear(self):
-        """ Clear the set.
-        All we need to do is reset the size of the set to 0.
-        This will start writing elements from the beginning of the array.
-        """
         self.__length = 0
 
-    def __len__(self):
-        return self.__length
+    def add(self, item: T) -> None:
+        """ Add new element to the set. """
+        index = self.__index_of_item(item)
+        if self.__array[index] == item:
+            return
+        
+        if len(self) == len(self.__array):
+            self.__resize()
+        
+        self.__shuffle_right(index)
+        self.__array[index] = item
+        self.__length += 1
 
-    def __contains__(self, item):
-        """ Checks if the item is in the list.
-        :returns: True if the item is in the list, False otherwise.
+    def remove(self, item: T) -> None:
+        """
+        Removes an item from the set
+        :complexity best: O(logn * comp) Item is at end of array
+        :complexity worst: O(logn * comp + n) Item is at front of array
+            comp - cost of comparision
+            n - size of the set
         """
         index = self.__index_of_item(item)
-        return item == self.__array[index]
-
-
-    def is_empty(self):
-        return len(self) == 0
+        if not self.__array[index] == item:
+            raise KeyError(item)
+        #shuffle left to remove the item. Swapping with the last item would break sorted order.
+        self.__shuffle_left(index)
+        self.__length += -1
 
     def values(self) -> ArrayR[T]:
         """
@@ -52,6 +53,16 @@ class ArraySortedSet(Set[T]):
         for i in range(len(self)):
             res[i] = self.__array[i]
         return res
+
+    def clear(self):
+        """ Clear the set.
+        All we need to do is reset the size of the set to 0.
+        This will start writing elements from the beginning of the array.
+        """
+        self.__length = 0
+
+    def is_empty(self):
+        return len(self) == 0
 
     def __shuffle_right(self, index: int) -> None:
         """
@@ -81,30 +92,6 @@ class ArraySortedSet(Set[T]):
         # referring to the new array
         self.__array = new_array
 
-    def add(self, item: T) -> None:
-        """ Add new element to the set. """
-        if len(self) == len(self.__array):
-            self.__resize()
-        index = self.__index_of_item(item)
-        self.__shuffle_right(index)
-        self.__array[index] = item
-        self.__length += 1
-
-    def remove(self, item: T) -> None:
-        """
-        Removes an item from the set
-        :complexity best: O(logn * comp) Item is at end of array
-        :complexity worst: O(logn * comp + n) Item is at front of array
-            comp - cost of comparision
-            n - size of the set
-        """
-        index = self.__index_of_item(item)
-        if not self.__array[index] == item:
-            raise KeyError(item)
-        #shuffle left to remove the item. Swapping with the last item would break sorted order.
-        self.__shuffle_left(index)
-        self.__length += -1 
-
     def __index_of_item(self, item: T) -> int:
         """
         Find the position where the new item should be placed.
@@ -132,22 +119,51 @@ class ArraySortedSet(Set[T]):
 
         return low
     
-    def difference(self, other:Set[T]) -> ArraySortedSet[T]:
+    def union(self, other: Set[T]) -> ArraySortedSet[T]:
         """
-        Return the difference of two sets, returns a set with every item not in the other set.
-        :complexity: O(n * contains)
+        Return the union of two sets, returns a set with every item in either self or other set.
+        :complexity: O((n + mlogm) * comp)
             n - size of self
-            contains - complexity of in of other set
+            m - size of other
+            comp - cost of comparison
         """
-        res = ArraySortedSet(len(self))
-        for i in range(len(self)):
-            item = self.__array[i]
-            if item not in other:
-                res.__array[res.__length] = item
+        res = ArraySortedSet(len(self) + len(other))
+        other_values = other.values()
+        sorted_values = mergesort(other_values)
+
+        # merge the two arrays discarding duplicates
+        i = 0
+        j = 0
+        while i < len(self) and j < len(sorted_values):
+            i_value = self.__array[i]
+            j_value = sorted_values[j]
+            if i_value < j_value:
+                res.__array[res.__length] = i_value
                 res.__length += 1
-        
+                i += 1
+            elif j_value < i_value:
+                res.__array[res.__length] = sorted_values[j]
+                res.__length += 1
+                j += 1
+            elif i_value == j_value:
+                res.__array[res.__length] = i_value
+                res.__length += 1
+                i += 1
+                j += 1
+            else:
+                raise ValueError(f"Comparison operator poorly implemented {i_value} and {j_value} cannot be compared.")
+
+        if i < len(self):
+            for k in range(i, len(self)):
+                res.__array[res.__length] = self.__array[k]
+                res.__length += 1
+        if j < len(sorted_values):
+            for k in range(j, len(sorted_values)):
+                res.__array[res.__length] = sorted_values[k]
+                res.__length += 1
+
         return res
-    
+
     def intersection(self, other:Set[T]) -> ArraySortedSet[T]:
         """
         Return the intersection of two sets, returns a set with every item in both self and other set.
@@ -164,53 +180,32 @@ class ArraySortedSet(Set[T]):
         
         return res
 
-    def union(self, other:Set[T]) -> ArraySortedSet[T]:
+    def difference(self, other: Set[T]) -> ArraySortedSet[T]:
         """
-        Return the union of two sets, returns a set with every item in either self or other set.
-        :complexity: O((n + mlogm) * comp)
+        Return the difference of two sets, returns a set with every item not in the other set.
+        :complexity: O(n * contains)
             n - size of self
-            m - size of other
-            comp - cost of comparison
+            contains - complexity of in of other set
         """
-        res = ArraySortedSet(len(self) + len(other))
-        other_values = other.values()
-        sorted_values = mergesort(other_values)
-
-        #merge the two arrays discarding duplicates
-        i = 0; j = 0
-        while i < len(self) and j < len(sorted_values):
-            i_value = self.__array[i]
-            j_value = sorted_values[j]
-            if i_value < j_value:
-                res.__array[res.__length] =i_value
-                res.__length += 1
-                i += 1
-            elif j_value < i_value:
-                res.__array[res.__length] = sorted_values[j]
-                res.__length += 1
-                j += 1
-            elif i_value == j_value:
-                res.__array[res.__length] = i_value
-                res.__length += 1
-                i += 1
-                j += 1
-            else:
-                raise  ValueError(f"Comparison operator poorly implemented {i_value} and {j_value} cannot be compared.")
-    
-        if i < len(self):
-            for k in range(i, len(self)):
-                res.__array[res.__length] = self.__array[k]
-                res.__length += 1
-        if j < len(sorted_values):
-            for k in range(j, len(sorted_values)):
-                res.__array[res.__length] = sorted_values[k]
-                res.__length += 1
-        
-        return res
-    
-    def __str__(self):
-        """ Magic method constructing a string representation of the set object. """
-        elems = []
+        res = ArraySortedSet(len(self))
         for i in range(len(self)):
-            elems.append(str(self.__array[i]) if type(self.__array[i]) != str else f"'{self.__array[i]}'")
-        return '{' + ', '.join(elems) + '}'
+            item = self.__array[i]
+            if item not in other:
+                res.__array[res.__length] = item
+                res.__length += 1
+
+        return res
+
+    def __contains__(self, item):
+        """ Checks if the item is in the list.
+        :returns: True if the item is in the list, False otherwise.
+        """
+        index = self.__index_of_item(item)
+        return item == self.__array[index]
+
+    def __len__(self):
+        return self.__length
+
+    def __str__(self):
+        """ Returns a string representation of the set. """
+        return f'<ArraySortedSet {Set.__str__(self)}>'
