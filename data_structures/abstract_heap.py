@@ -13,14 +13,6 @@ class AbstractHeap(Generic[T], ABC):
     def __init__(self, ordering: Literal['min', 'max']) -> None:
         pass
     
-    
-    def is_empty(self) -> bool:
-        return len(self) == 0
-
-    @abstractmethod
-    def __len__(self) -> int:
-        pass
-
     @abstractmethod
     def add(self, item:T) -> None:
         pass
@@ -33,7 +25,14 @@ class AbstractHeap(Generic[T], ABC):
     def peek(self) -> T:
         pass
 
+    def is_empty(self) -> bool:
+        return len(self) == 0
+
     @classmethod
     @abstractmethod
-    def heapify(cls, items:Iterable[T]) -> AbstractHeap[T]:
+    def heapify(cls, items: Iterable[T]) -> AbstractHeap[T]:
+        pass
+
+    @abstractmethod
+    def __len__(self) -> int:
         pass

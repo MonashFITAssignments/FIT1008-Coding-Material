@@ -29,8 +29,8 @@ class TestArrayHeap(TestCase):
 
         min_heap = ArrayHeap(10, 'min')
         max_heap = ArrayHeap(10, 'max')
-        empty_min = "ArrayHeap(min, [])"
-        empty_max = "ArrayHeap(max, [])"
+        empty_min = "<ArrayHeap(min, [])>"
+        empty_max = "<ArrayHeap(max, [])>"
         self.assertEqual(empty_min, str(min_heap))
         self.assertEqual(empty_max, str(max_heap))
 
@@ -38,8 +38,8 @@ class TestArrayHeap(TestCase):
             min_heap.add(i)
             max_heap.add(i)
         
-        filled_min = "ArrayHeap(min, [0, 1, 2, 3, 4, 5, 6, 7])"
-        filled_max = "ArrayHeap(max, [7, 6, 5, 3, 2, 1, 4, 0])"
+        filled_min = "<ArrayHeap(min, [0, 1, 2, 3, 4, 5, 6, 7])>"
+        filled_max = "<ArrayHeap(max, [7, 6, 5, 3, 2, 1, 4, 0])>"
         self.assertEqual(filled_min, str(min_heap))
         self.assertEqual(filled_max, str(max_heap))
 
@@ -49,13 +49,13 @@ class TestMinArrayHeap(TestCase):
 
     def test_str(self):
         heap = MinArrayHeap(10)
-        empty_str = 'MinArrayHeap([])'
+        empty_str = '<MinArrayHeap([])>'
         self.assertEqual(empty_str, str(heap))
         
         for i in range(6):
             heap.add(i)
         
-        filled_str = 'MinArrayHeap([0, 1, 2, 3, 4, 5])'
+        filled_str = '<MinArrayHeap([0, 1, 2, 3, 4, 5])>'
         self.assertEqual(filled_str, str(heap))
 
 class TestMaxArrayHeap(TestCase):
@@ -76,13 +76,13 @@ class TestMaxArrayHeap(TestCase):
     
     def test_str(self):
         heap = MaxArrayHeap(10)
-        empty_str = 'MaxArrayHeap([])'
+        empty_str = '<MaxArrayHeap([])>'
         self.assertEqual(empty_str, str(heap))
         
         for i in range(6):
             heap.add(i)
         
-        filled_str = 'MaxArrayHeap([5, 3, 4, 0, 2, 1])'
+        filled_str = '<MaxArrayHeap([5, 3, 4, 0, 2, 1])>'
         self.assertEqual(filled_str, str(heap))
 
 class TestUnorderedHeap(TestCase):
@@ -202,7 +202,7 @@ class TestLinkedHeap(TestCase):
             tree = lh._MinLinkedHeap__root
             rank = tree.key
             for _ in range(rank):
-                tree = tree._right
+                tree = tree.right
             self.assertIsNone(tree)
         
         self.assertEqual(len(lh), num)
@@ -238,5 +238,3 @@ class TestLinkedHeap(TestCase):
         self.assertEqual(0, len(lh))
         extracted_items = [lh.extract_root() for _ in range(len(items))]
         self.assertEqual(items, extracted_items)       
-
-
