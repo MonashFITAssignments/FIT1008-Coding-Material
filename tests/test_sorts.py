@@ -29,6 +29,11 @@ class TestMergeSort(TestCase):
         result_array = mergesort(empty_array)
         self.assertEqual(len(result_array), 0, "Resulting array should be empty for an empty input array")
 
+    def test_key(self):
+        reverse_sorted = list(range(10))
+        sorted_list = mergesort(ArrayR.from_list(reverse_sorted), lambda x: -x)
+        self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
+
 
 class TestInsertionSort(TestCase):
     def test_sort(self):
@@ -69,3 +74,8 @@ class TestInsertionSort(TestCase):
         empty_array = ArrayR.from_list([])
         result_array = insertion_sort(empty_array)
         self.assertEqual(len(result_array), 0, "Resulting array should be empty for an empty input array")
+    
+    def test_key(self):
+        reverse_sorted = list(range(10))
+        sorted_list = insertion_sort(ArrayR.from_list(reverse_sorted), lambda x: -x)
+        self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
