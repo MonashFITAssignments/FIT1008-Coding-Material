@@ -3,6 +3,8 @@ from unittest import TestCase
 from data_structures.linked_list import LinkedList
 from data_structures.array_list import ArrayList
 from data_structures.array_sorted_list import ArraySortedList
+from data_structures.referential_array import ArrayR
+from data_structures.abstract_list import List
 
 
 class TestArrayList(TestCase):
@@ -332,3 +334,18 @@ class TestLinkedList(TestCase):
 
         self.list.append(2)
         self.assertEqual(str(self.list), '<LinkedList [1, 2]>')
+
+class TestLists(TestCase):
+    def setUp(self):
+        self.lists:list[List] = [ArrayList(), LinkedList()]
+        self.empty_lists = [ArrayList(), LinkedList()]
+        [list.append(i) for i in range(5) for list in self.lists]
+
+    def test_convert_to_arrayR(self):
+        arrays = [ArrayR.from_list(list) for list in self.lists]
+        empty_arrays = [ArrayR.from_list(list) for list in self.empty_lists]
+        self.assertEqual(list(map(len, arrays)), [5,5])
+        self.assertEqual(list(map(len, empty_arrays)), [0,0])
+        for i in range(5):
+            for array in arrays:
+                self.assertIn(i, array)
