@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from data_structures.array_sorted_list import ArraySortedList
-
+from data_structures.referential_array import ArrayR
 
 class TestArraySortedList(TestCase):
     def setUp(self):
@@ -73,3 +73,12 @@ class TestArraySortedList(TestCase):
         # Running operations with a different type should raise TypeError
         self.assertRaises(TypeError, lambda: "string" in self.list)
         self.assertFalse(0.5 in self.list)
+
+    def test_convert_to_arrayR(self):
+        for i in range(10):
+            self.list.add(i)
+        
+        array = ArrayR.from_list(self.list)
+        self.assertEqual(len(array), 10)
+        for i in range(10):
+            self.assertIn(i, array)
