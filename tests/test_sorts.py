@@ -64,8 +64,10 @@ class TestInsertionSort(TestCase):
             ll.append(i)
             al.append(i)
         
-        insertion_sort(ll)
-        insertion_sort(al)
+        ll_sorted = insertion_sort(ll)
+        al_sorted = insertion_sort(al)
+        self.assertIs(type(ll_sorted), LinkedList)
+        self.assertIs(type(al_sorted), ArrayList)
         self.assertNotEqual([x for x in ll], sorted(unsorted_list))
         self.assertNotEqual([x for x in al], sorted(unsorted_list))
 
