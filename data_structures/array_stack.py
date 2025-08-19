@@ -61,3 +61,9 @@ class ArrayStack(Stack[T]):
     def __len__(self) -> int:
         """ Returns the number of items in the stack"""
         return self.__length
+
+    def __str__(self) -> str:
+        """ Returns the string representation of the stack """
+        return '<ArrayStack [' + ', '.join(
+            str(self.__array[i]) for i in range(len(self))
+        ) + ']>'

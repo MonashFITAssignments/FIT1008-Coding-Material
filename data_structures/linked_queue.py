@@ -98,11 +98,9 @@ class LinkedQueue(Queue[T]):
         """ Returns a string representation of the queue."""
         i = self.__front
         result = "<LinkedQueue ["
-        count = 1  # 1-based counting
         while i is not None:
             result += str(i.item)
             if i.link is not None:
                 result += ", "
             i = i.link
-            count += 1
         return f"{result}]>"

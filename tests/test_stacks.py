@@ -86,6 +86,14 @@ class TestStack(TestCase):
             self.assertEqual(len(stack), 0)
             self.assertTrue(stack.is_empty())
 
+    def test_str(self) -> None:
+        for stack in self.stacks:
+            self.assertEqual(str(stack), f'<ArrayStack [{", ".join(str(i) for i in range(len(stack)))}]>')
+    
+        for _ in range(2):
+            self.roomy_stack.pop()
+        roomy_str = '<ArrayStack [0, 1, 2]>'
+        self.assertEqual(roomy_str, str(self.roomy_stack))
 
 
 class TestLinkedStack(TestCase):
@@ -137,3 +145,20 @@ class TestLinkedStack(TestCase):
         self.assertEqual(len(self.stack), 0)
         self.assertRaises(Exception, self.stack.pop)
         self.assertRaises(Exception, self.stack.peek)
+
+    def test_str(self):
+        empty_str = '<LinkedStack []>'
+        self.assertEqual(empty_str, str(self.stack))
+
+        self.stack.push(0)
+        self.stack.push(1)
+        self.stack.push(2)
+        self.stack.push(3)
+        self.stack.push(4)
+
+        roomy_str = '<LinkedStack [0, 1, 2, 3, 4]>'
+        self.assertEqual(roomy_str, str(self.stack))
+        for _ in range(2):
+            self.stack.pop()
+        roomy_str = '<LinkedStack [0, 1, 2]>'
+        self.assertEqual(roomy_str, str(self.stack))
