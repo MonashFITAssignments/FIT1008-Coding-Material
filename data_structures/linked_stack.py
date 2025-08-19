@@ -56,3 +56,15 @@ class LinkedStack(Stack[T]):
         :complexity: O(1)
         """
         return self.__length
+
+    def __str__(self) -> str:
+        """ Returns a string representation of the stack."""
+        i = self.__top
+        stack_str = ""
+        while i is not None:
+            if stack_str == "":
+                stack_str = str(i.item)
+            else:
+                stack_str = str(i.item) + ", " + stack_str
+            i = i.link
+        return f"<LinkedStack [{stack_str}]>"
