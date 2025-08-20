@@ -40,12 +40,6 @@ class LinkedStack(Stack[T]):
             raise Exception('Stack is empty')
         return self.__top.item
 
-    def is_full(self) -> bool:
-        """ Returns whether the stack is full
-        The linked implementation is never full.
-        """
-        return False
-
     def clear(self) -> None:
         """" Resets the stack to an empty state. """
         self.__top = None

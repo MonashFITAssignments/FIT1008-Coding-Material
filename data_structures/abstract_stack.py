@@ -29,11 +29,6 @@ class Stack(ABC, Generic[T]):
         return len(self) == 0
 
     @abstractmethod
-    def is_full(self) -> bool:
-        """ Returns True iff the stack is full and no element can be pushed. """
-        pass
-
-    @abstractmethod
     def clear(self):
         """ Clears all elements from the stack. """
         pass
