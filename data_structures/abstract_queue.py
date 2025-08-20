@@ -46,6 +46,7 @@ class Queue(ABC, Generic[T]):
     @abstractmethod
     def __str__(self) -> str:
         """ Returns the string representation of the queue """
+        pass
 
     def __repr__(self) -> str:
         return str(self)

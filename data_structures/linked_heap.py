@@ -1,5 +1,6 @@
 from __future__ import annotations
 from data_structures.abstract_heap import AbstractHeap, T
+from data_structures.referential_array import ArrayR
 from data_structures.node import BinaryNode
 from typing import Iterable, Union, Tuple
 
@@ -116,7 +117,22 @@ class MinLinkedHeap(AbstractHeap[T]):
         res.__root = tree
         return res
 
+    @staticmethod
+    def is_full(self) -> bool:
+        return False
+
     def __len__(self) -> int:
         if self.__root:
             return self.__root.size
         return 0
+
+    def __str__(self) -> str:
+        def get_elements(node: BinaryNode[int, T], elements: ArrayR[T], index: int) -> None:
+            if node is not None:
+                elements[index] = str(node.item)
+                get_elements(node.left, elements, index * 2 + 1)
+                get_elements(node.right, elements, index * 2 + 2)
+
+        elements = ArrayR(len(self))
+        get_elements(self.__root, elements, 0)
+        return "<MinLinkedHeap([" + ", ".join(elements) + "])>"

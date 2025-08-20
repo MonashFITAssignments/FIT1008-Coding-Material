@@ -42,3 +42,11 @@ class Stack(ABC, Generic[T]):
     def __len__(self) -> int:
         """ Returns the number of elements in the stack."""
         pass
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """ Returns the string representation of the stack """
+        pass
+
+    def __repr__(self) -> str:
+        return str(self)

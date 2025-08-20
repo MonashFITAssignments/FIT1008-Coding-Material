@@ -92,8 +92,9 @@ class TestArrayList(TestCase):
             self.assertEqual(len(self.list), 9 - i)
 
     def test_getitem(self):
-        self.assertRaises(IndexError, lambda: self.list[0])
         self.assertRaises(IndexError, lambda: self.list[-1])
+        self.assertRaises(IndexError, lambda: self.list[0])
+        self.assertRaises(IndexError, lambda: self.list[1])
 
         self.list.append(0)
         self.list.append(1)
@@ -211,9 +212,6 @@ class TestSortedList(TestCase):
         self.assertTrue(2 in self.list)
         self.assertTrue(3 in self.list)
         self.assertFalse(4 in self.list)
-
-    def test_str(self):
-        pass
 
     def test_str(self):
         self.assertEqual(str(self.list), '<ArraySortedList []>')

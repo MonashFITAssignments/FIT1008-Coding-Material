@@ -51,6 +51,9 @@ class BitVectorSet(Set[int]):
         """ Makes the set empty. """
         self.__elems = 0
 
+    def is_full(self) -> bool:
+        return False
+
     def is_empty(self) -> bool:
         """ True if the set is empty. """
         return self.__elems == 0

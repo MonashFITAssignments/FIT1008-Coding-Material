@@ -59,3 +59,6 @@ class AbstractBinarySearchTree(ABC, Generic[K, V]):
     @abstractmethod
     def __str__(self) -> str:
         pass
+
+    def __repr__(self) -> str:
+        return str(self)

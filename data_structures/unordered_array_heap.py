@@ -19,7 +19,7 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         :complexity best: O(1) the item is adding to the end of the array (no rising required)
         :complexity worst: O(logN) Need to rise the item to the top of the heap (N is the size of the heap)
         """
-        if len(self) == len(self.__array) - 1:
+        if self.is_full():
             raise ValueError("Cannot add to full heap.")
 
         self.__length += 1
@@ -50,7 +50,10 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         if self.__length == 0:
             raise ValueError("Cannot peek from empty heap.")
         return self.__array[1]
-    
+
+    def is_full(self) -> bool:
+        return len(self) == len(self.__array) - 1
+
     @abstractmethod
     def _should_rise(self, below:T, above:T) -> bool:
         """ Returns if the below element should rise up. 

@@ -39,8 +39,8 @@ class ArrayList(List[T]):
         :complexity: See __shuffle_left()
         """
         item = self[index]
-        self.__length -= 1
         self.__shuffle_left(index)
+        self.__length -= 1
         return item
 
     def index(self, item: T) -> int:
@@ -86,7 +86,7 @@ class ArrayList(List[T]):
         :complexity worst: O(N) shuffle from the start of the list
         where N is the number of items in the list
         """
-        for i in range(index, len(self)):
+        for i in range(index, len(self) - 1):
             self.__array[i] = self.__array[i + 1]
 
     def __resize(self) -> None:
@@ -97,7 +97,7 @@ class ArrayList(List[T]):
         :post:       Capacity is strictly greater than the list length.
         :complexity: Worst case O(N), for list of length N.
         """
-        if len(self) == len(self.__array):
+        if self.is_full():
             new_cap = int(2 * len(self.__array)) + 1
             new_array = ArrayR(new_cap)
             for i in range(len(self)):
@@ -111,8 +111,9 @@ class ArrayList(List[T]):
         """ Get the item at index
         :raises IndexError: if index is out of bounds
         :complexity: O(1)
+        :pre: index must be between [-self(len), len(self)]
         """
-        if index < -1 * len(self) or len(self) <= index:
+        if index < -1 * len(self) or index >= len(self):
             raise IndexError("Out of bounds access in list.")
         if index < 0:
             index = len(self) + index
@@ -122,8 +123,9 @@ class ArrayList(List[T]):
         """ Set the item at index to value
         :raises IndexError: if index is out of bounds
         :complexity: O(1)
+        :pre: index must be between [-self(len), len(self)]
         """
-        if index < -1 * len(self) or len(self) <= index:
+        if index < -1 * len(self) or index > len(self):
             raise IndexError("Out of bounds access in list.")
         if index < 0:
             index = len(self) + index
