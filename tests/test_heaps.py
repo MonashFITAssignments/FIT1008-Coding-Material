@@ -144,6 +144,7 @@ class TestArrayHeaps(TestCase):
                 heap.extract_root()
             
             self.assertRaises(ValueError, heap.peek)
+
     def test_heapify(self):
         for heap_order, heap in zip(['max', 'min'], [self.heaps[0], self.heaps[2]]):
             num_items = self.CAPACITY
@@ -188,6 +189,27 @@ class TestArrayHeaps(TestCase):
 
 
         ArrayHeap.heapify([], 'max')
+
+    def test_str(self):
+        heap = ArrayHeap(10, 'min')
+        empty_str = '<ArrayHeap(min, [])>'
+        self.assertEqual(empty_str, str(heap))
+
+        for i in range(6):
+            heap.add(i)
+
+        filled_str = '<ArrayHeap(min, [0, 1, 2, 3, 4, 5])>'
+        self.assertEqual(filled_str, str(heap))
+
+        heap = ArrayHeap(10, 'max')
+        empty_str = '<ArrayHeap(max, [])>'
+        self.assertEqual(empty_str, str(heap))
+
+        for i in range(6):
+            heap.add(i)
+
+        filled_str = '<ArrayHeap(max, [5, 3, 4, 0, 2, 1])>'
+        self.assertEqual(filled_str, str(heap))
 
 class TestLinkedHeap(TestCase):
     def test_init(self):
@@ -238,3 +260,14 @@ class TestLinkedHeap(TestCase):
         self.assertEqual(0, len(lh))
         extracted_items = [lh.extract_root() for _ in range(len(items))]
         self.assertEqual(items, extracted_items)       
+
+    def test_str(self):
+        heap = MinLinkedHeap()
+        empty_str = '<MinLinkedHeap([])>'
+        self.assertEqual(empty_str, str(heap))
+
+        for i in range(6):
+            heap.add(i)
+
+        filled_str = '<MinLinkedHeap([0, 2, 1, 3, 4, 5])>'
+        self.assertEqual(filled_str, str(heap))

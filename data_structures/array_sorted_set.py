@@ -23,7 +23,7 @@ class ArraySortedSet(Set[T]):
         if self.__array[index] == item:
             return
         
-        if len(self) == len(self.__array):
+        if self.is_full():
             self.__resize()
         
         self.__shuffle_right(index)
@@ -61,7 +61,12 @@ class ArraySortedSet(Set[T]):
         """
         self.__length = 0
 
-    def is_empty(self):
+    def is_full(self) -> bool:
+        """ True if the set is full. """
+        return len(self) == len(self.__array)
+
+    def is_empty(self) -> bool:
+        """ True if the set is empty. """
         return len(self) == 0
 
     def __shuffle_right(self, index: int) -> None:
@@ -82,15 +87,15 @@ class ArraySortedSet(Set[T]):
         """ Resize the set.
         It only sizes up, so should only be called when adding new items.
         """
-        # Double the size of the array
-        new_array = ArrayR(2 * len(self.__array))
-
-        # copying the contents
-        for i in range(self.__length):
-            new_array[i] = self.__array[i]
-
-        # referring to the new array
-        self.__array = new_array
+        if self.is_full():
+            new_cap = int(2 * len(self.__array)) + 1
+            new_array = ArrayR(new_cap)
+            for i in range(len(self)):
+                new_array[i] = self.__array[i]
+            self.__array = new_array
+        assert len(self) < len(
+            self.__array
+        ), "Capacity not greater than length after __resize."
 
     def __index_of_item(self, item: T) -> int:
         """

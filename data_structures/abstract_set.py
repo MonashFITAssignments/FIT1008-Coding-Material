@@ -41,6 +41,11 @@ class Set(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def is_full(self) -> bool:
+        """ True if the set is full. """
+        pass
+
+    @abstractmethod
     def is_empty(self) -> bool:
         """ True if the set is empty. """
         pass

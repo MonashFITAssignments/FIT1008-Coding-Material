@@ -28,6 +28,10 @@ class AbstractHeap(Generic[T], ABC):
     def is_empty(self) -> bool:
         return len(self) == 0
 
+    @abstractmethod
+    def is_full(self) -> bool:
+        pass
+
     @classmethod
     @abstractmethod
     def heapify(cls, items: Iterable[T]) -> AbstractHeap[T]:
@@ -36,3 +40,10 @@ class AbstractHeap(Generic[T], ABC):
     @abstractmethod
     def __len__(self) -> int:
         pass
+
+    @abstractmethod
+    def __str__(self) -> str:
+        pass
+
+    def __repr__(self) -> str:
+        return str(self)

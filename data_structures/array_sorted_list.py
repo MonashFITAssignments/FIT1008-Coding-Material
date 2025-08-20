@@ -23,7 +23,7 @@ class ArraySortedList(SortedList[T]):
             Worst case: O(N) when the item is added at the beginning of the list.
             N is the number of items in the list.
         """
-        if len(self) == len(self.__array):
+        if self.is_full():
             self.__resize()
         index = self.__index_to_add(item)
         self.__shuffle_right(index)
@@ -39,8 +39,8 @@ class ArraySortedList(SortedList[T]):
               number of items in the list.
         """
         item = self[index]
-        self.__length -= 1
         self.__shuffle_left(index)
+        self.__length -= 1
         return item
 
     def index(self, item: T) -> int:
@@ -58,6 +58,10 @@ class ArraySortedList(SortedList[T]):
 
         raise ValueError(f"{item} not found")
 
+    def is_full(self) -> bool:
+        """ Check if the list of full. """
+        return len(self) == len(self.__array)
+
     def clear(self) -> None:
         """ Clear the list. """
         self.__length = 0
@@ -73,22 +77,22 @@ class ArraySortedList(SortedList[T]):
         """
         Shuffle items starting at the given position to the left.
         """
-        for i in range(index, len(self)):
+        for i in range(index, len(self) - 1):
             self.__array[i] = self.__array[i + 1]
 
     def __resize(self) -> None:
         """ Resize the list.
         It only sizes up, so should only be called when adding new items.
         """
-        # Double the size of the array
-        new_array = ArrayR(2 * len(self.__array) + 1)
-
-        # copying the contents
-        for i in range(self.__length):
-            new_array[i] = self.__array[i]
-
-        # referring to the new array
-        self.__array = new_array
+        if self.is_full():
+            new_cap = int(2 * len(self.__array)) + 1
+            new_array = ArrayR(new_cap)
+            for i in range(len(self)):
+                new_array[i] = self.__array[i]
+            self.__array = new_array
+        assert len(self) < len(
+            self.__array
+        ), "Capacity not greater than length after __resize."
 
     def __index_to_add(self, item: T) -> int:
         """
@@ -128,7 +132,7 @@ class ArraySortedList(SortedList[T]):
         :raises IndexError: if the index is out of bounds.
         :complexity: O(1)
         """
-        if index < -1 * len(self) or len(self) <= index:
+        if index < -1 * len(self) or index >= len(self):
             raise IndexError('Out of bounds access in list.')
         if index < 0:
             index = len(self) + index
