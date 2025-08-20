@@ -112,9 +112,6 @@ class LinkedList(List[T]):
         else:
             return index
 
-    def is_full(self) -> bool:
-        return False
-
     def __get_node_at_index(self, index: int) -> Node[T]:
         """
         Gets the nodes at a given index

@@ -77,13 +77,6 @@ class LinkedQueue(Queue[T]):
             raise Exception("Queue is empty")
         return self.__front
 
-    def is_full(self) -> bool:
-        """ Checks if the queue is full.
-        Unlike an array-based queue, a linked queue cannot be full, unless
-        the system runs out of memory which is a different issue.
-        """
-        return False
-
     def clear(self) -> None:
         """ Clears all elements from the queue. """
         self.__front = None

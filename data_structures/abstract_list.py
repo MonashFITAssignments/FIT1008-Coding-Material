@@ -32,11 +32,6 @@ class List(ABC, Generic[T]):
         """ Find the position of a given item in the list. """
         pass
 
-    @abstractmethod
-    def is_full(self) -> bool:
-        """ Check if the list of full. """
-        pass
-
     def is_empty(self) -> bool:
         """ Check if the list of empty. """
         return len(self) == 0

@@ -117,10 +117,6 @@ class MinLinkedHeap(AbstractHeap[T]):
         res.__root = tree
         return res
 
-    @staticmethod
-    def is_full(self) -> bool:
-        return False
-
     def __len__(self) -> int:
         if self.__root:
             return self.__root.size

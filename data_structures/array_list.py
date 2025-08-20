@@ -101,7 +101,7 @@ class ArrayList(List[T]):
             new_cap = int(2 * len(self.__array)) + 1
             new_array = ArrayR(new_cap)
             for i in range(len(self)):
-                new_array[i] = self.__array[i]
+                new_array[i] = self[i]
             self.__array = new_array
         assert len(self) < len(
             self.__array

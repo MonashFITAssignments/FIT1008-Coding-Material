@@ -34,11 +34,6 @@ class Queue(ABC, Generic[T]):
         return len(self) == 0
 
     @abstractmethod
-    def is_full(self) -> bool:
-        """ True if the stack is full and no element can be pushed. """
-        pass
-
-    @abstractmethod
     def clear(self) -> None:
         """ Clears all elements from the queue. """
         pass
