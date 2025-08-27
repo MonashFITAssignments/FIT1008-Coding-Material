@@ -13,7 +13,7 @@ class TestLinearProbeTable(TestCase):
 
 class TestQuadraticProbeTable(TestCase):
     def setUp(self):
-        self.table = LinearProbeTable()
+        self.table = QuadraticProbeTable()
 
 class TestDoubleHashingProbeTable(TestCase):
     def setUp(self):

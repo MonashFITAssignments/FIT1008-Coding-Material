@@ -12,7 +12,7 @@ class QuadraticProbeTable(LinearProbeTable):
 
     def __handle_probing(self, key: str, is_insert: bool) -> int:
         """
-        Find the correct position for this key in the hash table using linear probing.
+        Find the correct position for this key in the hash table using quadratic probing.
         :complexity:
             Best: O(K) happens when we hash the key and the position is empty.
             Worst: O(N + K) happens when we hash the key but the position is taken and we have to
