@@ -1,6 +1,8 @@
 from unittest import TestCase
 
 from data_structures.hash_table_linear_probing import LinearProbeTable
+from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
+from data_structures.hash_table_double_hashing import DoubleHashingTable
 from data_structures.hash_table_separate_chaining import HashTableSeparateChaining
 from data_structures.binary_search_tree import BinarySearchTree
 
@@ -8,6 +10,14 @@ from data_structures.binary_search_tree import BinarySearchTree
 class TestLinearProbeTable(TestCase):
     def setUp(self):
         self.table = LinearProbeTable()
+
+class TestQuadraticProbeTable(TestCase):
+    def setUp(self):
+        self.table = LinearProbeTable()
+
+class TestDoubleHashingProbeTable(TestCase):
+    def setUp(self):
+        self.table = DoubleHashingTable()
 
 class TestHashTableSeparateChaining(TestCase):
     def setUp(self):
@@ -17,6 +27,7 @@ class TestDictionaries(TestCase):
     def setUp(self):
         self.dictionaries = [
             LinearProbeTable(),
+            QuadraticProbeTable(),
             HashTableSeparateChaining(),
             BinarySearchTree()
         ]
