@@ -66,40 +66,6 @@ class HashTableSeparateChaining(HashTable[str, V]):
                     i += 1
         return res
     
-    def keys(self) -> ArrayR[str]:
-        """
-        Returns all keys in the hash table
-        :complexity: O(N + S) where N is the number of items in our hash table
-        and S is the table size. Depending on how the table is created, if the table size
-        is not variable (e.g. it's always using the default size), then S can be ignored as
-        a constant, simplifying the complexity to O(N).
-        """
-        res = ArrayR(self.__length)
-        i = 0
-        for list in self.__table:
-            if list is not None:
-                for item in list:
-                    res[i] = item[0]
-                    i += 1
-        return res
-
-    def values(self) -> ArrayR[V]:
-        """
-        Returns all values in the hash table
-        :complexity: O(N + S) where N is the number of items in our hash table
-        and S is the table size. Depending on how the table is created, if the table size
-        is not variable (e.g. it's always using the default size), then S can be ignored as
-        a constant, simplifying the complexity to O(N).
-        """
-        res = ArrayR(self.__length)
-        i = 0
-        for list in self.__table:
-            if list is not None:
-                for item in list:
-                    res[i] = item[1]
-                    i += 1
-        return res
-
     def is_empty(self):
         """
         Returns whether the hash table is empty
