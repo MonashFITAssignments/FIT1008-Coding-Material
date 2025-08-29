@@ -9,7 +9,7 @@ V = TypeVar('V')
 class LinearProbeTable(HashTable[str, V]):
     """
     Linear Probe Table.
-    Defines a Hash Table using Linear Probing for conflict resolution.
+    Defines a Hash Table using Linear Probing for collision resolution.
     If you want to use this with a different key type, you should override the hash function.
     
     Type Arguments:
@@ -17,26 +17,6 @@ class LinearProbeTable(HashTable[str, V]):
 
     Unless stated otherwise, all methods have O(1) complexity.
     """
-
-    # No test case should exceed 1 million entries.
-    TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
-    HASH_BASE = 31
-
-    def __init__(self, sizes = None) -> None:
-        """
-        Constructor for the LinearProbeTable class.
-        :param sizes: Optional list of sizes to use for the hash table.
-                      If not provided, a default list of sizes will be used.
-        :complexity: O(1) - Assuming the default sizes are used, we can assume the array is created in O(1) time.
-            If you use this function in any way that passes some variable input for the sizes, then the complexity
-            needs to change accordingly.
-        """
-        if sizes is not None:
-            self.TABLE_SIZES = sizes
-
-        self.__size_index = 0
-        self.__array: ArrayR[tuple[str, V]] = ArrayR(self.TABLE_SIZES[self.__size_index])
-        self.__length = 0
 
     def hash(self, key: str) -> int:
         """
@@ -47,14 +27,14 @@ class LinearProbeTable(HashTable[str, V]):
         a = 31415
         for char in key:
             value = (ord(char) + a * value) % self.table_size
-            a = a * self.HASH_BASE % (self.table_size - 1)
+            a = a * self.__hash_base % (self.table_size - 1)
         return value
 
     @property
     def table_size(self) -> int:
         return len(self.__array)
 
-    def __linear_probe(self, key: str, is_insert: bool) -> int:
+    def __handle_probing(self, key: str, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using linear probing.
         :complexity: 
@@ -117,7 +97,7 @@ class LinearProbeTable(HashTable[str, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        position = self.__linear_probe(key, False)
+        position = self.__handle_probing(key, False)
         # Remove the element
         self.__array[position] = None
         self.__length -= 1
@@ -127,7 +107,7 @@ class LinearProbeTable(HashTable[str, V]):
             key2, value = self.__array[position]
             self.__array[position] = None
             # Reinsert.
-            newpos = self.__linear_probe(key2, True)
+            newpos = self.__handle_probing(key2, True)
             self.__array[newpos] = (key2, value)
             position = (position + 1) % self.table_size
 
@@ -138,7 +118,7 @@ class LinearProbeTable(HashTable[str, V]):
         :complexity: See linear probe.
         :raises KeyError: when the key doesn't exist.
         """
-        position = self.__linear_probe(key, False)
+        position = self.__handle_probing(key, False)
         return self.__array[position][1]
 
     def __setitem__(self, key: str, data: V) -> None:
@@ -151,7 +131,7 @@ class LinearProbeTable(HashTable[str, V]):
         :raises FullError: when the table cannot be resized further.
         """
 
-        position = self.__linear_probe(key, True)
+        position = self.__handle_probing(key, True)
 
         if self.__array[position] is None:
             self.__length += 1
@@ -165,12 +145,12 @@ class LinearProbeTable(HashTable[str, V]):
         """
         Need to resize table and reinsert all values
 
-        :complexity: 
+        :complexity:
             Best: O(N * K) happens when all items can be inserted immediately after being hashed
                 with no probing needed.
             Worst: O(N * (N + K)) happens when all items need maximum probing to be inserted in the new table.
                 This is assuming K here is representing an average key length.
-            
+
             N is the number of items in the table.
             K is the length of the key.
             This analysis is assuming the default table sizes are used, and thus the
@@ -179,10 +159,10 @@ class LinearProbeTable(HashTable[str, V]):
         """
         old_array = self.__array
         self.__size_index += 1
-        if self.__size_index == len(self.TABLE_SIZES):
+        if self.__size_index == len(self.__TABLE_SIZES):
             # Cannot be resized further.
             return
-        self.__array = ArrayR(self.TABLE_SIZES[self.__size_index])
+        self.__array = ArrayR(self.__TABLE_SIZES[self.__size_index])
         self.__length = 0
         for item in old_array:
             if item is not None:
