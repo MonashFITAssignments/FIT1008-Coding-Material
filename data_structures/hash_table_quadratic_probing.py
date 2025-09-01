@@ -46,3 +46,12 @@ class QuadraticProbeTable(LinearProbeTable):
             raise RuntimeError("Table is full!")
         else:
             raise KeyError(key)
+    
+    def __str__(self) -> str:
+        """
+        Returns all they key/value pairs in our hash table (no particular
+        order).
+        """
+        items = self.items()
+        items = '\n'.join(map(lambda x: f"({x[0]}, {x[1]})", items))
+        return f"<QuadraticProbeTable\n{items}\n>"

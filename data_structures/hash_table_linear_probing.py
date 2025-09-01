@@ -198,9 +198,6 @@ class LinearProbeTable(HashTable[str, V]):
         Returns all they key/value pairs in our hash table (no particular
         order).
         """
-        result = ""
-        for item in self.__array:
-            if item is not None:
-                (key, value) = item
-                result += "(" + str(key) + "," + str(value) + ")\n"
-        return f"<LinearProbeTable \n{result}>"
+        items = self.items()
+        items = '\n'.join(map(lambda x: f"({x[0]}, {x[1]})", items))
+        return f"<LinearProbeTable\n{items}\n>"
