@@ -45,7 +45,7 @@ class LinearProbeTable(HashTable[str, V]):
         a = 31415
         for char in key:
             value = (ord(char) + a * value) % self.table_size
-            a = a * self.__hash_base % (self.table_size - 1)
+            a = (a * self.__hash_base % (self.table_size - 1)) + 1
         return value
 
     @property

@@ -42,7 +42,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
         a = 31415
         for char in key:
             value = (ord(char) + a * value) % len(self.__table)
-            a = a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)
+            a = (a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)) + 1
         return value
 
     @property
