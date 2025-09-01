@@ -27,9 +27,9 @@ class TestDictionaries(TestCase):
     def setUp(self):
         self.dictionaries = [
             LinearProbeTable(),
+            DoubleHashingTable(),
             QuadraticProbeTable(),
             HashTableSeparateChaining(),
-            BinarySearchTree()
         ]
         self.dictionary = None
     
@@ -94,3 +94,15 @@ class TestDictionaries(TestCase):
             self.assertTrue(2 in values)
             self.assertTrue(3 in values)
             self.assertEqual(len(values), 3)
+    
+    def test_str(self):
+        for dictionary in self.dictionaries:
+            dictionary["Key One"] = 1
+            self.assertEqual(len(dictionary), 1)
+            dictionary["Key Two"] = 2
+            self.assertEqual(len(dictionary), 2)
+            dictionary["Key Two"] = 3
+            self.assertEqual(len(dictionary), 2)
+            self.assertEqual(dictionary["Key Two"], 3, dictionary)
+            dict_type_name = type(dictionary).__name__
+            self.assertEqual(str(dictionary), f"<{dict_type_name}\n(Key One, 1)\n(Key Two, 3)\n>")
