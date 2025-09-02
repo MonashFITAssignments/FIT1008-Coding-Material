@@ -32,7 +32,7 @@ class LinearProbeTable(HashTable[str, V]):
             self.__TABLE_SIZES = sizes
 
         self.__size_index = 0
-        self.__array: ArrayR[tuple[str, V]] = ArrayR(self.__TABLE_SIZES[self.__size_index])
+        self.__array: ArrayR[tuple[str, V]] = ArrayR(max(self.__TABLE_SIZES[self.__size_index], 2))
         self.__length = 0
         self.__hash_base = hash_base
 
@@ -176,10 +176,10 @@ class LinearProbeTable(HashTable[str, V]):
                 as long as the sizes are growing by a constant factor (e.g. each table size is almost double the previous one).
         """
         old_array = self.__array
-        self.__size_index += 1
-        if self.__size_index >= len(self.__TABLE_SIZES):
+        if self.__size_index + 1 == len(self.__TABLE_SIZES):
             # Cannot be resized further.
             return
+        self.__size_index += 1
         self.__array = ArrayR(self.__TABLE_SIZES[self.__size_index])
         self.__length = 0
         for item in old_array:
