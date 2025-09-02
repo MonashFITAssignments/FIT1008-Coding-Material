@@ -177,7 +177,7 @@ class LinearProbeTable(HashTable[str, V]):
         """
         old_array = self.__array
         self.__size_index += 1
-        if self.__size_index == len(self.__TABLE_SIZES):
+        if self.__size_index >= len(self.__TABLE_SIZES):
             # Cannot be resized further.
             return
         self.__array = ArrayR(self.__TABLE_SIZES[self.__size_index])
