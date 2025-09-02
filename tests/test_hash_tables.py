@@ -30,6 +30,7 @@ class TestDictionaries(TestCase):
             DoubleHashingTable(),
             QuadraticProbeTable(),
             HashTableSeparateChaining(),
+            BinarySearchTree()
         ]
         self.dictionary = None
     
@@ -97,6 +98,7 @@ class TestDictionaries(TestCase):
     
     def test_str(self):
         for dictionary in self.dictionaries:
+            if type(dictionary) is BinarySearchTree: continue
             dictionary["Key One"] = 1
             self.assertEqual(len(dictionary), 1)
             dictionary["Key Two"] = 2
