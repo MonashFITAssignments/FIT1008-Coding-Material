@@ -8,9 +8,9 @@ class Node(Generic[T]):
     linked structures.
     """
 
-    def __init__(self, item: T = None):
+    def __init__(self, item: T = None, link = None):
         self.item = item
-        self.link: Node[T] | None = None
+        self.link: Node[T] | None = link
 
     def __str__(self) -> str:
         return f"Node({self.item}, {'...' if self.link else 'None'})"
@@ -20,12 +20,12 @@ class BinaryNode(Generic[K, T]):
     Has two links two more nodes.
     Has general attribute size which may store depth, number of nodes in subtree or any other metadata.
     """
-    def __init__(self, item: T = None, key: K = None, size: int = 0):
+    def __init__(self, item: T = None, key: K = None, size: int = 0, left = None, right = None):
         self.__item = item
         self.__key = key if key is not None else item
         self.__size = size
-        self.__left: BinaryNode[K, T] | None = None
-        self.__right: BinaryNode[K, T] | None = None
+        self.__left: BinaryNode[K, T] | None = left
+        self.__right: BinaryNode[K, T] | None = right
 
     @property
     def item(self) -> T:

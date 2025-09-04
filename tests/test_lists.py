@@ -5,6 +5,7 @@ from data_structures.array_list import ArrayList
 from data_structures.array_sorted_list import ArraySortedList
 from data_structures.referential_array import ArrayR
 from data_structures.abstract_list import List
+from data_structures.node import Node
 
 
 class TestArrayList(TestCase):
@@ -332,6 +333,55 @@ class TestLinkedList(TestCase):
 
         self.list.append(2)
         self.assertEqual(str(self.list), '<LinkedList [1, 2]>')
+
+    def test_from_node(self):
+        empty = None
+        ll = LinkedList.from_node(empty)
+        self.assertTrue(ll.is_empty())
+
+        chain_3 = Node(1, Node(2, Node(3, None)))
+        ll = LinkedList.from_node(chain_3)
+        self.assertEqual(len(ll), 3)
+        self.assertEqual([x for x in ll], [1,2,3])
+        ll.append(4) #check that rear is set properly
+        self.assertEqual([x for x in ll], [1,2,3,4])
+
+        chain_3.item = "This shouldn't affect ll"
+        chain_3.link.link = None
+        self.assertEqual([x for x in ll], [1,2,3,4])
+
+
+        for i in range(10):
+            chain = None
+            for j in range(i):
+                chain = Node(j, chain)
+            ll = LinkedList.from_node(chain)
+            self.assertEqual(len(ll), i)
+            self.assertEqual(list(ll), list(range(i))[::-1])
+
+    def test_from_node_cycles(self):
+        cycle1 = Node(1)
+        cycle1.link = cycle1
+        self.assertRaises(ValueError, LinkedList.from_node, cycle1)
+        
+        cycle2a = cycle2b = Node(2)
+        cycle2a.link, cycle2b.link = cycle2b, cycle2a
+        self.assertRaises(ValueError, LinkedList.from_node, cycle2a)
+        self.assertRaises(ValueError, LinkedList.from_node, cycle2b)
+        
+        cycle3 = Node(3, cycle2a)
+        for _ in range(50):
+            cycle3 = Node(3, cycle3)
+        self.assertRaises(ValueError, LinkedList.from_node, cycle3)
+
+        for length in range(15):
+            cycle_top = Node(1)
+            cycle_bottom = cycle_top
+            for _ in range(length):
+                cycle_top = Node(1, cycle_top)
+            cycle_bottom.link = cycle_top
+            self.assertRaises(ValueError, LinkedList.from_node, cycle_top)
+
 
 class TestLists(TestCase):
     def setUp(self):
