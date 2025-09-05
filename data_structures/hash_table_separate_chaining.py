@@ -42,7 +42,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
         a = 31415
         for char in key:
             value = (ord(char) + a * value) % len(self.__table)
-            a = a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)
+            a = (a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)) + 1
         return value
 
     @property
@@ -163,15 +163,6 @@ class HashTableSeparateChaining(HashTable[str, V]):
         Returns all they key/value pairs in our hash table (no particular order)
         :complexity: O(N) where N is the number of items in our hash table
         """
-        result = ""
-        for list in self.__table:
-            if list is not None:
-                first = True
-                for item in list:
-                    if not first:
-                        result += ' -> '
-                    (key, value) = item
-                    result += "(" + str(key) + "," + str(value) + ")"
-                    first = False
-                result += '\n'
-        return f"<HashTableSeparateChaining \n{result}>"
+        items = self.items()
+        items = '\n'.join(map(lambda x: f"({x[0]}, {x[1]})", items))
+        return f"<HashTableSeparateChaining\n{items}\n>"

@@ -23,16 +23,52 @@ class TestHashTableSeparateChaining(TestCase):
     def setUp(self):
         self.table = HashTableSeparateChaining()
 
+class TetsHashTables(TestCase):
+    def setUp(self):
+        self.dictionaries = [
+            LinearProbeTable(),
+            DoubleHashingTable(),
+            QuadraticProbeTable(),
+            HashTableSeparateChaining(),
+        ]
+    
+    def test_resize(self):
+        restricted_tables = [
+            LinearProbeTable([2,10]),
+            DoubleHashingTable([2,10]),
+            QuadraticProbeTable([2,10]),
+            # HashTableSeparateChaining([2,10])
+        ]
+        for table in restricted_tables:
+            for i in range(5):
+                table[str(i)] = i
+            table["5"] = 5 #This will call resize, but fail as reached max size
+            table["6"] = 5 #This again will call resize as it is still above load factor, this should work as well
+            for _ in range(30):
+                table["6"] = 6
+    
+    def test_str(self):
+        for dictionary in self.dictionaries:
+            dictionary["Key One"] = 1
+            self.assertEqual(len(dictionary), 1)
+            dictionary["Key Two"] = 2
+            self.assertEqual(len(dictionary), 2)
+            dictionary["Key Two"] = 3
+            self.assertEqual(len(dictionary), 2)
+            self.assertEqual(dictionary["Key Two"], 3, dictionary)
+            dict_type_name = type(dictionary).__name__
+            self.assertEqual(str(dictionary), f"<{dict_type_name}\n(Key One, 1)\n(Key Two, 3)\n>")
+
 class TestDictionaries(TestCase):
     def setUp(self):
         self.dictionaries = [
             LinearProbeTable(),
+            DoubleHashingTable(),
             QuadraticProbeTable(),
             DoubleHashingTable(),
             HashTableSeparateChaining(),
             BinarySearchTree()
         ]
-        self.dictionary = None
     
     def test_add(self):
         for dictionary in self.dictionaries:
@@ -111,3 +147,4 @@ class TestDictionaries(TestCase):
             self.assertTrue(2 in values)
             self.assertTrue(3 in values)
             self.assertEqual(len(values), 3)
+    
