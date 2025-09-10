@@ -2,51 +2,58 @@ import re
 
 class DunderProtected:
     """
-    Allows subclass code to access base-class __dunder attributes using their
-    own __name, by remapping _SubClass__attr -> _DefiningClass__attr across MRO.
-    Outside code using obj.__attr (no mangling) still fails as usual.
+    Allow subclass code to override/access base-class __dunder attributes/methods
+    by remapping _Owner__name across the MRO to the most-derived definition.
     """
     _DU_PTN = re.compile(r"^_([A-Za-z_]\w*)__([A-Za-z_]\w*)$")
 
     def __getattribute__(self, name):
-        # Fast path: try normal lookup first
-        try:
-            return super().__getattribute__(name)
-        except AttributeError:
-            pass
-
-        # Remap: _CurrentClass__attr -> _OwnerClass__attr if it exists
         m = DunderProtected._DU_PTN.match(name)
         if m:
-            want_owner, attr = m.group(1), m.group(2)
-            # Try every class in MRO as a potential owner of the dunder attr
-            for cls in type(self).mro():
+            # e.g. name == "_Base__do" -> attr="do"
+            attr = m.group(2)
+            cls_self = type(self)
+
+            # 1) Data descriptors on classes (most-derived first)
+            for cls in cls_self.mro():
                 mangled = f"_{cls.__name__}__{attr}"
-                # Avoid infinite recursion by peeking into __dict__ directly
-                objdict = object.__getattribute__(self, "__dict__")
+                clsdict = object.__getattribute__(cls, "__dict__")
+                val = clsdict.get(mangled)
+                if val is not None and (hasattr(val, "__set__") or hasattr(val, "__delete__")):
+                    # data descriptor
+                    return val.__get__(self, cls_self)
+
+            # 2) Instance dict (most-derived owner slot first)
+            objdict = object.__getattribute__(self, "__dict__")
+            for cls in cls_self.mro():
+                mangled = f"_{cls.__name__}__{attr}"
                 if mangled in objdict:
                     return objdict[mangled]
-                # Also allow class-level attributes/descriptors
-                clsdict = object.__getattribute__(cls, "__dict__")
-                if mangled in clsdict:
-                    return clsdict[mangled].__get__(self, type(self)) \
-                        if hasattr(clsdict[mangled], "__get__") else clsdict[mangled]
 
-        # Fall back to normal error
-        raise AttributeError(f"{type(self).__name__!s} object has no attribute {name!r}")
+            # 3) Non-data descriptors / class attrs (most-derived first)
+            for cls in cls_self.mro():
+                mangled = f"_{cls.__name__}__{attr}"
+                clsdict = object.__getattribute__(cls, "__dict__")
+                val = clsdict.get(mangled)
+                if val is not None:
+                    # bind if descriptor
+                    return val.__get__(self, cls_self) if hasattr(val, "__get__") else val
+
+            # If nothing matched, fall through to normal lookup to raise AttrError
+
+        # Normal lookup (also handles non-mangled names)
+        return super().__getattribute__(name)
 
     def __setattr__(self, name, value):
-        # If it's a dunder-mangled name, try to map to an existing owner slot
         m = DunderProtected._DU_PTN.match(name)
         if m:
-            _, attr = m.group(1), m.group(2)
+            attr = m.group(2)
+            # Prefer writing into the first existing slot across MRO
+            objdict = object.__getattribute__(self, "__dict__")
             for cls in type(self).mro():
                 mangled = f"_{cls.__name__}__{attr}"
-                objdict = object.__getattribute__(self, "__dict__")
                 if mangled in objdict:
                     objdict[mangled] = value
                     return
-            # If no existing owner slot, default to current class's name
-            # (keeps normal Python semantics for first assignment)
-        # Defer to default behavior
+            # Otherwise default behavior (creates attribute under provided name)
         super().__setattr__(name, value)

@@ -1,8 +1,9 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Tuple
-from data_structures.referential_array import ArrayR
 from data_structures.dunder_protected import DunderProtected
+from data_structures.referential_array import ArrayR
+
 
 K = TypeVar('K')
 V = TypeVar('V')
@@ -46,6 +47,10 @@ class HashTable(ABC, Generic[K, V], DunderProtected):
 
     def is_empty(self) -> bool:
         return len(self) == 0
+
+    @abstractmethod
+    def is_full(self) -> bool:
+        pass
 
     def __contains__(self, key: str) -> bool:
         """

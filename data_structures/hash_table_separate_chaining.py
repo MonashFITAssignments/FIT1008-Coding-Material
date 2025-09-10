@@ -66,12 +66,19 @@ class HashTableSeparateChaining(HashTable[str, V]):
                     i += 1
         return res
     
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """
         Returns whether the hash table is empty
         :complexity: O(1)
         """
         return self.__length == 0
+
+    def is_full(self) -> bool:
+        """
+        Returns whether the hash table is full
+        :complexity: O(1)
+        """
+        return len(self) == len(self.__array)
 
     def __delitem__(self, key: str) -> None:
         """
