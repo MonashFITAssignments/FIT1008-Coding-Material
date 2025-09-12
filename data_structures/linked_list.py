@@ -42,20 +42,16 @@ class LinkedList(List[T]):
         #Track two pointers to check for cycles, and count number of nodes
         hare = node
         tortoise = node
-        while node:
-            res.__length += 1
-            node = node.link
+        while hare is not None and hare.link is not None:
+            hare = hare.link.link
             tortoise = tortoise.link
-            if node:
-                res.__length += 1
-                node = node.link
-                hare = hare.link.link
-            else:
-                #The cycle check will false positive on a length of 3 otherwise
-                break
+            res.__length += 2
             if tortoise is hare:
                 raise ValueError("Cannot create a linked list with a cycle.")
         
+        if hare is not None:
+            res.__length += 1
+
         res.__head, res.__rear = res.copy_head()
         return res
 
