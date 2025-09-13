@@ -23,13 +23,18 @@ class TestHashTableSeparateChaining(TestCase):
     def setUp(self):
         self.table = HashTableSeparateChaining()
 
-class TetsHashTables(TestCase):
+class TestHashTables(TestCase):
     def setUp(self):
         self.dictionaries = [
             LinearProbeTable(),
             DoubleHashingTable(),
             QuadraticProbeTable(),
             HashTableSeparateChaining(),
+        ]
+        self.probe_tables = [
+            LinearProbeTable(),
+            DoubleHashingTable(),
+            QuadraticProbeTable(),
         ]
     
     def test_resize(self):
@@ -46,7 +51,7 @@ class TetsHashTables(TestCase):
             table["6"] = 5 #This again will call resize as it is still above load factor, this should work as well
             for _ in range(30):
                 table["6"] = 6
-    
+
     def test_str(self):
         for dictionary in self.dictionaries:
             dictionary["Key One"] = 1

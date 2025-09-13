@@ -8,17 +8,15 @@ class DunderProtected:
     """
     _DU_PTN = re.compile(r"^_([A-Za-z_]\w*)__([A-Za-z_]\w*)$")
 
-    def __getattribute__(self, name):
-        # Fast path: try normal lookup first
-        try:
-            return super().__getattribute__(name)
-        except AttributeError:
-            pass
-
-        # Remap: _CurrentClass__attr -> _OwnerClass__attr if it exists
+    def __getattribute__(self, name:str):
+        #Check if we are accessing a private attribute
         m = DunderProtected._DU_PTN.match(name)
         if m:
+            # Remap: _CurrentClass__attr -> _OwnerClass__attr if it exists
             want_owner, attr = m.group(1), m.group(2)
+            # Check that the want owner should have access to the protected attribute
+            if want_owner not in [cls.__name__ for cls in type(self).mro()]:
+                return super().__getattribute__(name)
             # Try every class in MRO as a potential owner of the dunder attr
             for cls in type(self).mro():
                 mangled = f"_{cls.__name__}__{attr}"
@@ -31,22 +29,25 @@ class DunderProtected:
                 if mangled in clsdict:
                     return clsdict[mangled].__get__(self, type(self)) \
                         if hasattr(clsdict[mangled], "__get__") else clsdict[mangled]
+        else:
+            # Fall back to normal behaviour for unmangled names
+            return super().__getattribute__(name)
 
-        # Fall back to normal error
-        raise AttributeError(f"{type(self).__name__!s} object has no attribute {name!r}")
 
     def __setattr__(self, name, value):
         # If it's a dunder-mangled name, try to map to an existing owner slot
         m = DunderProtected._DU_PTN.match(name)
         if m:
-            _, attr = m.group(1), m.group(2)
-            for cls in type(self).mro():
-                mangled = f"_{cls.__name__}__{attr}"
-                objdict = object.__getattribute__(self, "__dict__")
-                if mangled in objdict:
-                    objdict[mangled] = value
-                    return
-            # If no existing owner slot, default to current class's name
-            # (keeps normal Python semantics for first assignment)
+            want_owner, attr = m.group(1), m.group(2)
+            # Check that the want owner should have access to the protected attribute
+            if want_owner in [cls.__name__ for cls in type(self).mro()]:                
+                for cls in type(self).mro():
+                    mangled = f"_{cls.__name__}__{attr}"
+                    objdict = object.__getattribute__(self, "__dict__")
+                    if mangled in objdict:
+                        objdict[mangled] = value
+                        return
+                # If no existing owner slot or want owner doesn't have access, default to current class's name
+                # (keeps normal Python semantics for first assignment)
         # Defer to default behavior
         super().__setattr__(name, value)
