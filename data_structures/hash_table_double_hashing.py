@@ -1,9 +1,9 @@
 from __future__ import annotations
 from data_structures.referential_array import ArrayR
-from data_structures.hash_table_linear_probing import LinearProbeTable
+from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
 
 
-class DoubleHashingTable(LinearProbeTable):
+class DoubleHashingTable(QuadraticProbeTable):
     """
     Double Hashing Probe Table.
     Defines a Hash Table using Double Hashing for collision resolution.

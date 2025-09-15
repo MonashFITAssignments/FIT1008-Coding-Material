@@ -46,6 +46,30 @@ class QuadraticProbeTable(LinearProbeTable):
             raise RuntimeError("Table is full!")
         else:
             raise KeyError(key)
+
+    def __delitem__(self, key: str) -> None:
+        """
+        Deletes a (key, value) pair in our hash table.
+
+        :complexity:
+            Best: O(N + K) when we reinsert without probing.
+            Worst: O(N * (N + K)) every element has to be reinserted.
+            N is the number of items in the table.
+            K is the length of the key.
+
+        :raises KeyError: when the key doesn't exist.
+        """
+        position = self.__handle_probing(key, False)
+        self.__array[position] = None
+        self.__length -= 1
+
+        old_array = self.__array
+        self.__array = ArrayR(self.table_size)
+        self.__length = 0
+        for item in old_array:
+            if item is not None:
+                key, value = item
+                self[key] = value
     
     def __str__(self) -> str:
         """

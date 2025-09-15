@@ -65,6 +65,7 @@ class TestDictionaries(TestCase):
             LinearProbeTable(),
             DoubleHashingTable(),
             QuadraticProbeTable(),
+            DoubleHashingTable(),
             HashTableSeparateChaining(),
             BinarySearchTree()
         ]
@@ -83,25 +84,41 @@ class TestDictionaries(TestCase):
         for dictionary in self.dictionaries:
             dictionary["Key Three"] = 3
             dictionary["Key One"] = 1
+            dictionary["Key Four"] = 4
             dictionary["Key Two"] = 2
-            self.assertEqual(len(dictionary), 3)
+            dictionary["Key Five"] = 5
+            self.assertEqual(len(dictionary), 5)
             
             del dictionary["Key One"]
-            self.assertEqual(len(dictionary), 2)
+            self.assertEqual(len(dictionary), 4)
             self.assertNotIn("Key One", dictionary)
             self.assertIn("Key Two", dictionary)
             self.assertIn("Key Three", dictionary)
-            
+            self.assertIn("Key Four", dictionary)
+            self.assertIn("Key Five", dictionary)
+
             del dictionary["Key Three"]
-            self.assertEqual(len(dictionary), 1)
+            self.assertEqual(len(dictionary), 3)
             self.assertIn("Key Two", dictionary)
             self.assertNotIn("Key Three", dictionary)
-            
-            del dictionary["Key Two"]
-            self.assertEqual(len(dictionary), 0)
-            self.assertTrue(dictionary.is_empty())
-            self.assertNotIn("Key Two", dictionary)
+            self.assertIn("Key Four", dictionary)
+            self.assertIn("Key Five", dictionary)
 
+            del dictionary["Key Two"]
+            self.assertEqual(len(dictionary), 2)
+            self.assertNotIn("Key Two", dictionary)
+            self.assertIn("Key Four", dictionary)
+            self.assertIn("Key Five", dictionary)
+
+            del dictionary["Key Four"]
+            self.assertEqual(len(dictionary), 1)
+            self.assertNotIn("Key Four", dictionary)
+            self.assertIn("Key Five", dictionary)
+
+            del dictionary["Key Five"]
+            self.assertEqual(len(dictionary), 0)
+            self.assertNotIn("Key Five", dictionary)
+            self.assertTrue(dictionary.is_empty())
 
             self.assertRaises(KeyError, lambda: dictionary.__delitem__("no key"))
     

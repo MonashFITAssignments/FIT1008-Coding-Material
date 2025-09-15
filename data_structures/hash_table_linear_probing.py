@@ -99,7 +99,18 @@ class LinearProbeTable(HashTable[str, V]):
         return res
 
     def is_empty(self) -> bool:
+        """
+        Returns whether the hash table is empty
+        :complexity: O(1)
+        """
         return self.__length == 0
+
+    def is_full(self) -> bool:
+        """
+        Returns whether the hash table is full
+        :complexity: O(1)
+        """
+        return len(self) == len(self.__array)
 
     def __delitem__(self, key: str) -> None:
         """
@@ -177,6 +188,9 @@ class LinearProbeTable(HashTable[str, V]):
         """
         old_array = self.__array
         if self.__size_index + 1 == len(self.__TABLE_SIZES):
+            if self.is_full():
+                raise RuntimeError("Table is full!")
+
             # Cannot be resized further.
             return
         self.__size_index += 1
