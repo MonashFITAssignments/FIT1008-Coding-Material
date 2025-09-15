@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 
 
-class Stack(ABC, Generic[T], DunderProtected):
+class Stack(ABC, Generic[T]):
     """ Stack ADT. 
     Defines a generic abstract stack with the usual methods.
     """

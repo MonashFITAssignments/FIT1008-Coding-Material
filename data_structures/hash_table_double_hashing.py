@@ -1,9 +1,9 @@
 from __future__ import annotations
 from data_structures.referential_array import ArrayR
-from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
+from data_structures.hash_table_linear_probing import LinearProbeTable
 
 
-class DoubleHashingTable(QuadraticProbeTable):
+class DoubleHashingTable(LinearProbeTable):
     """
     Double Hashing Probe Table.
     Defines a Hash Table using Double Hashing for collision resolution.
@@ -13,7 +13,7 @@ class DoubleHashingTable(QuadraticProbeTable):
     def hash2(self, key: str) -> int:
         return 1 + (hash(key) % (self.table_size - 1))
 
-    def __handle_probing(self, key: str, is_insert: bool) -> int:
+    def _handle_probing(self, key: str, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using double hashing probing.
         :complexity:
@@ -30,13 +30,13 @@ class DoubleHashingTable(QuadraticProbeTable):
         step = self.hash2(key)
 
         for _ in range(self.table_size):
-            if self.__array[position] is None:
+            if self._array[position] is None:
                 # Empty spot. Am I upserting or retrieving?
                 if is_insert:
                     return position
                 else:
                     raise KeyError(key)
-            elif self.__array[position][0] == key:
+            elif self._array[position][0] == key:
                 return position
             else:
                 # Taken by something else. Time to linear probe.
@@ -47,6 +47,30 @@ class DoubleHashingTable(QuadraticProbeTable):
             raise RuntimeError("Table is full!")
         else:
             raise KeyError(key)
+
+    def __delitem__(self, key: str) -> None:
+        """
+        Deletes a (key, value) pair in our hash table.
+
+        :complexity:
+            Best: O(N + K) when we reinsert without probing.
+            Worst: O(N * (N + K)) every element has to be reinserted.
+            N is the number of items in the table.
+            K is the length of the key.
+
+        :raises KeyError: when the key doesn't exist.
+        """
+        position = self._handle_probing(key, False)
+        self._array[position] = None
+        self._length -= 1
+
+        old_array = self._array
+        self._array = ArrayR(self.table_size)
+        self._length = 0
+        for item in old_array:
+            if item is not None:
+                key, value = item
+                self[key] = value
 
     def __str__(self) -> str:
         """

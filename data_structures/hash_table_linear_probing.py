@@ -2,11 +2,11 @@ from __future__ import annotations
 from typing import TypeVar, Tuple, List
 from data_structures.abstract_hash_table import HashTable
 from data_structures.referential_array import ArrayR
-
+from data_structures.dunder_protected import protected_names
 V = TypeVar('V')
 
 
-class LinearProbeTable(HashTable[str, V]):
+class LinearProbeTable(HashTable[str, V], protected_names("_size_index", "_array", "_length", "_hash_base", "_handleProbing")):
     """
     Linear Probe Table.
     Defines a Hash Table using Linear Probing for collision resolution.
@@ -18,7 +18,7 @@ class LinearProbeTable(HashTable[str, V]):
     Unless stated otherwise, all methods have O(1) complexity.
     """
 
-    __TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
+    _TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
 
     def __init__(self, sizes: None | List[int] = None, hash_base: int | None = 31) -> None:
         """
@@ -29,12 +29,14 @@ class LinearProbeTable(HashTable[str, V]):
             needs to change accordingly.
         """
         if sizes is not None:
-            self.__TABLE_SIZES = sizes
+            self._TABLE_SIZES = sizes
+        else:
+            self._TABLE_SIZES = LinearProbeTable._TABLE_SIZES
 
-        self.__size_index = 0
-        self.__array: ArrayR[tuple[str, V]] = ArrayR(max(self.__TABLE_SIZES[self.__size_index], 2))
-        self.__length = 0
-        self.__hash_base = hash_base
+        self._size_index = 0
+        self._array: ArrayR[tuple[str, V]] = ArrayR(max(self._TABLE_SIZES[self._size_index], 2))
+        self._length = 0
+        self._hash_base = hash_base
 
     def hash(self, key: str) -> int:
         """
@@ -45,14 +47,14 @@ class LinearProbeTable(HashTable[str, V]):
         a = 31415
         for char in key:
             value = (ord(char) + a * value) % self.table_size
-            a = (a * self.__hash_base % (self.table_size - 1)) + 1
+            a = (a * self._hash_base % (self.table_size - 1)) + 1
         return value
 
     @property
     def table_size(self) -> int:
-        return len(self.__array)
+        return len(self._array)
 
-    def __handle_probing(self, key: str, is_insert: bool) -> int:
+    def _handle_probing(self, key: str, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using linear probing.
         :complexity: 
@@ -68,13 +70,13 @@ class LinearProbeTable(HashTable[str, V]):
         position = self.hash(key)
 
         for _ in range(self.table_size):
-            if self.__array[position] is None:
+            if self._array[position] is None:
                 # Empty spot. Am I upserting or retrieving?
                 if is_insert:
                     return position
                 else:
                     raise KeyError(key)
-            elif self.__array[position][0] == key:
+            elif self._array[position][0] == key:
                 return position
             else:
                 # Taken by something else. Time to linear probe.
@@ -90,11 +92,11 @@ class LinearProbeTable(HashTable[str, V]):
         Returns all keys in the hash table.
         :complexity: O(N) where N is the table size.
         """
-        res = ArrayR(self.__length)
+        res = ArrayR(self._length)
         i = 0
         for x in range(self.table_size):
-            if self.__array[x] is not None:
-                res[i] = self.__array[x]
+            if self._array[x] is not None:
+                res[i] = self._array[x]
                 i += 1
         return res
 
@@ -103,14 +105,14 @@ class LinearProbeTable(HashTable[str, V]):
         Returns whether the hash table is empty
         :complexity: O(1)
         """
-        return self.__length == 0
+        return self._length == 0
 
     def is_full(self) -> bool:
         """
         Returns whether the hash table is full
         :complexity: O(1)
         """
-        return len(self) == len(self.__array)
+        return len(self) == len(self._array)
 
     def __delitem__(self, key: str) -> None:
         """
@@ -126,18 +128,18 @@ class LinearProbeTable(HashTable[str, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        position = self.__handle_probing(key, False)
+        position = self._handle_probing(key, False)
         # Remove the element
-        self.__array[position] = None
-        self.__length -= 1
+        self._array[position] = None
+        self._length -= 1
         # Start moving over the cluster
         position = (position + 1) % self.table_size
-        while self.__array[position] is not None:
-            key2, value = self.__array[position]
-            self.__array[position] = None
+        while self._array[position] is not None:
+            key2, value = self._array[position]
+            self._array[position] = None
             # Reinsert.
-            newpos = self.__handle_probing(key2, True)
-            self.__array[newpos] = (key2, value)
+            newpos = self._handle_probing(key2, True)
+            self._array[newpos] = (key2, value)
             position = (position + 1) % self.table_size
 
     def __getitem__(self, key: str) -> V:
@@ -147,8 +149,8 @@ class LinearProbeTable(HashTable[str, V]):
         :complexity: See linear probe.
         :raises KeyError: when the key doesn't exist.
         """
-        position = self.__handle_probing(key, False)
-        return self.__array[position][1]
+        position = self._handle_probing(key, False)
+        return self._array[position][1]
 
     def __setitem__(self, key: str, data: V) -> None:
         """
@@ -160,12 +162,12 @@ class LinearProbeTable(HashTable[str, V]):
         :raises FullError: when the table cannot be resized further.
         """
 
-        position = self.__handle_probing(key, True)
+        position = self._handle_probing(key, True)
 
-        if self.__array[position] is None:
-            self.__length += 1
+        if self._array[position] is None:
+            self._length += 1
 
-        self.__array[position] = (key, data)
+        self._array[position] = (key, data)
 
         if len(self) > self.table_size / 2:
             self.__rehash()
@@ -186,16 +188,16 @@ class LinearProbeTable(HashTable[str, V]):
                 cost of creating a new table is constant. This assumption can be extended to any table size
                 as long as the sizes are growing by a constant factor (e.g. each table size is almost double the previous one).
         """
-        old_array = self.__array
-        if self.__size_index + 1 == len(self.__TABLE_SIZES):
+        old_array = self._array
+        if self._size_index + 1 == len(self._TABLE_SIZES):
             if self.is_full():
                 raise RuntimeError("Table is full!")
 
             # Cannot be resized further.
             return
-        self.__size_index += 1
-        self.__array = ArrayR(self.__TABLE_SIZES[self.__size_index])
-        self.__length = 0
+        self._size_index += 1
+        self._array = ArrayR(self._TABLE_SIZES[self._size_index])
+        self._length = 0
         for item in old_array:
             if item is not None:
                 key, value = item
@@ -205,7 +207,7 @@ class LinearProbeTable(HashTable[str, V]):
         """
         Returns the number of elements in the hash table
         """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """
