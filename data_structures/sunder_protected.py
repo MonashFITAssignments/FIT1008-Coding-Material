@@ -7,7 +7,7 @@ from functools import wraps
 
 class ProtectAttributesMeta(ABCMeta):
     
-    SHOULD_SALT_PROTECTION = False # Changes the protected name to be different on each run, so that users cannot access _Protected__property
+    PROTECTION_PREFIX = "Protected" #+ hex(id(1))
 
     def __new__(cls, name, bases, namespace, **kwargs):
         """ 
@@ -15,7 +15,6 @@ class ProtectAttributesMeta(ABCMeta):
         and replace the attributes with relevant properties, and overwrite the methods.
         The attributes are overwritten at the protected location, so need to be stored at another location
         """
-        protected_prefix = "Protected" + (str(hex(id(ProtectAttributesMeta))) if ProtectAttributesMeta.SHOULD_SALT_PROTECTION else "")
         properties = []
         for attr, value in namespace.items():
             if not re.match(r"^_[0-9A-Za-z]", attr) or attr == '_abc_impl': continue
@@ -24,7 +23,7 @@ class ProtectAttributesMeta(ABCMeta):
                 namespace[attr] = ProtectAttributesMeta.__protected_method(value)
             else:
                 namespace[attr] = ProtectAttributesMeta.__protected_property(attr)
-                private_name = f'_{protected_prefix}_{attr}'
+                private_name = f'_{ProtectAttributesMeta.PROTECTION_PREFIX}_{attr}'
                 properties.append((private_name, value))
         
         klass = super().__new__(cls, name, bases, namespace, **kwargs)
@@ -55,7 +54,7 @@ class ProtectAttributesMeta(ABCMeta):
     
     @staticmethod
     def __protected_property(name):
-        private_name = f'_{"Protected" + (str(hex(id(ProtectAttributesMeta))) if ProtectAttributesMeta.SHOULD_SALT_PROTECTION else "")}_{name}'
+        private_name = f'_{ProtectAttributesMeta.PROTECTION_PREFIX}_{name}'
         def get_caller():
             frame = sys._getframe(2)
             className = frame.f_code.co_qualname.split(".", 1)[0]
@@ -63,20 +62,23 @@ class ProtectAttributesMeta(ABCMeta):
             return caller
         def getter(self):
             caller = get_caller()
-            if not isinstance(caller, type(self)) and not isinstance(self, caller):
-                
+            if not isinstance(self, caller):
+                # You are doing something dumb, please use a different approach that does not rely on this attribute
+                # If you still get around the protection, we will change ProtectAttributesMeta.PROTECTION_PREFIX in marking, 
+                # and your code will break
                 raise AttributeError(f"cannot access protected attribute '{name}' on object '{type(self).__name__}'")
+            
             return getattr(self, private_name)
 
         def setter(self, value):
             caller = get_caller()
-            if not isinstance(caller, self.__class__) and not isinstance(self, caller) and not (caller is ProtectAttributesMeta or type(caller) is ProtectAttributesMeta):
+            if not isinstance(self, caller) and not (caller is ProtectAttributesMeta or type(caller) is ProtectAttributesMeta):
                 raise AttributeError(f"cannot set protected attribute '{name}' on object '{type(self).__name__}'")
             setattr(self, private_name, value)
 
         def deleter(self):
             caller = get_caller()
-            if not isinstance(caller, self.__class__) and not isinstance(self, caller):
+            if not isinstance(self, caller):
                 raise AttributeError(f"cannot delete protected attribute '{name}' on object '{type(self).__name__}'")
             delattr(self, private_name)
 
@@ -89,7 +91,7 @@ class ProtectAttributesMeta(ABCMeta):
         def wrapper(self, *args, **kwargs):
             frame = sys._getframe(1)
             caller = frame.f_globals[frame.f_code.co_qualname.split(".", 1)[0]]
-            if not caller is ProtectAttributesMeta.__protected_method and not isinstance(caller, self.__class__) and not isinstance(self, caller):
+            if not caller is ProtectAttributesMeta.__protected_method and not isinstance(self, caller):
                 raise AttributeError(f"cannot call protected method '{method.__name__}'")
             return method(self, *args, **kwargs)
         return wrapper
