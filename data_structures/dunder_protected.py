@@ -9,7 +9,7 @@ class DunderProtected:
 
     def __getattribute__(self, name):
         m = DunderProtected._DU_PTN.match(name)
-        if m:
+        if m and m.group(1) in (cls.__name__ for cls in type(self).mro()):
             # e.g. name == "_Base__do" -> attr="do"
             attr = m.group(2)
             cls_self = type(self)
@@ -46,7 +46,7 @@ class DunderProtected:
 
     def __setattr__(self, name, value):
         m = DunderProtected._DU_PTN.match(name)
-        if m:
+        if m and m.group(1) in (cls.__name__ for cls in type(self).mro()):
             attr = m.group(2)
             # Prefer writing into the first existing slot across MRO
             objdict = object.__getattribute__(self, "__dict__")
