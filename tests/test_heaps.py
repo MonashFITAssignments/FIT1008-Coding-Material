@@ -6,7 +6,7 @@ from data_structures.unordered_array_heap import UnorderedArrayHeap
 from data_structures.linked_heap import MinLinkedHeap
 
 def check_heap_ordering(heap, ordering):
-    heap_array = heap._UnorderedArrayHeap__array
+    heap_array = heap._Protected__array
     bound = len(heap)
     for i in range(1, len(heap)):
         valid = (2*i     > bound or ordering(heap_array[i], heap_array[2*i    ])) and \
@@ -221,7 +221,7 @@ class TestLinkedHeap(TestCase):
         num = 34
         for i in range(num):
             lh.add(i)
-            tree = lh._MinLinkedHeap__root
+            tree = lh._Protected__root
             rank = tree.key
             for _ in range(rank):
                 tree = tree.right
@@ -246,7 +246,7 @@ class TestLinkedHeap(TestCase):
         lh = MinLinkedHeap()
         for i in range(20, 0, -1):
             lh.add(i)
-            self.assertEqual(lh._MinLinkedHeap__root.key, 1)
+            self.assertEqual(lh._Protected__root.key, 1)
         
     def test_heapify(self):
         items = list(range(10))

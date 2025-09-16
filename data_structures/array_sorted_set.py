@@ -14,21 +14,21 @@ class ArraySortedSet(Set[T]):
         if initial_capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
 
-        self.__array = ArrayR(initial_capacity)
-        self.__length = 0
+        self._array = ArrayR(initial_capacity)
+        self._length = 0
 
     def add(self, item: T) -> None:
         """ Add new element to the set. """
         index = self.__index_of_item(item)
-        if self.__array[index] == item:
+        if self._array[index] == item:
             return
         
         if self.is_full():
             self.__resize()
         
         self.__shuffle_right(index)
-        self.__array[index] = item
-        self.__length += 1
+        self._array[index] = item
+        self._length += 1
 
     def remove(self, item: T) -> None:
         """
@@ -39,11 +39,11 @@ class ArraySortedSet(Set[T]):
             n - size of the set
         """
         index = self.__index_of_item(item)
-        if not self.__array[index] == item:
+        if not self._array[index] == item:
             raise KeyError(item)
         #shuffle left to remove the item. Swapping with the last item would break sorted order.
         self.__shuffle_left(index)
-        self.__length += -1
+        self._length += -1
 
     def values(self) -> ArrayR[T]:
         """
@@ -51,7 +51,7 @@ class ArraySortedSet(Set[T]):
         """
         res = ArrayR(len(self))
         for i in range(len(self)):
-            res[i] = self.__array[i]
+            res[i] = self._array[i]
         return res
 
     def clear(self):
@@ -59,11 +59,11 @@ class ArraySortedSet(Set[T]):
         All we need to do is reset the size of the set to 0.
         This will start writing elements from the beginning of the array.
         """
-        self.__length = 0
+        self._length = 0
 
     def is_full(self) -> bool:
         """ True if the set is full. """
-        return len(self) == len(self.__array)
+        return len(self) == len(self._array)
 
     def is_empty(self) -> bool:
         """ True if the set is empty. """
@@ -74,27 +74,27 @@ class ArraySortedSet(Set[T]):
         Shuffle items to the right up to a given position.
         """
         for i in range(len(self), index, -1):
-            self.__array[i] = self.__array[i - 1]
+            self._array[i] = self._array[i - 1]
 
     def __shuffle_left(self, index: int) -> None:
         """
         Shuffle items starting at the given position to the left.
         """
         for i in range(index, len(self)):
-            self.__array[i] = self.__array[i + 1]
+            self._array[i] = self._array[i + 1]
 
     def __resize(self) -> None:
         """ Resize the set.
         It only sizes up, so should only be called when adding new items.
         """
         if self.is_full():
-            new_cap = int(2 * len(self.__array)) + 1
+            new_cap = int(2 * len(self._array)) + 1
             new_array = ArrayR(new_cap)
             for i in range(len(self)):
-                new_array[i] = self.__array[i]
-            self.__array = new_array
+                new_array[i] = self._array[i]
+            self._array = new_array
         assert len(self) < len(
-            self.__array
+            self._array
         ), "Capacity not greater than length after __resize."
 
     def __index_of_item(self, item: T) -> int:
@@ -113,10 +113,10 @@ class ArraySortedSet(Set[T]):
         while low <= high:
             mid = (low + high) // 2
             # Found the item
-            if self.__array[mid] == item:
+            if self._array[mid] == item:
                 return mid
             # check right of the remaining list
-            elif self.__array[mid] < item:
+            elif self._array[mid] < item:
                 low = mid + 1
             # check left of the remaining list
             else:
@@ -140,19 +140,19 @@ class ArraySortedSet(Set[T]):
         i = 0
         j = 0
         while i < len(self) and j < len(sorted_values):
-            i_value = self.__array[i]
+            i_value = self._array[i]
             j_value = sorted_values[j]
             if i_value < j_value:
-                res.__array[res.__length] = i_value
-                res.__length += 1
+                res._array[res._length] = i_value
+                res._length += 1
                 i += 1
             elif j_value < i_value:
-                res.__array[res.__length] = sorted_values[j]
-                res.__length += 1
+                res._array[res._length] = sorted_values[j]
+                res._length += 1
                 j += 1
             elif i_value == j_value:
-                res.__array[res.__length] = i_value
-                res.__length += 1
+                res._array[res._length] = i_value
+                res._length += 1
                 i += 1
                 j += 1
             else:
@@ -160,12 +160,12 @@ class ArraySortedSet(Set[T]):
 
         if i < len(self):
             for k in range(i, len(self)):
-                res.__array[res.__length] = self.__array[k]
-                res.__length += 1
+                res._array[res._length] = self._array[k]
+                res._length += 1
         if j < len(sorted_values):
             for k in range(j, len(sorted_values)):
-                res.__array[res.__length] = sorted_values[k]
-                res.__length += 1
+                res._array[res._length] = sorted_values[k]
+                res._length += 1
 
         return res
 
@@ -178,10 +178,10 @@ class ArraySortedSet(Set[T]):
         """
         res = ArraySortedSet(min(len(self), len(other)))
         for i in range(len(self)):
-            item = self.__array[i]
+            item = self._array[i]
             if item in other:
-                res.__array[res.__length] = item
-                res.__length += 1
+                res._array[res._length] = item
+                res._length += 1
         
         return res
 
@@ -194,10 +194,10 @@ class ArraySortedSet(Set[T]):
         """
         res = ArraySortedSet(len(self))
         for i in range(len(self)):
-            item = self.__array[i]
+            item = self._array[i]
             if item not in other:
-                res.__array[res.__length] = item
-                res.__length += 1
+                res._array[res._length] = item
+                res._length += 1
 
         return res
 
@@ -206,10 +206,10 @@ class ArraySortedSet(Set[T]):
         :returns: True if the item is in the list, False otherwise.
         """
         index = self.__index_of_item(item)
-        return item == self.__array[index]
+        return item == self._array[index]
 
     def __len__(self):
-        return self.__length
+        return self._length
 
     def __str__(self):
         """ Returns a string representation of the set. """

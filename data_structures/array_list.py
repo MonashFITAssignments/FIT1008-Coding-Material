@@ -1,6 +1,6 @@
 from data_structures.abstract_list import *
 from data_structures.referential_array import ArrayR
-from data_structures.dunder_protected import protect_attributes
+from data_structures.dunder_protected import ProtectAttributes
 
 
 class ArrayList(List[T]):
@@ -12,7 +12,6 @@ class ArrayList(List[T]):
         
         self._array = ArrayR(initial_capacity)
         self._length = 0
-        protect_attributes(self)
 
     def insert(self, index: int, item: T) -> None:
         """ Insert item at the given index.

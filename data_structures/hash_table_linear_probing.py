@@ -2,11 +2,11 @@ from __future__ import annotations
 from typing import TypeVar, Tuple, List
 from data_structures.abstract_hash_table import HashTable
 from data_structures.referential_array import ArrayR
-from data_structures.dunder_protected import protected_names
+
 V = TypeVar('V')
 
 
-class LinearProbeTable(HashTable[str, V], protected_names("_size_index", "_array", "_length", "_hash_base", "_handleProbing")):
+class LinearProbeTable(HashTable[str, V]):
     """
     Linear Probe Table.
     Defines a Hash Table using Linear Probing for collision resolution.
@@ -30,8 +30,6 @@ class LinearProbeTable(HashTable[str, V], protected_names("_size_index", "_array
         """
         if sizes is not None:
             self._TABLE_SIZES = sizes
-        else:
-            self._TABLE_SIZES = LinearProbeTable._TABLE_SIZES
 
         self._size_index = 0
         self._array: ArrayR[tuple[str, V]] = ArrayR(max(self._TABLE_SIZES[self._size_index], 2))

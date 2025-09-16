@@ -24,6 +24,7 @@ from ctypes import py_object
 from typing import Generic, Union, TypeVar
 from data_structures.abstract_list import List
 from data_structures.abstract_sorted_list import SortedList
+from data_structures.dunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 
@@ -37,28 +38,28 @@ class ArrayR(Generic[T]):
         """
         if length < 0:
             raise ValueError("Array length cannot be negative.")
-        self.array = (length * py_object)()  # initialises the space
-        self.array[:] = [None for _ in range(length)]
+        self.__array = (length * py_object)()  # initialises the space
+        self.__array[:] = [None for _ in range(length)]
 
     def __len__(self) -> int:
         """ Returns the length of the array
         :complexity: O(1)
         """
-        return len(self.array)
+        return len(self.__array)
 
     def __getitem__(self, index: int) -> T:
         """ Returns the object in position index.
         :complexity: O(1)
         :pre: index in between 0 and length - self.array[] checks it
         """
-        return self.array[index]
+        return self.__array[index]
 
     def __setitem__(self, index: int, value: T) -> None:
         """ Sets the object in position index to value
         :complexity: O(1)
         :pre: index in between 0 and length - self.array[] checks it
         """
-        self.array[index] = value
+        self.__array[index] = value
 
     @classmethod
     def from_list(cls, lst: list[T] | List[T] | SortedList[T]) -> ArrayR[T]:
@@ -66,20 +67,20 @@ class ArrayR(Generic[T]):
         :complexity: O(n) where n is the length of the list
         """
         new_array = cls(len(lst))
-        new_array.array[:] = lst
+        new_array.__array[:] = lst
         return new_array
 
     def to_list(self) -> list[T]:
         """ Returns a list representation of the array
         :complexity: O(n) where n is the length of the array
         """
-        return [self.array[i] for i in range(len(self))]
+        return [self.__array[i] for i in range(len(self))]
 
     def __str__(self) -> str:
         """ Returns a string representation of the array
         :complexity: O(n) where n is the length of the array
         """
-        return str([self.array[i] for i in range(len(self))])
+        return str([self.__array[i] for i in range(len(self))])
 
     def __repr__(self) -> str:
         """ Returns a string representation of the array for debugging purposes

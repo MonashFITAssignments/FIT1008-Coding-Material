@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.referential_array import ArrayR
+from data_structures.dunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 
 
-class Set(ABC, Generic[T]):
+class Set(ABC, Generic[T], ProtectAttributes):
     """ Set ADT.
     Defines a generic abstract set with the usual methods.
     """

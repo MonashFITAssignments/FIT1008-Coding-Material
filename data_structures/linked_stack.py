@@ -6,17 +6,17 @@ class LinkedStack(Stack[T]):
     """ Implementation of a stack with linked nodes. """
 
     def __init__(self, _=None) -> None:
-        self.__top = None
-        self.__length = 0
+        self._top = None
+        self._length = 0
 
     def push(self, item: T) -> None:
         """ Pushes an element to the top of the stack.
         :complexity: O(1)
         """
         new_node = Node(item)
-        new_node.link = self.__top
-        self.__top = new_node
-        self.__length += 1
+        new_node.link = self._top
+        self._top = new_node
+        self._length += 1
 
     def pop(self) -> T:
         """ Pops the element at the top of the stack.
@@ -26,9 +26,9 @@ class LinkedStack(Stack[T]):
         if self.is_empty():
             raise Exception('Stack is empty')
 
-        item = self.__top.item
-        self.__top = self.__top.link
-        self.__length -= 1
+        item = self._top.item
+        self._top = self._top.link
+        self._length -= 1
         return item
 
     def peek(self) -> T:
@@ -38,22 +38,22 @@ class LinkedStack(Stack[T]):
         """
         if self.is_empty():
             raise Exception('Stack is empty')
-        return self.__top.item
+        return self._top.item
 
     def clear(self) -> None:
         """" Resets the stack to an empty state. """
-        self.__top = None
-        self.__length = 0
+        self._top = None
+        self._length = 0
 
     def __len__(self) -> int:
         """ Returns the number of elements in the stack.
         :complexity: O(1)
         """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """ Returns a string representation of the stack."""
-        i = self.__top
+        i = self._top
         stack_str = ""
         while i is not None:
             if stack_str == "":

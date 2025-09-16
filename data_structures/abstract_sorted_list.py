@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
+from data_structures.dunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 K = TypeVar('K')
 
 
-class SortedList(ABC, Generic[T]):
+class SortedList(ABC, Generic[T], ProtectAttributes):
     """ Sorted List ADT.
     Defines a generic abstract sorted list with the standard methods.
     Items to store should be of time ListItem.

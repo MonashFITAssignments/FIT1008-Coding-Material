@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
+from data_structures.dunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 
 
-class List(ABC, Generic[T]):
+class List(ABC, Generic[T], ProtectAttributes):
     """ List ADT. 
     Defines a generic abstract list with the standard methods.
     """
