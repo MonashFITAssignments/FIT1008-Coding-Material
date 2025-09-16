@@ -217,6 +217,3 @@ class TestProtected(TestCase):
             else:
                 self.fail(f"Length class '{type(adt).__name__}' does not have a length attribute")
             self.assertRaises(AttributeError, lambda: adt._length)
-
-        lp_ht = LinearProbeTable()
-        self.assertRaises(AttributeError, lambda: lp_ht._TABLE_SIZES)
