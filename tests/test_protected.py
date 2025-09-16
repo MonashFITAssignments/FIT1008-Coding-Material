@@ -8,7 +8,7 @@ from data_structures.array_stack import ArrayStack
 from data_structures.binary_search_tree import BinarySearchTree
 from data_structures.bit_vector_set import BitVectorSet
 from data_structures.circular_queue import CircularQueue
-from data_structures.dunder_protected import ProtectAttributes
+from data_structures.sunder_protected import ProtectAttributes
 from data_structures.hash_table_double_hashing import DoubleHashingTable
 from data_structures.hash_table_linear_probing import LinearProbeTable
 from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
@@ -29,10 +29,11 @@ class ProtectedParent(ProtectAttributes):
     def __init__(self):
         self._a = 1
         self.calls = 0
-        # protect_attributes(self)
         
     def _protected_call(self):
         self.calls += 1
+    def __private_call(self):
+        self.calls -= 1
     def public_call(self):
         self._protected_call()
 
@@ -154,7 +155,7 @@ class TestProtected(TestCase):
         self.assertEqual(child2._Protected__to_overide, 21)
         self.assertEqual(child2._Protected__ProtectedChild2__to_overide, 31)
 
-    def test_classes_array(self):
+    def test_adt_attrs(self):
         array_attr = [
             ArrayHeap(10, "min"),
             ArrayList(10),
@@ -205,7 +206,8 @@ class TestProtected(TestCase):
         ls = LinkedStack(); length_attr.append(ls)
         self.assertRaises(AttributeError, lambda: ls._top)
         
-        
+        for ht in array_attr[7:10]:
+            self.assertRaises(AttributeError, lambda: ht._TABLE_SIZES)
         
         
         for adt in length_attr:

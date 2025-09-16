@@ -1,6 +1,5 @@
 from data_structures.abstract_list import *
 from data_structures.referential_array import ArrayR
-from data_structures.dunder_protected import ProtectAttributes
 
 
 class ArrayList(List[T]):

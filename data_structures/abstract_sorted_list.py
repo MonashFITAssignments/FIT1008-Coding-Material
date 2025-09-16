@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import ProtectAttributes
+from data_structures.sunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 K = TypeVar('K')
