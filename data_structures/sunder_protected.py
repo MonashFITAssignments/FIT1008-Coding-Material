@@ -42,7 +42,6 @@ class ProtectAttributesMeta(ABCMeta):
         """
         obj = super().__call__(*args, **kwds)
         
-        cls = type(obj)
         if not cls.__protected_properties__:
             for attr in obj.__dict__:
                 #Check for a protected attribute, starts with _ and not __
