@@ -47,7 +47,7 @@ class TestBinarySearchTree(TestCase):
 
     def test_setup_invariant(self):
         for tree in self.trees:
-            self.assertTrue(check_bst_invariant(tree._BinarySearchTree__root))
+            self.assertTrue(check_bst_invariant(tree._Protected__root))
 
         incorrect = BinaryNode(1, 1)
         incorrect.right = BinaryNode(0, 0)
