@@ -151,11 +151,11 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
 
         if not isinstance(node, (BinaryNode, type(None))):
             raise TypeError(f"Cannot instantiate binary tree with node type: {type(node)}")
-        
+
         if check_invariant:
             if not check_bst_invariant(node):
                 raise ValueError("Constructed BinarySearchTree does not satisfy search invariant.")
-        
+
         tree = BinarySearchTree()
         tree.__root = node
         tree.__length = length if length else len_aux(node)
@@ -172,7 +172,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         if current is None:
             return None
         return self.__get_min_node(current.right)
-    
+
     def __get_predecessor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
             Get predecessor of the current node.
@@ -309,7 +309,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                 CompK is the complexity of comparing the keys
             """
             if current is None:  # base case: at the leaf
-                current = BinaryNode(item, key)
+                current = BinaryNode(item, key, current_depth)
                 self.__length += 1
             elif key < current.key:
                 current.left = insert_aux(current.left, key, item, current_depth + 1)
@@ -319,7 +319,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                 current.item = item
             return current
 
-        self.__root = insert_aux(self.__root, key, item, 1)
+        self.__root = insert_aux(self.__root, key, item, 0)
 
     def __len__(self) -> int:
         """ Returns the number of nodes in the tree. """
