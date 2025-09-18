@@ -1,12 +1,14 @@
 from unittest import TestCase
 from data_structures.array_heap import ArrayHeap
-from data_structures.max_array_heap_ import MaxArrayHeap
+from data_structures.max_array_heap_ import MaxArrayHeap as MaxArrayHeap_
+from data_structures.max_array_heap import MaxArrayHeap
 from data_structures.min_array_heap import MinArrayHeap
 from data_structures.unordered_array_heap import UnorderedArrayHeap
 from data_structures.linked_heap import MinLinkedHeap
 
 def check_heap_ordering(heap, ordering):
-    heap_array = heap._UnorderedArrayHeap__array
+    
+    heap_array = heap._UnorderedArrayHeap__array if isinstance(heap, UnorderedArrayHeap) else heap._MaxArrayHeap__array
     bound = len(heap)
     for i in range(1, len(heap)):
         valid = (2*i     > bound or ordering(heap_array[i], heap_array[2*i    ])) and \
@@ -93,8 +95,8 @@ class TestUnorderedHeap(TestCase):
 class TestArrayHeaps(TestCase):
     CAPACITY = 10
     def setUp(self) -> None:
-        self.heaps:list[UnorderedArrayHeap]  = [MaxArrayHeap(self.CAPACITY), ArrayHeap(self.CAPACITY, 'max'), MinArrayHeap(self.CAPACITY), ArrayHeap(self.CAPACITY, 'min')]
-        self.orders = ['max', 'max', 'min', 'min']
+        self.heaps:list[UnorderedArrayHeap]  = [MaxArrayHeap(self.CAPACITY), MaxArrayHeap_(self.CAPACITY), ArrayHeap(self.CAPACITY, 'max'), MinArrayHeap(self.CAPACITY), ArrayHeap(self.CAPACITY, 'min')]
+        self.orders = ['max', 'max', 'max', 'min', 'min']
         self.max_ordering = lambda a, b: a >= b
         self.min_ordering = lambda a, b: a <= b
     
@@ -146,7 +148,7 @@ class TestArrayHeaps(TestCase):
             self.assertRaises(ValueError, heap.peek)
 
     def test_heapify(self):
-        for heap_order, heap in zip(['max', 'min'], [self.heaps[0], self.heaps[2]]):
+        for heap_order, heap in zip(['max', 'max', 'min'], [self.heaps[0], self.heaps[1], self.heaps[3]]):
             num_items = self.CAPACITY
             heap_class = type(heap)
             items1 = list(range(num_items))
@@ -163,11 +165,11 @@ class TestArrayHeaps(TestCase):
             act_items2 = [heap2.extract_root() for _ in range(num_items)]
             if heap_order == 'max':
                 items1 = items1[::-1]
-            self.assertEqual(act_items1, items1)
-            self.assertEqual(act_items2, items1)
+            self.assertEqual(act_items1, items1, heap_class.__name__)
+            self.assertEqual(act_items2, items1, heap_class.__name__)
         
         #Separate ArrayHeap as heapify needs extra parameters
-        for heap_order, heap in zip(['max', 'min'], [self.heaps[1], self.heaps[3]]):
+        for heap_order, heap in zip(['max', 'min'], [self.heaps[2], self.heaps[4]]):
             num_items = 10
             heap_class = type(heap)
             items1 = list(range(num_items))
