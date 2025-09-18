@@ -1,8 +1,8 @@
 from unittest import TestCase
 from data_structures.array_heap import ArrayHeap
-from data_structures.max_array_heap_ import MaxArrayHeap as MaxArrayHeap_
-from data_structures.max_array_heap import MaxArrayHeap
-from data_structures.min_array_heap import MinArrayHeap
+from data_structures.array_max_heap_ import MaxArrayHeap as MaxArrayHeap_
+from data_structures.array_max_heap import MaxArrayHeap
+from data_structures.array_min_heap import MinArrayHeap
 from data_structures.unordered_array_heap import UnorderedArrayHeap
 from data_structures.linked_heap import MinLinkedHeap
 
