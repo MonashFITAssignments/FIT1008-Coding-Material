@@ -1,23 +1,23 @@
 from __future__ import annotations
 from data_structures.referential_array import ArrayR
-from data_structures.unordered_array_heap import UnorderedArrayHeap, T
+from data_structures.in_review.array_unordered_heap import ArrayUnorderedHeap, T
 from typing import Literal, Iterable
 
 HeapOrders = Literal['min', 'max']
 
-class ArrayHeap(UnorderedArrayHeap[T]):
+class ArrayHeap(ArrayUnorderedHeap[T]):
     MAX_ORDERING = 0
     MIN_ORDERING = 1
 
     def __init__(self, max_items:int, ordering: HeapOrders):
-        UnorderedArrayHeap.__init__(self, max_items)
+        ArrayUnorderedHeap.__init__(self, max_items)
 
         if ordering == 'min':
             self.__heap_order = ArrayHeap.MIN_ORDERING
         elif ordering == 'max':
             self.__heap_order = ArrayHeap.MAX_ORDERING
         else:
-            raise ValueError("Array heap recieved invalid heap ordering: " + ordering)
+            raise ValueError("Array heap received invalid heap ordering: " + ordering)
     
     def _should_rise(self, below:T, above:T) -> bool:
         if self.__heap_order == ArrayHeap.MIN_ORDERING:
@@ -40,4 +40,4 @@ class ArrayHeap(UnorderedArrayHeap[T]):
         return ArrayHeap(0, ordering)._heapify(items)
     
     def __str__(self):
-        return "<ArrayHeap(" + ("min, " if self.__heap_order == ArrayHeap.MIN_ORDERING else "max, ") + UnorderedArrayHeap.__str__(self) + ')>'
+        return "<ArrayHeap(" + ("min, " if self.__heap_order == ArrayHeap.MIN_ORDERING else "max, ") + ArrayUnorderedHeap.__str__(self) + ')>'
