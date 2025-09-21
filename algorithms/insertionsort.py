@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from data_structures.referential_array import ArrayR, T
 from data_structures.abstract_list import List
 from typing import Callable, Any
