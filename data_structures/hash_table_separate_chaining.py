@@ -152,7 +152,10 @@ class HashTableSeparateChaining(HashTable[str, V]):
     def __iter__(self):
         """
         Returns an iterator for the hash table
-        :complexity: O(N) where N n is the number of items in our hash table
+        :complexity:
+            Best: O(1) when the next spot in the table has a non-empty list, or the current list has more items.
+            Worst: O(N) where N is the table capacity, when we have to skip over many empty spots
+            in the table until we find the next non-empty list.
         """
         for list in self.__table:
             if list is not None:
