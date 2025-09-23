@@ -7,7 +7,7 @@ from data_structures.in_review.array_unordered_heap import ArrayUnorderedHeap
 from data_structures.array_max_heap import ArrayMaxHeap
 
 def check_heap_ordering(heap, ordering):
-    heap_array = heap._ProtectedAbstractHeap__array
+    heap_array = heap._ProtectedAbstractHeap__ArrayMaxHeap__array if type(heap) is ArrayMaxHeap else heap._ProtectedAbstractHeap__array
     bound = len(heap)
     for i in range(1, len(heap)):
         valid = (2*i     > bound or ordering(heap_array[i], heap_array[2*i    ])) and \

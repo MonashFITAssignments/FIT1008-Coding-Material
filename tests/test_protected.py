@@ -1,6 +1,7 @@
 from unittest import TestCase
-from data_structures.array_heap import ArrayHeap
+from data_structures.in_review.array_heap import ArrayHeap
 from data_structures.array_list import ArrayList
+from data_structures.array_max_heap import ArrayMaxHeap
 from data_structures.array_set import ArraySet
 from data_structures.array_sorted_list import ArraySortedList
 from data_structures.array_sorted_set import ArraySortedSet
@@ -13,12 +14,12 @@ from data_structures.hash_table_double_hashing import DoubleHashingTable
 from data_structures.hash_table_linear_probing import LinearProbeTable
 from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
 from data_structures.hash_table_separate_chaining import SeparateChainingTable
-from data_structures.linked_heap import MinLinkedHeap
+from data_structures.in_review.linked_heap import MinLinkedHeap
 from data_structures.linked_list import LinkedList
 from data_structures.linked_queue import LinkedQueue
 from data_structures.linked_stack import LinkedStack
-from data_structures.max_array_heap import MaxArrayHeap
-from data_structures.min_array_heap import MinArrayHeap
+from data_structures.in_review.array_max_heap_ import ArrayMaxHeap as ArrayMaxHeap_
+from data_structures.in_review.array_min_heap import ArrayMinHeap
 
 def global_function_attr(obj):
     obj._a
@@ -202,8 +203,9 @@ class TestProtected(TestCase):
             DoubleHashingTable(),
             QuadraticProbeTable(),
             LinearProbeTable(),
-            MaxArrayHeap(10),
-            MinArrayHeap(10),
+            ArrayMaxHeap(10),
+            ArrayMaxHeap_(10),
+            ArrayMinHeap(10),
         ]
         
         for adt in array_attr:

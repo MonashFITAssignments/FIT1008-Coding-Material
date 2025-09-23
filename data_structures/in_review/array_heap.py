@@ -40,4 +40,4 @@ class ArrayHeap(ArrayUnorderedHeap[T]):
         return ArrayHeap(0, ordering)._heapify(items)
     
     def __str__(self):
-        return "<ArrayHeap(" + ("min, " if self.__heap_order == ArrayHeap.MIN_ORDERING else "max, ") + ArrayUnorderedHeap.__str__(self) + ')>'
+        return "<ArrayHeap(" + ("min, " if self._heap_order == ArrayHeap.MIN_ORDERING else "max, ") + ArrayUnorderedHeap.__str__(self) + ')>'
