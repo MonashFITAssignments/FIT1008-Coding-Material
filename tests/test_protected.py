@@ -20,6 +20,13 @@ from data_structures.linked_stack import LinkedStack
 from data_structures.max_array_heap import MaxArrayHeap
 from data_structures.min_array_heap import MinArrayHeap
 
+def global_function_attr(obj):
+    obj._a
+def global_function_class(obj):
+    obj._protected_class_attr
+def global_function_method(obj):
+    obj._protected_call
+
 class ProtectedParent(ProtectAttributes):
     _protected_class_attr = 10
     __private_class_attr = 12
@@ -77,83 +84,111 @@ class ProtectedChild2(ProtectedParent):
     def get_private_overide(self):
         return self.__to_overide
 
+class Foo:
+    pass
+class Bar:
+    pass
+class A(ProtectAttributes, Foo, Bar):
+    def __init__(self):
+        self._a = None
+class B(Foo, ProtectAttributes, Bar):
+    def __init__(self):
+        self._a = None
+class C(Foo, Bar, ProtectAttributes):
+    def __init__(self):
+        self._a = None
+    
+
 class TestProtected(TestCase):
-    def test_private(self):
-        parent = ProtectedParent()
-        child = ProtectedChild()
+    def setUp(self):
+        self.parent = ProtectedParent()
+        self.child = ProtectedChild()
         #Check that creating a second instance of the class doesn't break things
-        parent2 = ProtectedParent()
-        child2 = ProtectedChild()
+        self.parent2 = ProtectedParent()
+        self.child2 = ProtectedChild2()
         #Check accessing protected attributes raises attribute error
 
-        self.assertRaises(AttributeError, lambda: parent._a)
-        self.assertRaises(AttributeError, lambda: parent2._a)
-        self.assertRaises(AttributeError, lambda: child._a)
-        self.assertRaises(AttributeError, lambda: child2._a)
-        self.assertEqual(parent2._Protected__a, 1)
-        self.assertEqual(child2._Protected__a, 1)
+    def test_inherintance_order(self):
+        #Check that the order of inheritance does not affect the name of protection.
+        a = A()
+        b = B()
+        c = C()
+        a._ProtectedA__a
+        b._ProtectedB__a
+        c._ProtectedC__a
+
+    def test_attributes(self):
+        # print(self.child.__dict__)
+        # print(ProtectedChild.__dict__)
+        self.assertRaises(AttributeError, lambda: self.parent._a)
+        self.assertRaises(AttributeError, lambda: self.parent2._a)
+        self.assertRaises(AttributeError, lambda: self.child._a)
+        self.assertRaises(AttributeError, lambda: self.child2._a)
+        self.assertEqual(self.parent2._ProtectedProtectedParent__a, 1)
+        self.assertEqual(self.child2._ProtectedProtectedParent__a, 1)
 
         #Check that child can access protected attribute
-        self.assertEqual(1, child.get_a())
+        self.assertEqual(1, self.child.get_a())
 
         def set_a(obj):
             obj._a = 2
         
         #Check that protected attributes cannot be set
-        self.assertRaises(AttributeError, set_a, parent)
-        self.assertRaises(AttributeError, set_a, child)
+        self.assertRaises(AttributeError, set_a, self.parent)
+        self.assertRaises(AttributeError, set_a, self.child)
+        self.assertRaises(AttributeError, set_a, self.parent2)
 
-        parent.public_call()
-        child.public_call()
+
+        self.parent.public_call()
+        self.child.public_call()
 
         #Check that children can overwrite protected methods
-        self.assertEqual(parent.calls, 1)
-        self.assertEqual(child.calls, 2)
+        self.assertEqual(self.parent.calls, 1)
+        self.assertEqual(self.child.calls, 2)
 
+    def test_methods(self):
         #Check that protected calls cannot be called
-        self.assertRaises(AttributeError, parent._protected_call)
-        self.assertRaises(AttributeError, child._protected_call)
+        self.assertRaises(AttributeError, lambda: self.parent._protected_call())
+        self.assertRaises(AttributeError, lambda: self.child._protected_call())
 
-        child.public_call2()
-        self.assertEqual(child.calls, 4)
+        self.child.public_call2()
+        self.assertEqual(self.child.calls, 2)
     
     def test_class_attrs(self):
-        parent = ProtectedParent()
-        parent2 = ProtectedParent()
-        child1 = ProtectedChild()
-        child2 = ProtectedChild2()
-
         #Getting class attributes from methods works
-        self.assertEqual(parent.get_protected_class(), 10)
-        self.assertEqual(parent.get_private_class(), 12)
-        self.assertEqual(child1.get_protected_class(), 10)
-        self.assertEqual(child1.get_private_class(), 12)
-        self.assertEqual(child2.get_protected_class(), 10)
-        self.assertRaises(AttributeError, child2.get_private_class)
+        self.assertEqual(self.parent.get_protected_class(), 10)
+        self.assertEqual(self.parent.get_private_class(), 12)
+        self.assertEqual(self.child.get_protected_class(), 10)
+        self.assertEqual(self.child.get_private_class(), 12)
+        self.assertEqual(self.child2.get_protected_class(), 10)
+        self.assertRaises(AttributeError, self.child2.get_private_class)
 
         #Setting class attributes from methods works
-        parent.set_protected_class(11)
-        self.assertEqual(parent.get_protected_class(), 11)
-        parent.set_private_class(13)
-        self.assertEqual(parent.get_private_class(), 13)
-        self.assertEqual(parent2.get_protected_class(), 10)
-        self.assertEqual(parent2.get_private_class(), 12)
+        self.parent.set_protected_class(11)
+        self.assertEqual(self.parent.get_protected_class(), 11)
+        self.parent.set_private_class(13)
+        self.assertEqual(self.parent.get_private_class(), 13)
+        self.assertEqual(self.parent2.get_protected_class(), 10)
+        self.assertEqual(self.parent2.get_private_class(), 12)
 
-        child1.set_protected_class(110)
-        self.assertEqual(child1.get_protected_class(), 110)
-        child1.set_private_class(130)
-        self.assertEqual(child1.get_private_class(), 130)
+        self.child.set_protected_class(110)
+        self.assertEqual(self.child.get_protected_class(), 110)
+        self.child.set_private_class(130)
+        self.assertEqual(self.child.get_private_class(), 130)
 
-        child2.set_private_class(120)
-        self.assertEqual(child2.get_private_class(), 120) #This adds a new attribute which won't be protected, but won't raise error anymore
+        self.child2.set_private_class(120)
+        self.assertEqual(self.child2.get_private_class(), 120) #This adds a new attribute which won't be protected, but won't raise error anymore
 
         #Check that children properly inheritted attributes
-        self.assertEqual(child1._Protected__to_overide, 20)
-        self.assertEqual(child1._Protected__ProtectedParent__to_overide, 30)
+        self.assertEqual(self.child._ProtectedProtectedParent__to_overide, 20)
+        self.assertEqual(self.child._ProtectedProtectedParent__ProtectedParent__to_overide, 30)
 
         #Check that children overide inheritted attributes
-        self.assertEqual(child2._Protected__to_overide, 21)
-        self.assertEqual(child2._Protected__ProtectedChild2__to_overide, 31)
+        self.assertEqual(self.child2._ProtectedProtectedParent__to_overide, 21)
+        self.assertEqual(self.child2._ProtectedProtectedParent__ProtectedChild2__to_overide, 31)
+
+    def test_global_funcs(self):
+        self.assertRaises
 
     def test_adt_attrs(self):
         array_attr = [
@@ -181,7 +216,7 @@ class TestProtected(TestCase):
         
         length_attr = array_attr[:]
         bst = BinarySearchTree(); length_attr.append(bst)
-        self.assertRaises(AttributeError, lambda: bst._root)
+        self.assertRaises(AttributeError, lambda: bst.__root)
         self.assertRaises(AttributeError, lambda: bst.__get_max_node(None))
 
         bsv = BitVectorSet()
@@ -191,7 +226,7 @@ class TestProtected(TestCase):
         self.assertRaises(AttributeError, lambda: htsc._table)
 
         mlh = MinLinkedHeap()
-        self.assertRaises(AttributeError, lambda: mlh._root)
+        self.assertRaises(AttributeError, lambda: mlh.__root)
         self.assertRaises(AttributeError, lambda: mlh.__merge(None, None))
 
         ll = LinkedList(); length_attr.append(ll)
