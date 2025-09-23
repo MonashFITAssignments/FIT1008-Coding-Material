@@ -28,13 +28,8 @@ class ProtectAttributesMeta(ABCMeta):
                 if cls_ is ProtectAttributes: # We are creating the abstract base class
                     return name 
                 else:
-                    mro = cls_.mro()
-                    
-                    for i in range(len(mro)):
-                        if mro[i] is ProtectAttributes:
-                            for j in range(i-1, -1, -1):
-                                if issubclass(mro[j] , ProtectAttributes):
-                                    return mro[j].__name__
+                    base_class = _get_base_class(cls_.mro())
+                    return base_class.__name__
         
             base_name = find_abstract_base_name()
             
@@ -53,18 +48,10 @@ class ProtectAttributesMeta(ABCMeta):
 class ProtectAttributes(metaclass=ProtectAttributesMeta):
     __protected_properties__ = False
 
-    def __get_caller(self):
-        frame = sys._getframe(2)
+    def __get_caller(self, frame):
         callername = frame.f_code.co_qualname.split(".", 1)[0]
         caller = frame.f_globals[callername]
         return caller
-    
-    def __get_base_class(self, mro):
-        for i in range(len(mro)):
-            if mro[i] is ProtectAttributes:
-                for j in range(i-1, -1, -1):
-                    if issubclass(mro[j] , ProtectAttributes):
-                        return mro[j]
 
     def __invalid_access(self, name):
         """
@@ -80,15 +67,15 @@ class ProtectAttributes(metaclass=ProtectAttributesMeta):
 
     def __getattr__(self, name:str):
         if name.startswith("_") and not name.startswith("__"):
-            # print(name)
-            caller = self.__get_caller()
+
+            caller = self.__get_caller(sys._getframe(1))
             
             #check for an abstract class in the mro
             if type(self) is ProtectAttributes or type(caller).__name__ == 'function': 
                 return self.__invalid_access(name)
             
             mro = caller.mro()
-            cls = self.__get_base_class(mro)
+            cls = _get_base_class(mro)
             if cls is None:
                 return self.__invalid_access(name)
             
@@ -104,16 +91,13 @@ class ProtectAttributes(metaclass=ProtectAttributesMeta):
         # return caller
     def __setattr__(self, name, value):
         if name.startswith("_") and not name.startswith("__"):
-            frame = sys._getframe(1)
-
-            # print(frame.f_locals.keys())
-            callername = frame.f_code.co_qualname.split(".", 1)[0]
-            caller = frame.f_globals[callername]
+            caller = self.__get_caller(sys._getframe(1))
             #check for an abstract class in the mro
-            if type(self) is ProtectAttributes: 
+            if type(self) is ProtectAttributes or type(caller).__name__ == 'function':
                 return self.__invalid_access(name)
 
-            cls = self.__get_base_class(caller.mro())
+            mro = caller.mro()
+            cls = _get_base_class(mro)
             if cls is None:
                 return self.__invalid_access(name)
             # Check the mangled name based on abstract class.
@@ -121,3 +105,10 @@ class ProtectAttributes(metaclass=ProtectAttributesMeta):
             return object.__setattr__(self, mangled, value)
         else:
             return object.__setattr__(self, name, value)
+
+def _get_base_class(mro):
+        for i in range(len(mro)):
+            if mro[i] is ProtectAttributes:
+                for j in range(i-1, -1, -1):
+                    if ProtectAttributes in mro[j].__bases__:
+                        return mro[j]

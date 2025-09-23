@@ -10,7 +10,7 @@ class UnorderedArrayHeap(AbstractHeap[T]):
     def __init__(self, max_items:int = 1):
         if not max_items >= 0:
             raise ValueError("Heap must store 0 or more items.")
-        self.__array = ArrayR[T](max_items + 1)
+        self._array = ArrayR[T](max_items + 1)
         self._length:int = 0
 
     def add(self, item: T) -> None:
@@ -23,7 +23,7 @@ class UnorderedArrayHeap(AbstractHeap[T]):
             raise ValueError("Cannot add to full heap.")
 
         self._length += 1
-        self.__array[len(self)] = item
+        self._array[len(self)] = item
         self._rise(len(self))
 
     def extract_root(self) -> T:
@@ -35,8 +35,8 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         """
         if self._length == 0:
             raise ValueError("Cannot extract_root from empty heap.")
-        res = self.__array[1]
-        self.__array[1] = self.__array[len(self)]
+        res = self._array[1]
+        self._array[1] = self._array[len(self)]
         self._length -= 1
         self._sink(1)
         return res
@@ -49,10 +49,10 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         """
         if self._length == 0:
             raise ValueError("Cannot peek from empty heap.")
-        return self.__array[1]
+        return self._array[1]
 
     def is_full(self) -> bool:
-        return len(self) == len(self.__array) - 1
+        return len(self) == len(self._array) - 1
 
     @abstractmethod
     def _should_rise(self, below:T, above:T) -> bool:
@@ -79,8 +79,8 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         elif k2 == len(self):
             return k2
         else:
-            left = self.__array[k2]
-            right = self.__array[k2 + 1]
+            left = self._array[k2]
+            right = self._array[k2 + 1]
 
             if self._should_sink(left, right):
                 #if left is put on top it is unstable, so right should be put on top
@@ -102,28 +102,28 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         :complexity best: O(1) when no rising is required
         :complexity worst: O(logN) where you need to rize to the top of the heap.
         """
-        rising_item = self.__array[k]
+        rising_item = self._array[k]
         
         # := is the walrus operator, it assigns the right expression to the left variable, and returns the expression.
         # This gets the parent_i and checks if parent_i is not None in the condition
-        while self.__get_parent_index(k) is not None and self._should_rise(rising_item, self.__array[self.__get_parent_index(k)]):
+        while self.__get_parent_index(k) is not None and self._should_rise(rising_item, self._array[self.__get_parent_index(k)]):
             parent_i = self.__get_parent_index(k)
-            self.__array[k] = self.__array[parent_i]
+            self._array[k] = self._array[parent_i]
             k = parent_i
             
-        self.__array[k] = rising_item
+        self._array[k] = rising_item
 
     def _sink(self, k:int) -> None:
         """ Sink the element at index k
         :complexity best: O(1) when no sinking is required
         :complexity worst: O(logN) where you need to sink to the bottom of the heap.
         """
-        sinking_item = self.__array[k]
-        while (child_i := self.__get_child_index(k)) is not None and self._should_sink(sinking_item, self.__array[child_i]):
-            self.__array[k] = self.__array[child_i]
+        sinking_item = self._array[k]
+        while (child_i := self.__get_child_index(k)) is not None and self._should_sink(sinking_item, self._array[child_i]):
+            self._array[k] = self._array[child_i]
             k = child_i
 
-        self.__array[k] = sinking_item
+        self._array[k] = sinking_item
 
     def _heapify(heap: UnorderedArrayHeap[T], items: Iterable[T]) -> UnorderedArrayHeap[T]:
         """ Construct a heap from an iterable of items. 
@@ -153,7 +153,7 @@ class UnorderedArrayHeap(AbstractHeap[T]):
             
             length = i + 1
         
-        heap.__array = array
+        heap._array = array
         heap._length = length
 
         for i in range(len(heap) // 2, 0, -1):
@@ -170,6 +170,6 @@ class UnorderedArrayHeap(AbstractHeap[T]):
         """
         res = ArrayR(self._length)
         for i in range(self._length):
-            res[i] = str(self.__array[i + 1])
+            res[i] = str(self._array[i + 1])
         
         return '[' + ', '.join(res) + ']'

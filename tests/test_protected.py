@@ -226,7 +226,7 @@ class TestProtected(TestCase):
         self.assertRaises(AttributeError, lambda: htsc._table)
 
         mlh = MinLinkedHeap()
-        self.assertRaises(AttributeError, lambda: mlh.__root)
+        self.assertRaises(AttributeError, lambda: mlh._root)
         self.assertRaises(AttributeError, lambda: mlh.__merge(None, None))
 
         ll = LinkedList(); length_attr.append(ll)
