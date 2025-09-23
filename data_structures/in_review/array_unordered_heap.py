@@ -6,7 +6,7 @@ from abc import abstractmethod
 
 HeapOrders = Literal['min', 'max']
 
-class UnorderedArrayHeap(AbstractHeap[T]):
+class ArrayUnorderedHeap(AbstractHeap[T]):
     def __init__(self, max_items:int = 1):
         if not max_items >= 0:
             raise ValueError("Heap must store 0 or more items.")
@@ -125,7 +125,7 @@ class UnorderedArrayHeap(AbstractHeap[T]):
 
         self._array[k] = sinking_item
 
-    def _heapify(heap: UnorderedArrayHeap[T], items: Iterable[T]) -> UnorderedArrayHeap[T]:
+    def _heapify(heap: ArrayUnorderedHeap[T], items: Iterable[T]) -> ArrayUnorderedHeap[T]:
         """ Construct a heap from an iterable of items. 
         :returns: A heap containing items in the iterable.
         :complexity: O(n) where n is the number of items in the iterable.
