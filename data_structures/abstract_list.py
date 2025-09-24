@@ -42,6 +42,12 @@ class List(ABC, Generic[T], DunderProtected):
         """ Clear the list. """
         pass
 
+    def _absolute_index(self, index):
+        """ Convert negative index into positive index """
+        if index < 0:
+            return len(self) + index
+        return index
+
     @abstractmethod
     def __getitem__(self, index: int) -> T:
         """ Return the element at the given position. """

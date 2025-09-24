@@ -14,5 +14,7 @@ if __name__ == '__main__':
         sys.executable, 
         "-m",
         "unittest",
+        "-k",
+        "Test"
     ])
 
