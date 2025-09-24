@@ -16,6 +16,12 @@ class SortedList(ABC, Generic[T], DunderProtected):
         """ Add new element to the list. """
         pass
 
+    def _absolute_index(self, index):
+        """ Convert negative index into positive index """
+        if index < 0:
+            return len(self) + index
+        return index
+
     @abstractmethod
     def delete_at_index(self, index: int) -> T:
         """ Delete item at a given position. """

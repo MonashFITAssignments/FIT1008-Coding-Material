@@ -23,7 +23,7 @@ class TestHashTableSeparateChaining(TestCase):
     def setUp(self):
         self.table = HashTableSeparateChaining()
 
-class TetsHashTables(TestCase):
+class TestHashTables(TestCase):
     def setUp(self):
         self.dictionaries = [
             LinearProbeTable(),

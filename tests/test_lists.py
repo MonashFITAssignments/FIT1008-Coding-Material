@@ -1,4 +1,5 @@
 from unittest import TestCase
+from abc import ABC, abstractmethod
 
 from data_structures.linked_list import LinkedList
 from data_structures.array_list import ArrayList
@@ -6,19 +7,9 @@ from data_structures.array_sorted_list import ArraySortedList
 from data_structures.referential_array import ArrayR
 from data_structures.abstract_list import List
 
-
-class TestArrayList(TestCase):
+class BaseListtests(TestCase):
     def setUp(self):
-        self.list = ArrayList()
-    
-    def test_capacity(self):
-        # These should work
-        ArrayList(10)
-        ArrayList(0)
-        
-        # This should raise ValueError
-        with self.assertRaises(ValueError):
-            ArrayList(-1)
+        self.list:List
 
     def test_append(self):
         self.list.append(1)
@@ -60,6 +51,50 @@ class TestArrayList(TestCase):
         self.assertEqual(len(self.list), 0)
         self.assertTrue(self.list.is_empty())
     
+    def test_delete_at_index(self):
+        self.list.append(1)
+        self.list.append(2)
+        self.list.append(3)
+
+        self.assertEqual(len(self.list), 3)
+
+        self.list.delete_at_index(2)
+        self.assertEqual(len(self.list), 2)
+        self.assertEqual(self.list[0], 1)
+        self.assertEqual(self.list[1], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(2))
+
+        self.list.delete_at_index(0)
+        self.assertEqual(len(self.list), 1)
+        self.assertEqual(self.list[0], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(1))
+
+        self.list.delete_at_index(0)
+        self.assertEqual(len(self.list), 0)
+        self.assertTrue(self.list.is_empty())
+    
+    def test_delete_at_negative_index(self):
+        self.list.append(1)
+        self.list.append(2)
+        self.list.append(3)
+
+        self.assertEqual(len(self.list), 3)
+
+        self.list.delete_at_index(-1)
+        self.assertEqual(len(self.list), 2)
+        self.assertEqual(self.list[-2], 1)
+        self.assertEqual(self.list[-1], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(-3))
+
+        self.list.delete_at_index(-2)
+        self.assertEqual(len(self.list), 1)
+        self.assertEqual(self.list[-1], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(-2))
+
+        self.list.delete_at_index(-1)
+        self.assertEqual(len(self.list), 0)
+        self.assertTrue(self.list.is_empty())
+
     def test_clear(self):
         for i in range(10):
             self.list.append(i)
@@ -105,6 +140,7 @@ class TestArrayList(TestCase):
 
         self.assertRaises(IndexError, lambda: self.list[2])
         self.assertRaises(IndexError, lambda: self.list[-3])
+        self.assertEqual(list(self.list), [0, 1])
 
     def test_contains(self):
         self.list.append(1)
@@ -115,6 +151,30 @@ class TestArrayList(TestCase):
         self.assertTrue(3 in self.list)
         self.assertFalse(4 in self.list)
 
+    def test_convert_to_arrayR(self):
+        empty_array = ArrayR.from_list(self.list)
+        for i in range(5):
+            self.list.append(i)
+        array = ArrayR.from_list(self.list)
+        self.assertEqual(len(empty_array), 0)
+        self.assertEqual(len(array), 5)
+        for i in range(5):
+            self.assertIn(i, array)
+
+class TestArrayList(BaseListtests):
+    def setUp(self):
+        self.list = ArrayList()
+    
+    def test_capacity(self):
+        # These should work
+        ArrayList(10)
+        ArrayList(0)
+        
+        # This should raise ValueError
+        with self.assertRaises(ValueError):
+            ArrayList(-1)
+
+    
     def test_str(self):
         self.assertEqual(str(self.list), '<ArrayList []>')
 
@@ -140,6 +200,11 @@ class TestSortedList(TestCase):
         self.assertEqual(self.list[1], 2)
         self.assertEqual(self.list[2], 3)
 
+        #Check negative indexing
+        self.assertEqual(self.list[-3], 1)
+        self.assertEqual(self.list[-2], 2)
+        self.assertEqual(self.list[-1], 3)
+
     def test_delete_at_index(self):
         self.list.add(1)
         self.list.add(2)
@@ -159,6 +224,28 @@ class TestSortedList(TestCase):
         self.assertRaises(IndexError, lambda: self.list.delete_at_index(1))
 
         self.list.delete_at_index(0)
+        self.assertEqual(len(self.list), 0)
+        self.assertTrue(self.list.is_empty())
+    
+    def test_delete_at_negative_index(self):
+        self.list.add(1)
+        self.list.add(2)
+        self.list.add(3)
+
+        self.assertEqual(len(self.list), 3)
+
+        self.list.delete_at_index(-1)
+        self.assertEqual(len(self.list), 2)
+        self.assertEqual(self.list[0], 1)
+        self.assertEqual(self.list[1], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(-3))
+
+        self.list.delete_at_index(-2)
+        self.assertEqual(len(self.list), 1)
+        self.assertEqual(self.list[0], 2)
+        self.assertRaises(IndexError, lambda: self.list.delete_at_index(-2))
+
+        self.list.delete_at_index(-1)
         self.assertEqual(len(self.list), 0)
         self.assertTrue(self.list.is_empty())
 
@@ -222,95 +309,10 @@ class TestSortedList(TestCase):
         self.list.add(2)
         self.assertEqual(str(self.list), '<ArraySortedList [1, 2]>')
 
-class TestLinkedList(TestCase):
+class TestLinkedList(BaseListtests):
     def setUp(self):
         self.list = LinkedList()
     
-    def test_append(self):
-        self.list.append(1)
-        self.assertEqual(len(self.list), 1)
-        self.list.append(2)
-        self.assertEqual(len(self.list), 2)
-        
-        self.assertEqual(self.list[0], 1)
-        self.assertEqual(self.list[1], 2)
-
-    def test_insert(self):
-        self.list.insert(0, 1)
-        self.assertEqual(len(self.list), 1)
-        self.list.insert(1, 2)
-        self.assertEqual(len(self.list), 2)
-        self.list.insert(1, 3)
-        self.assertEqual(len(self.list), 3)
-        
-        self.assertEqual(self.list[0], 1)
-        self.assertEqual(self.list[1], 3)
-        self.assertEqual(self.list[2], 2)
-    
-    def test_remove(self):
-        self.list.append(1)
-        self.list.append(2)
-        self.list.append(3)
-        self.assertEqual(len(self.list), 3)
-        
-        self.list.remove(1)
-        self.assertEqual(len(self.list), 2)
-        self.assertEqual(self.list[0], 2)
-        self.assertEqual(self.list[1], 3)
-        
-        self.list.remove(3)
-        self.assertEqual(len(self.list), 1)
-        self.assertEqual(self.list[0], 2)
-
-        self.list.remove(2)
-        self.assertEqual(len(self.list), 0)
-        self.assertTrue(self.list.is_empty())
-    
-    def test_clear(self):
-        for i in range(10):
-            self.list.append(i)
-        self.assertEqual(len(self.list), 10)
-
-        self.list.clear()
-        self.assertEqual(len(self.list), 0)
-        self.assertTrue(self.list.is_empty())
-    
-    def test_index(self):
-        for i in range(10):
-            self.list.append(i + 1)
-        
-        self.assertEqual(self.list.index(1), 0)
-        self.assertEqual(self.list.index(5), 4)
-        self.assertEqual(self.list.index(10), 9)
-
-        # Add a second 1
-        self.list.append(1)
-        # Should still return the first 1
-        self.assertEqual(self.list.index(1), 0)
-    
-    def test_len(self):
-        for i in range(10):
-            self.list.append(i)
-            self.assertEqual(len(self.list), i + 1)
-        
-        for i in range(10):
-            self.list.remove(i)
-            self.assertEqual(len(self.list), 9 - i)
-
-    def test_getitem(self):
-        self.assertRaises(IndexError, lambda: self.list[0])
-        self.assertRaises(IndexError, lambda: self.list[-1])
-
-        self.list.append(0)
-        self.list.append(1)
-        self.assertEqual(self.list[0], 0)
-        self.assertEqual(self.list[1], 1)
-        self.assertEqual(self.list[-1], 1)
-        self.assertEqual(self.list[-2], 0)
-
-        self.assertRaises(IndexError, lambda: self.list[2])
-        self.assertRaises(IndexError, lambda: self.list[-3])
-
     def test_iteration(self):
         self.list.append(1)
         self.list.append(2)
@@ -332,18 +334,3 @@ class TestLinkedList(TestCase):
 
         self.list.append(2)
         self.assertEqual(str(self.list), '<LinkedList [1, 2]>')
-
-class TestLists(TestCase):
-    def setUp(self):
-        self.lists:list[List] = [ArrayList(), LinkedList()]
-        self.empty_lists = [ArrayList(), LinkedList()]
-        [list.append(i) for i in range(5) for list in self.lists]
-
-    def test_convert_to_arrayR(self):
-        arrays = [ArrayR.from_list(list) for list in self.lists]
-        empty_arrays = [ArrayR.from_list(list) for list in self.empty_lists]
-        self.assertEqual(list(map(len, arrays)), [5,5])
-        self.assertEqual(list(map(len, empty_arrays)), [0,0])
-        for i in range(5):
-            for array in arrays:
-                self.assertIn(i, array)
