@@ -14,7 +14,7 @@ class MinLinkedHeap(AbstractHeap[T]):
         when the binary tree is complete.
     """
     def __init__(self):
-        self.__root: MaybeNode = None
+        self._root: MaybeNode = None
 
     def add(self, item:T) -> None:
         """ Add item to the heap
@@ -22,18 +22,18 @@ class MinLinkedHeap(AbstractHeap[T]):
         :comp worst: O(log(n)) where n is len(self)
         """
         new_node = BinaryNode(item, 1, 1)
-        self.__root = self.__merge(self.__root, new_node)
+        self._root = self.__merge(self._root, new_node)
 
     def extract_root(self):
-        if self.__root:
-            res = self.__root.item
-            self.__root = self.__merge(self.__root.left, self.__root.right)
+        if self._root:
+            res = self._root.item
+            self._root = self.__merge(self._root.left, self._root.right)
             return res
         raise ValueError("Cannot extract root from empty heap")
 
     def peek(self) -> T:
-        if self.__root:
-            return self.__root.item
+        if self._root:
+            return self._root.item
         raise ValueError("Cannot peek from empty heap")
 
     def __merge(self, node1:MaybeNode, node2:MaybeNode) -> BinaryNode[int, T]:
@@ -114,12 +114,12 @@ class MinLinkedHeap(AbstractHeap[T]):
             head, linked_stack = linked_stack 
             tree = res.__merge(tree, head)
         
-        res.__root = tree
+        res._root = tree
         return res
 
     def __len__(self) -> int:
-        if self.__root:
-            return self.__root.size
+        if self._root:
+            return self._root.size
         return 0
 
     def __str__(self) -> str:
@@ -130,5 +130,5 @@ class MinLinkedHeap(AbstractHeap[T]):
                 get_elements(node.right, elements, index * 2 + 2)
 
         elements = ArrayR(len(self))
-        get_elements(self.__root, elements, 0)
+        get_elements(self._root, elements, 0)
         return "<MinLinkedHeap([" + ", ".join(elements) + "])>"

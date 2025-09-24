@@ -10,7 +10,7 @@ class QuadraticProbeTable(LinearProbeTable):
     If you want to use this with a different key type, you should override the hash function.
     """
 
-    def __handle_probing(self, key: str, is_insert: bool) -> int:
+    def _handle_probing(self, key: str, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using quadratic probing.
         :complexity:
@@ -28,13 +28,13 @@ class QuadraticProbeTable(LinearProbeTable):
         step = 1
 
         for _ in range(self.table_size):
-            if self.__array[position] is None:
+            if self._array[position] is None:
                 # Empty spot. Am I upserting or retrieving?
                 if is_insert:
                     return position
                 else:
                     raise KeyError(key)
-            elif self.__array[position][0] == key:
+            elif self._array[position][0] == key:
                 return position
             else:
                 # Taken by something else. Time to linear probe.
@@ -59,13 +59,13 @@ class QuadraticProbeTable(LinearProbeTable):
 
         :raises KeyError: when the key doesn't exist.
         """
-        position = self.__handle_probing(key, False)
-        self.__array[position] = None
-        self.__length -= 1
+        position = self._handle_probing(key, False)
+        self._array[position] = None
+        self._length -= 1
 
-        old_array = self.__array
-        self.__array = ArrayR(self.table_size)
-        self.__length = 0
+        old_array = self._array
+        self._array = ArrayR(self.table_size)
+        self._length = 0
         for item in old_array:
             if item is not None:
                 key, value = item
