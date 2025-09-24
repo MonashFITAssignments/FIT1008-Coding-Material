@@ -117,8 +117,8 @@ class LinkedList(List[T]):
         Gets the nodes at a given index
         :complexity:
             Best: O(1) if the index is 0 or len(list) - 1
-            Worst: O(N) where N is the number of items in the list. Happens when the item is at
-                the end of the list or it doesn't exist in the list.
+            Worst: O(N) where N is the number of items in the list. Happens when the item is close
+                to the end of the list or it doesn't exist in the list.
         """
         if -1 * len(self) <= index and index < len(self):
             if index < 0:
