@@ -59,13 +59,9 @@ class SortedList(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ Returns a string representation of the list. """
-        result = '['
-        for i in range(len(self)):
-            if i > 0:
-                result += ', '
-            result += str(self[i]) if type(self[i]) != str else f"'{self[i]}'"
-        result += ']'
-        return result
+        strings = (str(self[i]) for i in range(len(self)))
+
+        return '[' + ', '.join(strings) + ']'
 
     def __repr__(self) -> str:
         return str(self)
