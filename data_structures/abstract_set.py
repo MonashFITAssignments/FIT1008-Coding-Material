@@ -85,7 +85,9 @@ class Set(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ Returns a string representation of the set. """
-        values = [str(value) for value in self.values()]
+        values = self.values()
+        for i in range(len(values)):
+            values[i] = str(values[i])
         return '{' + ', '.join(values) + '}'
 
     def __repr__(self) -> str:
