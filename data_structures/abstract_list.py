@@ -67,7 +67,7 @@ class List(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ String representation of the list object. """
-        strings = (str(self[i]) for i in range(len(self)))
+        strings = (str(item) for item in (self))
 
         return '[' + ', '.join(strings) + ']'
 
