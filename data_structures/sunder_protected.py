@@ -3,10 +3,11 @@ from abc import ABCMeta
 import sys 
 import types
 import functools
-
+import random
 
 class ProtectAttributesMeta(ABCMeta):
     PREFIX = "Protected" # + hex(id(1))  # Add hex(id(1)) to assignments so students can't deterministically access the remangled name
+    PROTECTED_RE = re.compile(r"^_[0-9A-Za-z]")
     
     def hide_caller():
         """ This method hides the key for the lookup inside a local variable of a function, to prevent forging the key """
@@ -14,24 +15,30 @@ class ProtectAttributesMeta(ABCMeta):
         caller = [None]
 
         def method_wrapper(func:types.FunctionType, is_class_method = False, static_class = None):
-            """Wraps methods to print __class__ before calling them."""
+            """Wraps methods to set the caller to allow access to private/protected attributes of the class."""
             @functools.wraps(func)
-            def wrapped(self_or_cls, *args, **kwargs):
+            def wrapped(*args, **kwargs):
                 old_caller = caller[0]
-                caller[0] = self_or_cls if is_class_method else static_class if static_class is not None else self_or_cls.__class__
+                caller[0] = ((args[0].__base_class if is_class_method else static_class.__base_class if static_class is not None else args[0].__class__.__base_class))
+                print(caller[0].__get__)
                 try:
-                    res =  func(self_or_cls, *args, **kwargs)
-                except Exception as e:
+                    res = func(*args, **kwargs)
+                except Exception:
                     caller[0] = old_caller
-                    raise e
+                    raise
                 caller[0] = old_caller
                 return res
             return wrapped
         class StaticMethod:
             def __init__(self, func):
                 self.func = func
+                self.memo = None
             def __get__(self, instance, owner):
-                return method_wrapper(self.func, False, owner)
+                self.func = method_wrapper(self.func, False, owner)
+                def new_get(self, instance, owner):
+                    return self.func
+                self.__get__ = new_get
+                return self.func
             
         def __new__(cls, name, bases, namespace, **kwargs):
             """ 
@@ -61,14 +68,12 @@ class ProtectAttributesMeta(ABCMeta):
                 # Delete all the old names and replace them with mangled ones, before the class gets created
                 new_namespace = {}
                 for attr, value in namespace.items():
-                    if isinstance(value, (types.FunctionType, classmethod, staticmethod)):
-                        if isinstance(value, (types.FunctionType)):
-                            value = method_wrapper(value)
-                        elif isinstance(value, classmethod):
-                            
-                            value = classmethod(method_wrapper(value.__func__, True))
-                        else:
-                            value = StaticMethod(value.__func__)
+                    if isinstance(value, (types.FunctionType)):
+                        value = method_wrapper(value)
+                    elif isinstance(value, classmethod):
+                        value = classmethod(method_wrapper(value.__func__, True))
+                    elif isinstance(value, staticmethod):
+                        value = StaticMethod(value.__func__)
                             
                     if not re.match(r"^_[0-9A-Za-z]", attr) or attr == '_abc_impl': 
                         new_namespace[attr] = value
@@ -77,17 +82,18 @@ class ProtectAttributesMeta(ABCMeta):
                         new_namespace[mangled_base + attr] = value
                     
             else:
-
+                # This is the __getattr__ and __setattr__ for the ProtectAttributes class
+                # Defining them here so they have access to the local caller variable
+                # This saves wrapping the methods in a function that passes caller
+                # which had a considerable performance boost.
                 def __getattr__(self, name:str):
-                    if name.startswith("_") and not name.startswith("__"):
-                        #check for an abstract class in the mro
+                    if ProtectAttributesMeta.PROTECTED_RE.match(name):
+                        # Check that we are in a Protected class
                         caller_class = caller[0]
                         if caller_class is None: 
                             return self.invalid_access(name)
-                        mro = caller_class.mro()
-                        cls = _get_base_class(mro)
-                        if cls is None:
-                            return self.invalid_access(name)
+                        # Find the base class of protection 
+                        cls = caller_class
                         
 
                         # Check the mangled name based on abstract base class.
@@ -98,14 +104,13 @@ class ProtectAttributesMeta(ABCMeta):
                     
 
                 def __setattr__(self, name:str, value):
-                    if name.startswith("_") and not name.startswith("__"):
+                    if ProtectAttributesMeta.PROTECTED_RE.match(name):
                         #check for an abstract class in the mro
                         caller_class = caller[0]
                         if caller_class is None:
                             return self.invalid_access(name)
 
-                        mro = caller_class.mro()
-                        cls = _get_base_class(mro)
+                        cls = caller_class
                         if cls is None:
                             return self.invalid_access(name)
                         
@@ -121,6 +126,10 @@ class ProtectAttributesMeta(ABCMeta):
             
             # Class gets initialised with the mangled names for the attributes and methods
             klass = super().__new__(cls, name, bases, new_namespace, **kwargs)
+            if name != 'ProtectAttributes' and ProtectAttributes in bases:
+                def get_class(self):
+                    return klass
+                klass.__base_class = property(get_class)
 
             return klass
         return __new__
@@ -144,7 +153,7 @@ class ProtectAttributes(metaclass=ProtectAttributesMeta):
         # which should reduce the number of students that look at this file,
         # and thus the number of internal accesses
 
-        frame = sys._getframe(2) #invalid access, ProtectAttributes.getattr, the wrapper on previous function
+        frame = sys._getframe(2) #invalid access, ProtectAttributes.getattr
         tb = types.TracebackType(None, frame, frame.f_lasti, frame.f_lineno)
 
         raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'").with_traceback(tb)
