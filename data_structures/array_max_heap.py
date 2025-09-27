@@ -61,26 +61,10 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :complexity: O(1)
         """
         k2 = k * 2
-        if k2 > len(self):
-            return None
-        elif k2 == len(self):
+        if k2 == len(self) or self.__array[k2] > self.__array[k2 + 1]:
             return k2
         else:
-            left = self.__array[k2]
-            right = self.__array[k2 + 1]
-
-            if left > right:
-                return k2
             return k2 + 1
-
-    def __get_parent_index(self, k:int) -> int | None:
-        """ Returns the index of the parent of k
-        :returns: None if k is the root, else index of k's parent
-        :complexity: O(1)
-        """
-        if k == 1:
-            return None
-        return k // 2
 
     def _rise(self, k:int) -> None:
         """ Rise the element at index k
@@ -90,11 +74,9 @@ class ArrayMaxHeap(AbstractHeap[T]):
         """
         rising_item = self.__array[k]
         
-        # := is the walrus operator, it assigns the right expression to the left variable, and returns the expression.
-        # This gets the parent_i and checks if parent_i is not None in the condition
-        while (parent_i := self.__get_parent_index(k)) is not None and rising_item > self.__array[parent_i]:
-            self.__array[k] = self.__array[parent_i]
-            k = parent_i
+        while k > 1 and rising_item > self.__array[k // 2]:
+            self.__array[k] = self.__array[k // 2]
+            k = k //2
             
         self.__array[k] = rising_item
 
@@ -105,7 +87,10 @@ class ArrayMaxHeap(AbstractHeap[T]):
             Where N is the size of the heap.
         """
         sinking_item = self.__array[k]
-        while (child_i := self.__get_child_index(k)) is not None and sinking_item < self.__array[child_i]:
+        while 2 * k <= len(self):
+            child_i = self.__get_child_index(k)
+            if sinking_item >= self.__array[child_i]:
+                break
             self.__array[k] = self.__array[child_i]
             k = child_i
 
