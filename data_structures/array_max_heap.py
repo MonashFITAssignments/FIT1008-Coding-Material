@@ -28,7 +28,10 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :raises: ValueError if the heap is empty
         :returns: The root of the heap
         :complexity: O(logN) where N is the size of the heap.
+
         Note: Technically there is a best case of O(1) if the items are all the same.
+        But in a heap of distinct elements extract_root always takes O(logN) time, 
+            otherwise heapsort would be a comparison based O(N) sorting algorithm, which is impossible.
         """
         if self.__length == 0:
             raise ValueError("Cannot extract_root from empty heap.")
@@ -56,8 +59,7 @@ class ArrayMaxHeap(AbstractHeap[T]):
         return len(self) == len(self.__array) - 1
         
     def __get_child_index(self, k:int) -> int | None:
-        """ Returns the index of child of k that would be the parent of the other.
-        :returns: None if no child exists, else index of child
+        """ Returns the index of child of k that would be the parent of the other (the larger child).
         :complexity: O(1)
         """
         k2 = k * 2
