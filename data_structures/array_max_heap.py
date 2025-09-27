@@ -28,7 +28,10 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :raises: ValueError if the heap is empty
         :returns: The root of the heap
         :complexity: O(logN) where N is the size of the heap.
+
         Note: Technically there is a best case of O(1) if the items are all the same.
+        But in a heap of distinct elements extract_root always takes O(logN) time, 
+            otherwise heapsort would be a comparison based O(N) sorting algorithm, which is impossible.
         """
         if self.__length == 0:
             raise ValueError("Cannot extract_root from empty heap.")
@@ -54,72 +57,42 @@ class ArrayMaxHeap(AbstractHeap[T]):
 
     def is_full(self) -> bool:
         return len(self) == len(self.__array) - 1
-
-    
-    def _should_rise(self, below:T, above:T) -> bool:
-        """ Returns if the below element should rise up. 
-        Depends on the ordering of the heap.
-        """
-        return below > above
-        
-    
-    def _should_sink(self, above:T, below:T ) -> bool:
-        """ Returns if the above element should sink down. 
-        Depends on the ordering of the heap.
-        """
-        return above < below
         
     def __get_child_index(self, k:int) -> int | None:
-        """ Returns the index of child of k that would be the parent of the other.
-        :returns: None if no child exists, else index of child
+        """ Returns the index of child of k that would be the parent of the other (the larger child).
         :complexity: O(1)
         """
         k2 = k * 2
-        if k2 > len(self):
-            return None
-        elif k2 == len(self):
+        if k2 == len(self) or self.__array[k2] > self.__array[k2 + 1]:
             return k2
         else:
-            left = self.__array[k2]
-            right = self.__array[k2 + 1]
-
-            if self._should_sink(left, right):
-                #if left is put on top it is unstable, so right should be put on top
-                return k2 + 1
-            return k2
-
-    def __get_parent_index(self, k:int) -> int | None:
-        """ Returns the index of the parent of k
-        :returns: None if k is the root, else index of k's parent
-        :complexity: O(1)
-        """
-        if k == 1:
-            return None
-        return k // 2
+            return k2 + 1
 
     def _rise(self, k:int) -> None:
         """ Rise the element at index k
-        N represents the size of the heap
         :complexity best: O(1) when no rising is required
-        :complexity worst: O(logN) where you need to rize to the top of the heap.
+        :complexity worst: O(logN) when you need to rise to the top of the heap.
+            Where N is the size of the heap.
         """
         rising_item = self.__array[k]
         
-        # := is the walrus operator, it assigns the right expression to the left variable, and returns the expression.
-        # This gets the parent_i and checks if parent_i is not None in the condition
-        while (parent_i := self.__get_parent_index(k)) is not None and self._should_rise(rising_item, self.__array[parent_i]):
-            self.__array[k] = self.__array[parent_i]
-            k = parent_i
+        while k > 1 and rising_item > self.__array[k // 2]:
+            self.__array[k] = self.__array[k // 2]
+            k = k //2
             
         self.__array[k] = rising_item
 
     def _sink(self, k:int) -> None:
         """ Sink the element at index k
         :complexity best: O(1) when no sinking is required
-        :complexity worst: O(logN) where you need to sink to the bottom of the heap.
+        :complexity worst: O(logN) when you need to sink to the bottom of the heap.
+            Where N is the size of the heap.
         """
         sinking_item = self.__array[k]
-        while (child_i := self.__get_child_index(k)) is not None and self._should_sink(sinking_item, self.__array[child_i]):
+        while 2 * k <= len(self):
+            child_i = self.__get_child_index(k)
+            if sinking_item >= self.__array[child_i]:
+                break
             self.__array[k] = self.__array[child_i]
             k = child_i
 

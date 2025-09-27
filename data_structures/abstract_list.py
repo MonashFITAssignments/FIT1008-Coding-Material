@@ -67,13 +67,9 @@ class List(ABC, Generic[T], ProtectAttributes):
 
     def __str__(self) -> str:
         """ String representation of the list object. """
-        result = '['
-        for i in range(len(self)):
-            if i > 0:
-                result += ', '
-            result += str(self[i]) if type(self[i]) != str else f"'{self[i]}'"
-        result += ']'
-        return result
+        strings = (str(item) for item in (self))
+
+        return '[' + ', '.join(strings) + ']'
 
     def __repr__(self) -> str:
         return str(self)
