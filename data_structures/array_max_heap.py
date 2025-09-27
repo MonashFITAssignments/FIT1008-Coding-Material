@@ -54,20 +54,6 @@ class ArrayMaxHeap(AbstractHeap[T]):
 
     def is_full(self) -> bool:
         return len(self) == len(self.__array) - 1
-
-    
-    def _should_rise(self, below:T, above:T) -> bool:
-        """ Returns if the below element should rise up. 
-        Depends on the ordering of the heap.
-        """
-        return below > above
-        
-    
-    def _should_sink(self, above:T, below:T ) -> bool:
-        """ Returns if the above element should sink down. 
-        Depends on the ordering of the heap.
-        """
-        return above < below
         
     def __get_child_index(self, k:int) -> int | None:
         """ Returns the index of child of k that would be the parent of the other.
@@ -83,10 +69,9 @@ class ArrayMaxHeap(AbstractHeap[T]):
             left = self.__array[k2]
             right = self.__array[k2 + 1]
 
-            if self._should_sink(left, right):
-                #if left is put on top it is unstable, so right should be put on top
-                return k2 + 1
-            return k2
+            if left > right:
+                return k2
+            return k2 + 1
 
     def __get_parent_index(self, k:int) -> int | None:
         """ Returns the index of the parent of k
@@ -99,15 +84,15 @@ class ArrayMaxHeap(AbstractHeap[T]):
 
     def _rise(self, k:int) -> None:
         """ Rise the element at index k
-        N represents the size of the heap
         :complexity best: O(1) when no rising is required
-        :complexity worst: O(logN) where you need to rize to the top of the heap.
+        :complexity worst: O(logN) when you need to rise to the top of the heap.
+            Where N is the size of the heap.
         """
         rising_item = self.__array[k]
         
         # := is the walrus operator, it assigns the right expression to the left variable, and returns the expression.
         # This gets the parent_i and checks if parent_i is not None in the condition
-        while (parent_i := self.__get_parent_index(k)) is not None and self._should_rise(rising_item, self.__array[parent_i]):
+        while (parent_i := self.__get_parent_index(k)) is not None and rising_item > self.__array[parent_i]:
             self.__array[k] = self.__array[parent_i]
             k = parent_i
             
@@ -116,10 +101,11 @@ class ArrayMaxHeap(AbstractHeap[T]):
     def _sink(self, k:int) -> None:
         """ Sink the element at index k
         :complexity best: O(1) when no sinking is required
-        :complexity worst: O(logN) where you need to sink to the bottom of the heap.
+        :complexity worst: O(logN) when you need to sink to the bottom of the heap.
+            Where N is the size of the heap.
         """
         sinking_item = self.__array[k]
-        while (child_i := self.__get_child_index(k)) is not None and self._should_sink(sinking_item, self.__array[child_i]):
+        while (child_i := self.__get_child_index(k)) is not None and sinking_item < self.__array[child_i]:
             self.__array[k] = self.__array[child_i]
             k = child_i
 
