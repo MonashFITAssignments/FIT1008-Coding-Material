@@ -34,6 +34,24 @@ class TestMergeSort(TestCase):
         sorted_list = mergesort(ArrayR.from_list(reverse_sorted), lambda x: -x)
         self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
 
+    def test_linked(self):
+        seed = time.time_ns()
+        random.seed(seed)
+        
+        # Generate a random list of integers
+        random_list = [random.randint(0, 100) for _ in range(random.randint(0, 100))]
+
+        ll = LinkedList()
+        for i in random_list:
+            ll.append(i)
+        
+        res = mergesort(ll)
+        self.assertIs(type(res), LinkedList)
+        actual = sorted(random_list)
+        for i, item in enumerate(res):
+            self.assertEqual(item, actual[i])
+
+
 
 class TestInsertionSort(TestCase):
     def test_sort(self):
@@ -81,3 +99,4 @@ class TestInsertionSort(TestCase):
         reverse_sorted = list(range(10))
         sorted_list = insertion_sort(ArrayR.from_list(reverse_sorted), lambda x: -x)
         self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
+
