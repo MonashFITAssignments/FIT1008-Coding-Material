@@ -61,6 +61,14 @@ class TestMinArrayHeap(TestCase):
 
 class TestMaxArrayHeap(TestCase):
 
+    def test_add_resize(self):
+        heap = ArrayMaxHeap(2)
+        for i in range(20):
+            heap.add(i)
+        items = [heap.extract_max() for _ in range(20)]
+        self.assertEqual(items, list(range(19, -1, -1)))
+
+
     def test_heapify_resize(self):
         generator = (i for i in range(10))
         self.assertRaises(TypeError, lambda: len(generator))
@@ -108,7 +116,10 @@ class TestArrayHeaps(TestCase):
                 self.assertTrue(check_heap_ordering(heap, ordering), str(heap))
             self.assertEqual(self.CAPACITY, len(heap), str(heap))
 
-            self.assertRaises(ValueError, lambda: heap.add(1))
+            if type(heap) is not ArrayMaxHeap:
+                self.assertRaises(ValueError, lambda: heap.add(1))
+            else:
+                heap.add(1)
     
     
     def test_extract(self):
