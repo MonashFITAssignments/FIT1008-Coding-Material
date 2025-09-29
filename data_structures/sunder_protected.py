@@ -6,40 +6,39 @@ import functools
 import random
 
 class ProtectAttributesMeta(ABCMeta):
-    PREFIX = "Protected" # + hex(id(1))  # Add hex(id(1)) to assignments so students can't deterministically access the remangled name
     PROTECTED_RE = re.compile(r"^_[0-9A-Za-z]")
     
     def hide_caller():
         """ This method hides the key for the lookup inside a local variable of a function, to prevent forging the key """
+        PREFIX = "Protected" #+ str(random.randint(0,99)) #Add this to assignments so that students cannot deterministically access the mangled name
 
-        caller = [None]
+        caller = None
 
-        def method_wrapper(func:types.FunctionType, is_class_method = False, static_class = None):
+        def method_wrapper(func, is_class_method = False, static_class = None):
             """Wraps methods to set the caller to allow access to private/protected attributes of the class."""
             @functools.wraps(func)
             def wrapped(*args, **kwargs):
-                old_caller = caller[0]
-                caller[0] = ((args[0].__base_class if is_class_method else static_class.__base_class if static_class is not None else args[0].__class__.__base_class))
-                print(caller[0].__get__)
+                nonlocal caller
+                old_caller = caller
+                caller = ((args[0].__base_class if is_class_method else static_class.__base_class if static_class is not None else args[0].__class__.__base_class))
                 try:
                     res = func(*args, **kwargs)
-                except Exception:
-                    caller[0] = old_caller
+                except:
+                    caller = old_caller
                     raise
-                caller[0] = old_caller
+                caller = old_caller
                 return res
             return wrapped
         class StaticMethod:
             def __init__(self, func):
                 self.func = func
-                self.memo = None
             def __get__(self, instance, owner):
                 self.func = method_wrapper(self.func, False, owner)
                 def new_get(self, instance, owner):
                     return self.func
                 self.__get__ = new_get
                 return self.func
-            
+
         def __new__(cls, name, bases, namespace, **kwargs):
             """ 
             On the construction of the class find all the protected (and private) attributes and methods on the class
@@ -62,10 +61,9 @@ class ProtectAttributesMeta(ABCMeta):
                 
             
                 base_name = find_abstract_base_name()
-                mangled_base = f"_{ProtectAttributesMeta.PREFIX}{base_name}_"
+                mangled_base = f"_{PREFIX}{base_name}_"
 
                 # Once we know the base case to mangle everything to, need to mangle all the class attributes and methods
-                # Delete all the old names and replace them with mangled ones, before the class gets created
                 new_namespace = {}
                 for attr, value in namespace.items():
                     if isinstance(value, (types.FunctionType)):
@@ -89,15 +87,12 @@ class ProtectAttributesMeta(ABCMeta):
                 def __getattr__(self, name:str):
                     if ProtectAttributesMeta.PROTECTED_RE.match(name):
                         # Check that we are in a Protected class
-                        caller_class = caller[0]
-                        if caller_class is None: 
-                            return self.invalid_access(name)
-                        # Find the base class of protection 
-                        cls = caller_class
-                        
+                        nonlocal caller
+                        if caller is None: 
+                            return self.invalid_access(name)                        
 
                         # Check the mangled name based on abstract base class.
-                        mangled_name = f"_{ProtectAttributesMeta.PREFIX}{cls.__name__}_{name}"
+                        mangled_name = f"_{PREFIX}{caller.__name__}_{name}"
                         return object.__getattribute__(self, mangled_name)
                     else: 
                         return object.__getattribute__(self, name)
@@ -105,17 +100,13 @@ class ProtectAttributesMeta(ABCMeta):
 
                 def __setattr__(self, name:str, value):
                     if ProtectAttributesMeta.PROTECTED_RE.match(name):
-                        #check for an abstract class in the mro
-                        caller_class = caller[0]
-                        if caller_class is None:
-                            return self.invalid_access(name)
-
-                        cls = caller_class
-                        if cls is None:
+                        # Check that we are in a Protected class
+                        nonlocal caller
+                        if caller is None:
                             return self.invalid_access(name)
                         
                         # Check the mangled name based on abstract base class.
-                        mangled_name = f"_{ProtectAttributesMeta.PREFIX}{cls.__name__}_{name}"
+                        mangled_name = f"_{PREFIX}{caller.__name__}_{name}"
                         return object.__setattr__(self, mangled_name, value)
                     else:
                         return object.__setattr__(self, name, value)
@@ -127,13 +118,17 @@ class ProtectAttributesMeta(ABCMeta):
             # Class gets initialised with the mangled names for the attributes and methods
             klass = super().__new__(cls, name, bases, new_namespace, **kwargs)
             if name != 'ProtectAttributes' and ProtectAttributes in bases:
-                def get_class(self):
-                    return klass
-                klass.__base_class = property(get_class)
+                klass.__base_class = klass
 
             return klass
         return __new__
     __new__ = hide_caller()
+
+    def __setattr__(cls, name, value):
+        # Prevent setting the key on the class attribute after class initialisation 
+        if name == '_ProtectAttributesMeta__base_class' and value is not cls:
+            raise AttributeError("Nice try :)")
+        return super().__setattr__(name, value)
 
 
     
@@ -151,7 +146,7 @@ class ProtectAttributes(metaclass=ProtectAttributesMeta):
         #                    ^^^^^^^
         # Instead of the raise AttributeError in this file, 
         # which should reduce the number of students that look at this file,
-        # and thus the number of internal accesses
+        # and thus the number of internal accesses and ed posts
 
         frame = sys._getframe(2) #invalid access, ProtectAttributes.getattr
         tb = types.TracebackType(None, frame, frame.f_lasti, frame.f_lineno)

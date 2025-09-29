@@ -188,6 +188,23 @@ class TestProtected(TestCase):
         self.assertEqual(self.child2._ProtectedProtectedParent__to_overide, 21)
         self.assertEqual(self.child2._ProtectedProtectedParent__ProtectedChild2__to_overide, 31)
 
+    def test_readonly_key(self):        
+        #Check that they can't overwrite the key attribute to a foreign class
+        
+        with self.assertRaises(AttributeError):
+            ProtectedParent._ProtectAttributesMeta__base_class = B
+
+        with self.assertRaises(AttributeError):
+            self.parent._ProtectAttributesMeta__base_class = B
+
+        with self.assertRaises(AttributeError):
+            setattr(ProtectedParent, '_ProtectAttributesMeta__base_class', B)
+
+        with self.assertRaises(AttributeError):
+            setattr(self.parent, '_ProtectAttributesMeta__base_class', B)
+        
+        ProtectedParent._ProtectAttributesMeta__base_class = ProtectedParent
+
     def test_global_funcs(self):
         self.assertRaises
 
