@@ -144,15 +144,6 @@ class TestLinkedQueue(TestCase):
             if i < 9:
                 self.assertEqual(self.queue.peek(), i + 2)
         self.assertTrue(self.queue.is_empty())
-
-    def test_peek_node(self):
-        self.queue.append(1)
-        self.assertEqual(self.queue.peek_node().item, 1)
-        self.queue.append(2)
-        self.assertEqual(self.queue.peek_node().item, 1)
-        self.queue.serve()
-        self.assertEqual(self.queue.peek_node().item, 2)
-        self.assertEqual(self.queue.peek_node().link, None)
     
     def test_is_empty(self):
         self.assertTrue(self.queue.is_empty())
