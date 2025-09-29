@@ -22,7 +22,7 @@ def merge(items1: List[T] | ArrayR[T], items2: List[T] | ArrayR[T], key = lambda
     Best/Worst Case: O(n), n = len(l1)+len(l2).
     """
     if type(items1) is not type(items2):
-        raise ValueError(f"cannot merge collections '{type(items1).__name__}' '{type(items2).__name__}' of differing type")
+        raise ValueError(f"cannot merge collections '{type(items1).__name__}' and '{type(items2).__name__}' of differing type")
     if type(items1) is ArrayR:
         return _merge_array(items1, items2, key)
     arr1 = ArrayR.from_list(items1)
