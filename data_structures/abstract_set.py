@@ -30,7 +30,7 @@ class Set(ABC, Generic[T], DunderProtected):
         pass
 
     @abstractmethod
-    def values(self) -> Generic[T]:
+    def values(self) -> ArrayR[T]:
         """
         Returns an array of all the items in the set in no particular order.
         """
