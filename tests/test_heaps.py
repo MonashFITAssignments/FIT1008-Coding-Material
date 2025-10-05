@@ -7,8 +7,7 @@ from data_structures.in_review.array_unordered_heap import ArrayUnorderedHeap
 from data_structures.array_max_heap import ArrayMaxHeap
 
 def check_heap_ordering(heap, ordering):
-    
-    heap_array = heap._ArrayUnorderedHeap__array if isinstance(heap, ArrayUnorderedHeap) else heap._ArrayMaxHeap__array
+    heap_array = heap._ProtectedAbstractHeap__ArrayMaxHeap__array if type(heap) is ArrayMaxHeap else heap._ProtectedAbstractHeap__array
     bound = len(heap)
     for i in range(1, len(heap)):
         valid = (2*i     > bound or ordering(heap_array[i], heap_array[2*i    ])) and \
@@ -221,7 +220,7 @@ class TestLinkedHeap(TestCase):
         num = 34
         for i in range(num):
             lh.add(i)
-            tree = lh._MinLinkedHeap__root
+            tree = lh._ProtectedAbstractHeap__root
             rank = tree.key
             for _ in range(rank):
                 tree = tree.right
@@ -245,7 +244,7 @@ class TestLinkedHeap(TestCase):
         lh = MinLinkedHeap()
         for i in range(20, 0, -1):
             lh.add(i)
-            self.assertEqual(lh._MinLinkedHeap__root.key, 1)
+            self.assertEqual(lh._ProtectedAbstractHeap__root.key, 1)
         
     def test_heapify(self):
         items = list(range(10))

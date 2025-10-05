@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Literal, Iterable
 from abc import abstractmethod, ABC
-from data_structures.dunder_protected import DunderProtected
+from data_structures.sunder_protected import ProtectAttributes
 
 T = TypeVar('T')
 
-class AbstractHeap(Generic[T], ABC, DunderProtected):
+class AbstractHeap(Generic[T], ABC, ProtectAttributes):
     """
     Abstract class for min and max heaps
     """

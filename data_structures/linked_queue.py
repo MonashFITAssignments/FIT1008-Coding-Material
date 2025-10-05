@@ -25,18 +25,18 @@ class LinkedQueue(Queue[T]):
         :complexity: O(1)
         """
         # Case 1: Empty queue
-        if self.__front is None:
-            self.__front = Node(item)
-            self.__rear = self.__front
-            self.__length += 1
+        if self._front is None:
+            self._front = Node(item)
+            self._rear = self._front
+            self._length += 1
             return
 
         # Case 2: Non Empty queue
         # Add to the rear
         new_node = Node(item)
-        self.__rear.link = new_node
-        self.__rear = new_node
-        self.__length += 1
+        self._rear.link = new_node
+        self._rear = new_node
+        self._length += 1
 
     def serve(self) -> T:
         """ Deletes and returns the element at the queue's front.
@@ -47,17 +47,17 @@ class LinkedQueue(Queue[T]):
             raise Exception("Queue is empty")
 
         # Case 1: Single element in the queue
-        if self.__front == self.__rear:
-            item = self.__front.item
-            self.__front = None
-            self.__rear = None
-            self.__length -= 1
+        if self._front == self._rear:
+            item = self._front.item
+            self._front = None
+            self._rear = None
+            self._length -= 1
             return item
 
         # Case 2: Multiple elements in the queue
-        item = self.__front.item
-        self.__front = self.__front.link
-        self.__length -= 1
+        item = self._front.item
+        self._front = self._front.link
+        self._length -= 1
         return item
 
     def peek(self) -> T:
@@ -66,7 +66,7 @@ class LinkedQueue(Queue[T]):
         """
         if self.is_empty():
             raise Exception("Queue is empty")
-        return self.__front.item
+        return self._front.item
 
     def peek_node(self) -> Node:
         """ Returns the node at the queue's front without deleting it.
@@ -75,21 +75,21 @@ class LinkedQueue(Queue[T]):
         """
         if self.is_empty():
             raise Exception("Queue is empty")
-        return self.__front
+        return self._front
 
     def clear(self) -> None:
         """ Clears all elements from the queue. """
-        self.__front = None
-        self.__rear = None
-        self.__length = 0
+        self._front = None
+        self._rear = None
+        self._length = 0
 
     def __len__(self) -> int:
         """ Returns the number of elements in the queue. """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """ Returns a string representation of the queue."""
-        i = self.__front
+        i = self._front
         result = "<LinkedQueue ["
         while i is not None:
             result += str(i.item)
