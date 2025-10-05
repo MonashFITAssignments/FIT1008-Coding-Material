@@ -12,21 +12,20 @@ class ProtectAttributesMeta(ABCMeta):
         """ This method hides the key for the lookup inside a local variable of a function, to prevent forging the key """
         PREFIX = "Protected" #+ str(random.randint(0,99)) #Add this to assignments so that students cannot deterministically access the mangled name
 
-        caller = None
+        caller = [None]
 
         def method_wrapper(func, is_class_method = False, static_class = None):
             """Wraps methods to set the caller to allow access to private/protected attributes of the class."""
             @functools.wraps(func)
             def wrapped(*args, **kwargs):
-                nonlocal caller
-                old_caller = caller
-                caller = ((args[0].__base_class if is_class_method else static_class.__base_class if static_class is not None else args[0].__class__.__base_class))
+                old_caller = caller[0]
+                caller[0] = ((args[0].__base_class if is_class_method else static_class.__base_class if static_class is not None else args[0].__class__.__base_class))
                 try:
                     res = func(*args, **kwargs)
                 except:
-                    caller = old_caller
+                    caller[0] = old_caller
                     raise
-                caller = old_caller
+                caller[0] = old_caller
                 return res
             return wrapped
         class StaticMethod:
@@ -76,7 +75,6 @@ class ProtectAttributesMeta(ABCMeta):
                     if not re.match(r"^_[0-9A-Za-z]", attr) or attr == '_abc_impl': 
                         new_namespace[attr] = value
                     else:
-
                         new_namespace[mangled_base + attr] = value
                     
             else:
@@ -87,12 +85,12 @@ class ProtectAttributesMeta(ABCMeta):
                 def __getattr__(self, name:str):
                     if ProtectAttributesMeta.PROTECTED_RE.match(name):
                         # Check that we are in a Protected class
-                        nonlocal caller
-                        if caller is None: 
+                        caller_ = caller[0]
+                        if caller_ is None: 
                             return self.invalid_access(name)                        
 
                         # Check the mangled name based on abstract base class.
-                        mangled_name = f"_{PREFIX}{caller.__name__}_{name}"
+                        mangled_name = f"_{PREFIX}{caller_.__name__}_{name}"
                         return object.__getattribute__(self, mangled_name)
                     else: 
                         return object.__getattribute__(self, name)
@@ -101,12 +99,12 @@ class ProtectAttributesMeta(ABCMeta):
                 def __setattr__(self, name:str, value):
                     if ProtectAttributesMeta.PROTECTED_RE.match(name):
                         # Check that we are in a Protected class
-                        nonlocal caller
-                        if caller is None:
+                        caller_ = caller[0]
+                        if caller_ is None:
                             return self.invalid_access(name)
                         
                         # Check the mangled name based on abstract base class.
-                        mangled_name = f"_{PREFIX}{caller.__name__}_{name}"
+                        mangled_name = f"_{PREFIX}{caller_.__name__}_{name}"
                         return object.__setattr__(self, mangled_name, value)
                     else:
                         return object.__setattr__(self, name, value)
