@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 from data_structures.sunder_protected import ProtectAttributes
+from data_structures.referential_array import ArrayR
 
 T = TypeVar('T')
 
