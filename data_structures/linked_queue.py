@@ -68,15 +68,6 @@ class LinkedQueue(Queue[T]):
             raise Exception("Queue is empty")
         return self.__front.item
 
-    def peek_node(self) -> Node:
-        """ Returns the node at the queue's front without deleting it.
-        :pre: queue is not empty
-        :raises Exception: if the queue is empty
-        """
-        if self.is_empty():
-            raise Exception("Queue is empty")
-        return self.__front
-
     def clear(self) -> None:
         """ Clears all elements from the queue. """
         self.__front = None
