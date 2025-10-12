@@ -13,7 +13,7 @@ from typing import Tuple
 from data_structures.abstract_binary_search_tree import AbstractBinarySearchTree, K, V
 from data_structures.abstract_hash_table import HashTable
 from data_structures.linked_stack import LinkedStack
-from data_structures.node import BinaryNode, Generic
+from data_structures.node_binary import BinaryNode, Generic
 from data_structures.referential_array import ArrayR
 
 

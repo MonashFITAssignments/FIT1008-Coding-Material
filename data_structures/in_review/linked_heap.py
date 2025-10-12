@@ -1,7 +1,7 @@
 from __future__ import annotations
 from data_structures.abstract_heap import AbstractHeap, T
 from data_structures.referential_array import ArrayR
-from data_structures.node import BinaryNode
+from data_structures.node_binary import BinaryNode
 from typing import Iterable, Union, Tuple
 
 MaybeNode = Union[BinaryNode[int, T], None]
