@@ -116,6 +116,23 @@ class MinLinkedHeap(AbstractHeap[T]):
         
         res.__root = tree
         return res
+    
+    def values(self):
+        """
+        Returns all the items in the heap in no particular order.
+        :complexity: O(n) where n is the number of items in the heap.
+        """
+        res = ArrayR(len(self))
+        def add(i:int, node:BinaryNode):
+            if node is None:
+                return i
+            
+            res[i] = node.item
+            i = add(i + 1, node.left)
+            return add(i + 1, node.right)
+        add(0, self.__root)
+        return res
+
 
     def __len__(self) -> int:
         if self.__root:

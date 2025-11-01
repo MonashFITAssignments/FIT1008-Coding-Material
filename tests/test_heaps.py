@@ -220,6 +220,15 @@ class TestArrayHeaps(TestCase):
             self.assertEqual(len(get_array(unlengthed_no_min)), 16)
             self.assertEqual(len(get_array(unlengthed_wi_min)), 31)
 
+    def test_values(self):
+        for heap in self.heaps:
+            for i in range(self.CAPACITY):
+                heap.add(i)
+            values = heap.values()
+            self.assertEqual(len(values), self.CAPACITY)
+            for i in range(self.CAPACITY):
+                self.assertIn(i, values)
+
 
     def test_str(self):
         heap = ArrayHeap(10, 'min')

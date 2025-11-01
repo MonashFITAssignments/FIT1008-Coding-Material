@@ -135,6 +135,16 @@ class ArrayMaxHeap(AbstractHeap[T]):
             heap._sink(i)
         
         return heap
+    
+    def values(self):
+        """
+        Returns all the items in the heap in no particular order.
+        :complexity: O(n) where n is the number of items in the heap.
+        """
+        res = ArrayR(len(self))
+        for i in range(len(self)):
+            res[i] = self.__array[i + 1]
+        return res
 
     def __len__(self) -> int:
         return self.__length
