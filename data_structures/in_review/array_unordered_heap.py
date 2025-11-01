@@ -124,14 +124,14 @@ class ArrayUnorderedHeap(AbstractHeap[T]):
 
         self.__array[k] = sinking_item
 
-    def _heapify(heap: ArrayUnorderedHeap[T], items: Iterable[T]) -> ArrayUnorderedHeap[T]:
+    def _heapify(heap: ArrayUnorderedHeap[T], items: Iterable[T], min_capacity:int = 1) -> ArrayUnorderedHeap[T]:
         """ Construct a heap from an iterable of items. 
         :returns: A heap containing items in the iterable.
         :complexity: O(n) where n is the number of items in the iterable.
         """
         try: #call len(iterable) to avoid having to resize a temporary array
             length = len(items)
-            array = ArrayR(length + 1)
+            array = ArrayR(max(min_capacity, length) + 1)
             for i, item in enumerate(items):
                 array[i + 1] = item
             
@@ -143,7 +143,7 @@ class ArrayUnorderedHeap(AbstractHeap[T]):
                     new_array[i] = array[i]
                 return new_array
             
-            array = ArrayR(2)
+            array = ArrayR(min_capacity + 1)
             i = -1
             for i, item in enumerate(items):
                 if i + 1 >= len(array):

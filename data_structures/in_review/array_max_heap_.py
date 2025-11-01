@@ -16,12 +16,12 @@ class ArrayMaxHeap(ArrayUnorderedHeap[T]):
         return self.extract_root()
     
     @classmethod
-    def heapify(cls, items: Iterable[T]) -> ArrayMaxHeap[T]:
+    def heapify(cls, items: Iterable[T], min_capacity:int = 1) -> ArrayMaxHeap[T]:
         """ Construct a heap from an iterable of items. 
         returns: A heap containing all items in the iterable.
         complexity: O(n) where n is the number of items in the iterable.
         """
-        return ArrayMaxHeap(0)._heapify(items)
+        return ArrayMaxHeap(0)._heapify(items, min_capacity)
 
     def __str__(self):
         return '<ArrayMaxHeap(' + ArrayUnorderedHeap.__str__(self) + ')>'

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from data_structures.referential_array import ArrayR
 from data_structures.abstract_heap import AbstractHeap, T
-from typing import Literal, Iterable
+from typing import Iterable
 
 class ArrayMaxHeap(AbstractHeap[T]):
     def __init__(self, max_items:int = 1):
@@ -98,15 +98,15 @@ class ArrayMaxHeap(AbstractHeap[T]):
 
         self.__array[k] = sinking_item
 
-    @staticmethod
-    def heapify(items: Iterable[T]) -> ArrayMaxHeap[T]:
+    @classmethod
+    def heapify(cls, items: Iterable[T], min_capacity: int = 1) -> ArrayMaxHeap[T]:
         """ Construct a heap from an iterable of items. 
         :returns: A heap containing items in the iterable.
         :complexity: O(n) where n is the number of items in the iterable.
         """
         try: #call len(iterable) to avoid having to resize a temporary array
             length = len(items)
-            array = ArrayR(length + 1)
+            array = ArrayR(max(min_capacity, length) + 1)
             for i, item in enumerate(items):
                 array[i + 1] = item
             
@@ -118,7 +118,7 @@ class ArrayMaxHeap(AbstractHeap[T]):
                     new_array[i] = array[i]
                 return new_array
             
-            array = ArrayR(2)
+            array = ArrayR(min_capacity + 1)
             i = -1
             for i, item in enumerate(items):
                 if i + 1 >= len(array):
