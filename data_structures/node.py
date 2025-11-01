@@ -1,6 +1,5 @@
 from typing import TypeVar, Generic
 T = TypeVar('T')
-K = TypeVar('K')
 
 class Node(Generic[T]):
     """ Simple linked node.
