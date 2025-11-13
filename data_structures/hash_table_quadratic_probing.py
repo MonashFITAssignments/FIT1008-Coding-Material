@@ -3,7 +3,7 @@ from data_structures.referential_array import ArrayR
 from data_structures.hash_table_linear_probing import LinearProbeTable
 
 
-class QuadraticProbeTable(LinearProbeTable):
+class QuadraticProbeTable(LinearProbeTable, private="array,length,size_index,hash_base"):
     """
     Quadratic Probe Table.
     Defines a Hash Table using Quadratic Probing for collision resolution.

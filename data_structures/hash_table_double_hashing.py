@@ -3,7 +3,7 @@ from data_structures.referential_array import ArrayR
 from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
 
 
-class DoubleHashingTable(QuadraticProbeTable):
+class DoubleHashingTable(QuadraticProbeTable, private="array,length,size_index,hash_base"):
     """
     Double Hashing Probe Table.
     Defines a Hash Table using Double Hashing for collision resolution.

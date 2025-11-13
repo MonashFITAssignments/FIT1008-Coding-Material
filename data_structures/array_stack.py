@@ -2,7 +2,7 @@ from data_structures.abstract_stack import Stack
 from data_structures.referential_array import ArrayR, T
 
 
-class ArrayStack(Stack[T]):
+class ArrayStack(Stack[T], private="array,length"):
     """ Implementation of a stack with arrays.
 
     Attributes:

@@ -111,7 +111,7 @@ class BSTPostOrderIterator(Generic[K,V]):
                     self.__stack.push((current.left, False))
 
 
-class BinarySearchTree(AbstractBinarySearchTree[K,V]):
+class BinarySearchTree(AbstractBinarySearchTree[K,V], private="root,length"):
     """ Basic binary search tree. """
 
     def __init__(self) -> None:
@@ -123,6 +123,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         self.__root: BinaryNode[K, V] | None = None
         self.__length = 0
 
+    # <del
     @staticmethod
     def from_node(node: BinaryNode[K, V] | None, length: int = 0, check_invariant: bool = False) -> BinarySearchTree[K, V]:
         """
@@ -161,6 +162,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
         tree.__length = length if length else len_aux(node)
 
         return tree
+    # del>
 
     def __get_successor(self, current: BinaryNode[K, V]) -> BinaryNode[K, V] | None:
         """
@@ -309,7 +311,7 @@ class BinarySearchTree(AbstractBinarySearchTree[K,V]):
                 CompK is the complexity of comparing the keys
             """
             if current is None:  # base case: at the leaf
-                current = BinaryNode(item, key, current_depth)
+                current = BinaryNode(item, key)
                 self.__length += 1
             elif key < current.key:
                 current.left = insert_aux(current.left, key, item, current_depth + 1)

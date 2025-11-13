@@ -2,7 +2,7 @@ from data_structures.abstract_queue import Queue, T
 from data_structures.referential_array import ArrayR
 
 
-class CircularQueue(Queue[T]):
+class CircularQueue(Queue[T], private="array,length,front,rear"):
     """ Circular implementation of a queue with arrays.
 
     Attributes:

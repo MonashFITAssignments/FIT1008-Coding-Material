@@ -16,3 +16,6 @@ class BinaryNode(Generic[K, T]):
 
     def __str__(self):
         return f"BinaryNode({self.item}, {self.key}, {self.size}, {'...' if self.left else 'None'}, {'...' if self.right else 'None'})"
+
+    def __repr__(self):
+        return str(self)

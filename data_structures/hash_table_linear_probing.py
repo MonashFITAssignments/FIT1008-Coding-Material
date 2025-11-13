@@ -6,7 +6,7 @@ from data_structures.referential_array import ArrayR
 V = TypeVar('V')
 
 
-class LinearProbeTable(HashTable[str, V]):
+class LinearProbeTable(HashTable[str, V], private="array,length,size_index,hash_base"):
     """
     Linear Probe Table.
     Defines a Hash Table using Linear Probing for collision resolution.
@@ -18,7 +18,7 @@ class LinearProbeTable(HashTable[str, V]):
     Unless stated otherwise, all methods have O(1) complexity.
     """
 
-    __TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
+    _TABLE_SIZES = [5, 13, 29, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869]
 
     def __init__(self, sizes: None | List[int] = None, hash_base: int | None = 31) -> None:
         """
@@ -29,10 +29,10 @@ class LinearProbeTable(HashTable[str, V]):
             needs to change accordingly.
         """
         if sizes is not None:
-            self.__TABLE_SIZES = sizes
+            self._TABLE_SIZES = sizes
 
         self.__size_index = 0
-        self.__array: ArrayR[tuple[str, V]] = ArrayR(max(self.__TABLE_SIZES[self.__size_index], 2))
+        self.__array: ArrayR[tuple[str, V]] = ArrayR(max(self._TABLE_SIZES[self.__size_index], 2))
         self.__length = 0
         self.__hash_base = hash_base
 
@@ -187,14 +187,14 @@ class LinearProbeTable(HashTable[str, V]):
                 as long as the sizes are growing by a constant factor (e.g. each table size is almost double the previous one).
         """
         old_array = self.__array
-        if self.__size_index + 1 == len(self.__TABLE_SIZES):
+        if self.__size_index + 1 == len(self._TABLE_SIZES):
             if self.is_full():
                 raise RuntimeError("Table is full!")
 
             # Cannot be resized further.
             return
         self.__size_index += 1
-        self.__array = ArrayR(self.__TABLE_SIZES[self.__size_index])
+        self.__array = ArrayR(self._TABLE_SIZES[self.__size_index])
         self.__length = 0
         for item in old_array:
             if item is not None:

@@ -7,9 +7,9 @@ class Node(Generic[T]):
     linked structures.
     """
 
-    def __init__(self, item: T = None):
+    def __init__(self, item: T = None, link = None):
         self.item = item
-        self.link: Node[T] | None = None
+        self.link: Node[T] | None = link
 
     def __str__(self) -> str:
         return f"Node({self.item}, {'...' if self.link else 'None'})"

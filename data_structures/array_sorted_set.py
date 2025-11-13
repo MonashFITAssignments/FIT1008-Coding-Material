@@ -6,7 +6,7 @@ __author__ = 'Maria Garcia de la Banda and Brendon Taylor. Modified by Alexey Ig
 __docformat__ = 'reStructuredText'
 
 
-class ArraySortedSet(Set[T]):
+class ArraySortedSet(Set[T], private="array,length"):
     """ Array-based sorted list implementation of the Abstract Set. """
 
     def __init__(self, initial_capacity: int = 1) -> None:

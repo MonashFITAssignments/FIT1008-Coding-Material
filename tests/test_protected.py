@@ -23,7 +23,7 @@ class TestProtected(TestCase):
 
             # Check that the children are calling their version of private attributes if they exist
             calls = 0
-            probing_func_name = f"_{type(table).__name__}__handle_probing"
+            probing_func_name = f"_LinearProbeTable__handle_probing" #Because setitem is in LinearProbeTable it looks up _LinearProbeTable__handle_probing
             old_func = getattr(table, probing_func_name)
             def new_probing_func(*args, **kwargs):
                 nonlocal calls
