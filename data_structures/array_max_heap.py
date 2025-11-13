@@ -101,6 +101,8 @@ class ArrayMaxHeap(AbstractHeap[T], private="array,length"):
     @classmethod
     def heapify(cls, items: Iterable[T], min_capacity: int = 1) -> ArrayMaxHeap[T]:
         """ Construct a heap from an iterable of items. 
+        :param min_capacity: Specifies the minimum capacity of the returned heap.
+            If the iterable has more items than `min_capacity` the heap's capacity will grow to fit the items in the iterable.
         :returns: A heap containing items in the iterable.
         :complexity: O(n) where n is the number of items in the iterable.
         """
@@ -117,8 +119,8 @@ class ArrayMaxHeap(AbstractHeap[T], private="array,length"):
                 for i in range(len(array)):
                     new_array[i] = array[i]
                 return new_array
-            
-            array = ArrayR(min_capacity + 1)
+
+            array = ArrayR(max(min_capacity + 1, 1))
             i = -1
             for i, item in enumerate(items):
                 if i + 1 >= len(array):
