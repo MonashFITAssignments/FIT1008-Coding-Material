@@ -2,7 +2,7 @@ from __future__ import annotations
 from data_structures.abstract_set import Set
 from data_structures.referential_array import ArrayR
 
-class BitVectorSet(Set[int]):
+class BitVectorSet(Set[int], private="elems"):
     """
     A bit-vector implementation of the set ADT. The set is represented
     as an integer. The element is present in the set if and only if the

@@ -5,7 +5,7 @@ from typing import TypeVar, Tuple
 
 V = TypeVar('V')
 
-class HashTableSeparateChaining(HashTable[str, V]):
+class HashTableSeparateChaining(HashTable[str, V], private="table,length"):
     """
     Separate Chaining Hash Table Implementation using a Linked List.
     It currently rehashes the primary cluster to handle deletion.

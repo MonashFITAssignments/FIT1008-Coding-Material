@@ -3,7 +3,7 @@ from data_structures.abstract_set import Set, T
 from data_structures.referential_array import ArrayR
 
 
-class ArraySet(Set[T]):
+class ArraySet(Set[T], private="array,length"):
     """
     Array-based implementation of the set ADT.
     """

@@ -2,7 +2,7 @@ from data_structures.node import Node
 from data_structures.abstract_stack import Stack, T
 
 
-class LinkedStack(Stack[T]):
+class LinkedStack(Stack[T], private="top,length"):
     """ Implementation of a stack with linked nodes. """
 
     def __init__(self, _=None) -> None:

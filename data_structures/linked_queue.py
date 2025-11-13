@@ -7,7 +7,7 @@ from data_structures.abstract_queue import Queue
 T = TypeVar("T")
 
 
-class LinkedQueue(Queue[T]):
+class LinkedQueue(Queue[T], private="front,rear,length"):
     """ Linked Queue
     The Queue ADT implemented using a linked structure.
     """

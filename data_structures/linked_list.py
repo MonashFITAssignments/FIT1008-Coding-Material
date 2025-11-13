@@ -19,7 +19,7 @@ class LinkedListIterator:
             return item
 
 
-class LinkedList(List[T]):
+class LinkedList(List[T], private="head,rear,length"):
     """ Linked-node based implementation of List ADT. """
 
     def __init__(self):

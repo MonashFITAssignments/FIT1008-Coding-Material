@@ -3,7 +3,7 @@ from data_structures.referential_array import ArrayR
 from data_structures.abstract_heap import AbstractHeap, T
 from typing import Iterable
 
-class ArrayMaxHeap(AbstractHeap[T]):
+class ArrayMaxHeap(AbstractHeap[T], private="array,length"):
     def __init__(self, max_items:int = 1):
         if not max_items >= 0:
             raise ValueError("Heap must store 0 or more items.")

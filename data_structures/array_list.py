@@ -1,8 +1,9 @@
 from data_structures.abstract_list import *
 from data_structures.referential_array import ArrayR
+from data_structures.abstract_list import List
 
 
-class ArrayList(List[T]):
+class ArrayList(List[T], private="array,length"):
     """ Implementation of a generic list with arrays. """
 
     def __init__(self, initial_capacity: int = 1) -> None:

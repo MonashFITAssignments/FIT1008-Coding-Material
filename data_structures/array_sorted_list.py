@@ -5,7 +5,7 @@ __author__ = 'Maria Garcia de la Banda and Brendon Taylor. Modified by Alexey Ig
 __docformat__ = 'reStructuredText'
 
 
-class ArraySortedList(SortedList[T]):
+class ArraySortedList(SortedList[T], private="array,length"):
     """ Array-based implementation of the Abstract Sorted List. """
 
     def __init__(self, initial_capacity: int = 1) -> None:

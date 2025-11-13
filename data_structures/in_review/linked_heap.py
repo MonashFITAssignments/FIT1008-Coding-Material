@@ -6,7 +6,7 @@ from typing import Iterable, Union, Tuple
 
 MaybeNode = Union[BinaryNode[int, T], None]
 
-class MinLinkedHeap(AbstractHeap[T]):
+class MinLinkedHeap(AbstractHeap[T], private="root"):
     """ Implementation of Leftist Tree based heap
     Each node has the shorter path to a leaf in their right child.
     When adding or removing items, the path to the highest leaf is always followed.
@@ -65,16 +65,16 @@ class MinLinkedHeap(AbstractHeap[T]):
         if node1.item > node2.item: #This part determines the heap ordering, makes node1 a valid parent
             node1, node2 = node2, node1
 
-        node1.right = self.__merge(node1.right, node2)
+        newNode = BinaryNode(node1.item, node1.key, size)
+        newNode.right = self.__merge(node1.right, node2)
+        newNode.left = node1.left
 
-        if key(node1.right) > key(node1.left):
-            node1.left, node1.right = node1.right, node1.left
+        if key(newNode.right) > key(newNode.left):
+            newNode.left, newNode.right = newNode.right, newNode.left
 
-        node2 = BinaryNode(node1.item, key(node1.right) + 1, size)
-        node2.left = node1.left
-        node2.right = node1.right
-
-        return node2
+        newNode.key = key(newNode.right) + 1
+        
+        return newNode
 
     @classmethod
     def heapify(cls, items: Iterable[T]) -> MinLinkedHeap:
@@ -126,10 +126,9 @@ class MinLinkedHeap(AbstractHeap[T]):
         def add(i:int, node:BinaryNode):
             if node is None:
                 return i
-            
             res[i] = node.item
             i = add(i + 1, node.left)
-            return add(i + 1, node.right)
+            return add(i, node.right)
         add(0, self.__root)
         return res
 
@@ -140,12 +139,5 @@ class MinLinkedHeap(AbstractHeap[T]):
         return 0
 
     def __str__(self) -> str:
-        def get_elements(node: BinaryNode[int, T], elements: ArrayR[T], index: int) -> None:
-            if node is not None:
-                elements[index] = str(node.item)
-                get_elements(node.left, elements, index * 2 + 1)
-                get_elements(node.right, elements, index * 2 + 2)
-
-        elements = ArrayR(len(self))
-        get_elements(self.__root, elements, 0)
-        return "<MinLinkedHeap([" + ", ".join(elements) + "])>"
+        
+        return "<MinLinkedHeap([" + ", ".join(map(str, self.values())) + "])>"

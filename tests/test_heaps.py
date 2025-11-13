@@ -308,5 +308,5 @@ class TestLinkedHeap(TestCase):
         for i in range(6):
             heap.add(i)
 
-        filled_str = '<MinLinkedHeap([0, 2, 1, 3, 4, 5])>'
+        filled_str = '<MinLinkedHeap([0, 2, 3, 4, 1, 5])>'
         self.assertEqual(filled_str, str(heap))
