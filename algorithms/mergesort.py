@@ -10,16 +10,39 @@ def merge(items1: List[T] | ArrayR[T], items2: List[T] | ArrayR[T], key = lambda
     Merges two sorted lists into one larger sorted list,
     containing all elements from the smaller lists.
 
-    The `key` kwarg allows you to define a custom sorting order.
+    :param items1:
+    :param items2: Two lists or arrays, they must be of the same type.
+    :param key: A function used to create a custom sorting order for the inputs, see usage.
+        Named functions can also be used:    
+    ```python
+    def key_func(obj):
+        if obj.type == "X":
+            return obj.x
+        else:
+            return obj.y
+    merge(arr1, arr2, key_func)
+    ```
 
-    returns:
+    :returns:
     The sorted list in the same type as the input lists.
 
-    pre:
-    Both l1 and l2 are sorted, and contain comparable elements.
+    :raises ValueError:
+    When two collections of items are different types.
 
-    complexity:
-    Best/Worst Case: O(n), n = len(l1)+len(l2).
+    ### Complexity:
+    Best/Worst Case: O(n), n = len(items1) + len(items2).
+    
+    ### Usage
+    >>> l1 = LinkedList()
+    >>> l2 = LinkedList()
+    >>> l1.append("B") 
+    >>> l1.append("f")
+    >>> l2.append("a")
+    >>> l2.append("Z")
+    >>> merge(l1, l2)
+    <LinkedList ["B", "a", "Z", "f"]>
+    >>> merge(l1, l2, lambda s: s.upper())
+    <LinkedList ["a", "B", "f", "Z"]>
     """
     if type(items1) is not type(items2):
         raise ValueError(f"cannot merge collections '{type(items1).__name__}' and '{type(items2).__name__}' of differing type")
@@ -34,73 +57,80 @@ def merge(items1: List[T] | ArrayR[T], items2: List[T] | ArrayR[T], key = lambda
         res.append(item)
     return res
 
-
-def _merge_array(list1: ArrayR[T], list2: ArrayR[T], key) -> ArrayR[T]:
+def _merge_array(arr1: ArrayR[T], arr2: ArrayR[T], key) -> ArrayR[T]:
     
-    n = len(list1) + len(list2)
-    res = type(list1)(n)
+    n = len(arr1) + len(arr2)
+    res = ArrayR(n)
     ia = 0
     ib = 0
     
     for _ in range(n):
-        if ia >= len(list1):
-            res[ia + ib] = list2[ib]
+        if ia >= len(arr1):
+            res[ia + ib] = arr2[ib]
             ib += 1
-        elif ib >= len(list2):
-            res[ia + ib] = list1[ia]
+        elif ib >= len(arr2):
+            res[ia + ib] = arr1[ia]
             ia += 1
-        elif key(list1[ia]) <= key(list2[ib]):
-            res[ia + ib] = list1[ia]
+        elif not key(arr2[ib]) < key(arr1[ia]):
+            res[ia + ib] = arr1[ia]
             ia += 1
         else:
-            res[ia + ib] = list2[ib]
+            res[ia + ib] = arr2[ib]
             ib += 1
     return res
 
-def _mergesort_array(my_list: ArrayR, key) -> ArrayR:
-    if len(my_list) <= 1:
-        return my_list
+def _mergesort_array(array: ArrayR, key) -> ArrayR:
+    if len(array) <= 1:
+        return array
     
     # Split the list into two halves
-    break_index = (len(my_list)+1) // 2
+    break_index = (len(array)+1) // 2
     
     # Create two new lists to hold the two halves.
     
     left_half = ArrayR(break_index)
-    right_half = ArrayR(len(my_list) - break_index)
+    right_half = ArrayR(len(array) - break_index)
 
     # Now fill the two halves with the elements from the original list
     # Left half
     for i in range(break_index):
-        left_half[i] = my_list[i]
+        left_half[i] = array[i]
     
     # Right half
-    for i in range(break_index, len(my_list)):
-        right_half[i - break_index] = my_list[i]
+    for i in range(break_index, len(array)):
+        right_half[i - break_index] = array[i]
     
     # Recursively sort the two halves and merge them
     arr1 = _mergesort_array(left_half, key)
     arr2 = _mergesort_array(right_half, key)
     return _merge_array(arr1, arr2, key)
 
-def mergesort(my_list: List[T] | ArrayR[T], key = lambda x: x) -> List[T] | ArrayR[T]:
+def mergesort(items: List[T] | ArrayR[T], key = lambda x: x) -> List[T] | ArrayR[T]:
     """
-    Sort a list using the mergesort operation.
+    Sort a list or array using the mergesort algorithm.
 
-    The `key` kwarg allows you to define a custom sorting order.
+    :param items: An ArrayList, LinkedList or ArrayR of items to sort.
+    :param key: A function used to create a custom sorting order for the inputs, see usage and merge.
 
-    complexity:
-    Best/Worst Case: O(NlogN) where N is the length of the list.
+    :returns: A sorted list/array of the same type as the input.
 
-    Return type is the same as the input type.
+    ### Complexity:
+    Best/Worst Case: O(NlogN) where N is the length of the list/array.
+
+    ### Usage:
+    >>> arr = Array.from_list(["Z", "a", "B", "e"])
+    >>> mergesort(arr)
+    ["B", "Z", "a", "e"]
+    >>> mergesort(arr, lambda s: s.upper())
+    ["a", "B", "e", "Z"]
     """
-    if type(my_list) is ArrayR:
-        return _mergesort_array(my_list, key)
+    if type(items) is ArrayR:
+        return _mergesort_array(items, key)
     else:
-        array = ArrayR.from_list(my_list)
+        array = ArrayR.from_list(items)
         array = _mergesort_array(array, key)
         #Create new list of same type as input
-        res = type(my_list)() 
+        res = type(items)() 
         for item in array:
             res.append(item)
         return res
