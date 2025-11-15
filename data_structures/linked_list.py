@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import Tuple
 from data_structures.abstract_list import List, T
 from data_structures.node import Node
 
@@ -26,6 +28,53 @@ class LinkedList(List[T]):
         self.__head = None
         self.__rear = None
         self.__length = 0
+    
+    @staticmethod
+    def from_node(node:Node[T] | None) -> LinkedList[T]:
+        """
+        Constructs a linked list from a node
+        :complexity: O(N) where N is the number of nodes
+        :raises: ValueError if a cycle is detected
+        """
+        res = LinkedList()
+        res.__head = node
+
+        #Track two pointers to check for cycles, and count number of nodes
+        hare = node
+        tortoise = node
+        while hare is not None and hare.link is not None:
+            hare = hare.link.link
+            tortoise = tortoise.link
+            res.__length += 2
+            if tortoise is hare:
+                raise ValueError("Cannot create a linked list with a cycle.")
+        
+        if hare is not None:
+            res.__length += 1
+
+        res.__head, res.__rear = res.copy_head()
+        return res
+
+
+
+    def copy_head(self) -> Tuple[Node[T]|None, Node[T]|None]:
+        """
+        Returns a copy of the linked nodes of the linked list.
+        The first node is the head, and the last the rear.
+        :complexity: O(N) where N is the length of the list.
+        """
+        if self.__head:
+            node_head = Node(self.__head.item)
+            curr_ll = self.__head.link
+            node_rear = node_head
+            while curr_ll:
+                node_rear.link = Node(curr_ll.item)
+                node_rear = node_rear.link
+                curr_ll = curr_ll.link
+            return node_head, node_rear
+        return None, None
+
+
 
     def insert(self, index: int, item: T) -> None:
         """
