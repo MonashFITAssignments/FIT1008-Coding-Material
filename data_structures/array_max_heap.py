@@ -146,7 +146,7 @@ class ArrayMaxHeap(AbstractHeap[T]):
         """
         res = ArrayR(len(self))
         for i in range(len(self)):
-            res[i] = self.__array[i + 1]
+            res[i] = self._array[i + 1]
         return res
 
     def __len__(self) -> int:
