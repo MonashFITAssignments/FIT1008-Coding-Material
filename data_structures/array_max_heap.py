@@ -7,8 +7,9 @@ class ArrayMaxHeap(AbstractHeap[T]):
     def __init__(self, max_items:int = 1):
         if not max_items >= 0:
             raise ValueError("Heap must store 0 or more items.")
-        self.__array = ArrayR[T](max_items + 1)
-        self.__length:int = 0
+        AbstractHeap.__init__(self)
+        self._array = ArrayR[T](max_items + 1)
+        self._length:int = 0
 
     def add(self, item: T) -> None:
         """ Add an item to the heap.
@@ -19,8 +20,8 @@ class ArrayMaxHeap(AbstractHeap[T]):
         if self.is_full():
             raise ValueError("Cannot add to full heap.")
 
-        self.__length += 1
-        self.__array[len(self)] = item
+        self._length += 1
+        self._array[len(self)] = item
         self._rise(len(self))
 
     def extract_root(self) -> T:
@@ -33,11 +34,11 @@ class ArrayMaxHeap(AbstractHeap[T]):
         But in a heap of distinct elements extract_root always takes O(logN) time, 
             otherwise heapsort would be a comparison based O(N) sorting algorithm, which is impossible.
         """
-        if self.__length == 0:
+        if self._length == 0:
             raise ValueError("Cannot extract_root from empty heap.")
-        res = self.__array[1]
-        self.__array[1] = self.__array[len(self)]
-        self.__length -= 1
+        res = self._array[1]
+        self._array[1] = self._array[len(self)]
+        self._length -= 1
         self._sink(1)
         return res
   
@@ -51,19 +52,19 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :returns: The root of the heap
         :complexity: O(1)
         """
-        if self.__length == 0:
+        if self._length == 0:
             raise ValueError("Cannot peek from empty heap.")
-        return self.__array[1]
+        return self._array[1]
 
     def is_full(self) -> bool:
-        return len(self) == len(self.__array) - 1
+        return len(self) == len(self._array) - 1
         
     def __get_child_index(self, k:int) -> int | None:
         """ Returns the index of child of k that would be the parent of the other (the larger child).
         :complexity: O(1)
         """
         k2 = k * 2
-        if k2 == len(self) or self.__array[k2] > self.__array[k2 + 1]:
+        if k2 == len(self) or self._array[k2] > self._array[k2 + 1]:
             return k2
         else:
             return k2 + 1
@@ -74,13 +75,13 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :complexity worst: O(logN) when you need to rise to the top of the heap.
             Where N is the size of the heap.
         """
-        rising_item = self.__array[k]
+        rising_item = self._array[k]
         
-        while k > 1 and rising_item > self.__array[k // 2]:
-            self.__array[k] = self.__array[k // 2]
+        while k > 1 and rising_item > self._array[k // 2]:
+            self._array[k] = self._array[k // 2]
             k = k //2
             
-        self.__array[k] = rising_item
+        self._array[k] = rising_item
 
     def _sink(self, k:int) -> None:
         """ Sink the element at index k
@@ -88,15 +89,15 @@ class ArrayMaxHeap(AbstractHeap[T]):
         :complexity worst: O(logN) when you need to sink to the bottom of the heap.
             Where N is the size of the heap.
         """
-        sinking_item = self.__array[k]
+        sinking_item = self._array[k]
         while 2 * k <= len(self):
             child_i = self.__get_child_index(k)
-            if sinking_item >= self.__array[child_i]:
+            if sinking_item >= self._array[child_i]:
                 break
-            self.__array[k] = self.__array[child_i]
+            self._array[k] = self._array[child_i]
             k = child_i
 
-        self.__array[k] = sinking_item
+        self._array[k] = sinking_item
 
     @classmethod
     def heapify(cls, items: Iterable[T], min_capacity: int = 1) -> ArrayMaxHeap[T]:
@@ -130,8 +131,8 @@ class ArrayMaxHeap(AbstractHeap[T]):
             length = i + 1
         
         heap = ArrayMaxHeap(length)
-        heap.__array = array
-        heap.__length = length
+        heap._array = array
+        heap._length = length
 
         for i in range(len(heap) // 2, 0, -1):
             heap._sink(i)
@@ -149,14 +150,14 @@ class ArrayMaxHeap(AbstractHeap[T]):
         return res
 
     def __len__(self) -> int:
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """
         :complexity: O(n) where n is the number of items in the heap.
         """
-        res = ArrayR(self.__length)
-        for i in range(self.__length):
-            res[i] = str(self.__array[i + 1])
+        res = ArrayR(self._length)
+        for i in range(self._length):
+            res[i] = str(self._array[i + 1])
         
         return '<ArrayMaxHeap([' + ', '.join(res) + '])>'

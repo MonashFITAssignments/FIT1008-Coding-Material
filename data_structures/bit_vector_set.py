@@ -11,7 +11,7 @@ class BitVectorSet(Set[int]):
 
     def __init__(self):
         Set.__init__(self)
-        self.__elems = 0
+        self._elems = 0
 
     def add(self, item: int) -> None:
         """
@@ -20,7 +20,7 @@ class BitVectorSet(Set[int]):
         """
         if not isinstance(item, int) or item <= 0:
             raise TypeError('Set elements should be positive integers.')
-        self.__elems |= 1 << (item - 1)
+        self._elems |= 1 << (item - 1)
 
     def remove(self, item: int) -> None:
         """
@@ -31,7 +31,7 @@ class BitVectorSet(Set[int]):
         if not isinstance(item, int) or item <= 0:
             raise TypeError('Set elements should be positive integers.')
         if item in self:
-            self.__elems ^= 1 << (item - 1)
+            self._elems ^= 1 << (item - 1)
         else:
             raise KeyError(item)
 
@@ -41,7 +41,7 @@ class BitVectorSet(Set[int]):
         """
         res = ArrayR(len(self))
         count = 0
-        for item in range(1, int.bit_length(self.__elems) + 1):
+        for item in range(1, int.bit_length(self._elems) + 1):
             if item in self:
                 res[count] = item
                 count += 1
@@ -49,11 +49,11 @@ class BitVectorSet(Set[int]):
 
     def clear(self) -> None:
         """ Makes the set empty. """
-        self.__elems = 0
+        self._elems = 0
 
     def is_empty(self) -> bool:
         """ True if the set is empty. """
-        return self.__elems == 0
+        return self._elems == 0
 
     def union(self, other: BitVectorSet[int]) -> BitVectorSet[int]:
         """
@@ -61,7 +61,7 @@ class BitVectorSet(Set[int]):
         The result set should contain all elements in self and other.
         """
         res = BitVectorSet()
-        res.__elems = self.__elems | other.__elems
+        res._elems = self._elems | other._elems
         return res
 
     def intersection(self, other: BitVectorSet[int]) -> BitVectorSet[int]:
@@ -71,7 +71,7 @@ class BitVectorSet(Set[int]):
         self and other.
         """
         res = BitVectorSet()
-        res.__elems = self.__elems & other.__elems
+        res._elems = self._elems & other._elems
         return res
 
     def difference(self, other: BitVectorSet[int]) -> BitVectorSet[int]:
@@ -81,7 +81,7 @@ class BitVectorSet(Set[int]):
         but not in other. I.e. self - other.
         """
         res = BitVectorSet()
-        res.__elems = self.__elems & ~other.__elems
+        res._elems = self._elems & ~other._elems
         return res
 
     def __contains__(self, item: int) -> bool:
@@ -91,7 +91,7 @@ class BitVectorSet(Set[int]):
         """
         if not isinstance(item, int) or item <= 0:
             raise TypeError('Set elements should be positive integers.')
-        return (self.__elems >> (item - 1)) & 1 == 1
+        return (self._elems >> (item - 1)) & 1 == 1
 
     def __len__(self) -> int:
         """
@@ -99,7 +99,7 @@ class BitVectorSet(Set[int]):
         Use int.bit_length(your_integer) to calculate the bit length.
         """
         res = 0
-        for item in range(1, int.bit_length(self.__elems) + 1):
+        for item in range(1, int.bit_length(self._elems) + 1):
             if item in self:
                 res += 1
         return res

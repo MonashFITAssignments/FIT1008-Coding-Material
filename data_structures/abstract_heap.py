@@ -6,13 +6,13 @@ from data_structures.referential_array import ArrayR
 
 T = TypeVar('T')
 
-class AbstractHeap(Generic[T], ABC, DunderProtected):
+class AbstractHeap(Generic[T], ABC):
     """
     Abstract class for min and max heaps
     """
 
     @abstractmethod
-    def __init__(self, ordering: Literal['min', 'max']) -> None:
+    def __init__(self) -> None:
         pass
     
     @abstractmethod

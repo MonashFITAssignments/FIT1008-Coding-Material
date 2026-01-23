@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 
-
-class Queue(ABC, Generic[T], DunderProtected):
+class Queue(ABC, Generic[T]):
     """ Queue ADT
     Defines a generic abstract queue with the usual methods.
     """
