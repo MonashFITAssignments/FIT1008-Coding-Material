@@ -1,7 +1,6 @@
 from __future__ import annotations
 from data_structures.abstract_heap import AbstractHeap, T
 from data_structures.referential_array import ArrayR
-from data_structures.node import BinaryNode
 from typing import Iterable, Union
 from data_structures.node_binary import BinaryNode
 from typing import Iterable, Union, Tuple
@@ -129,9 +128,9 @@ class MinLinkedHeap(AbstractHeap[T]):
             if node is None:
                 return i
             
-            res[i] = node.item
-            i = add(i + 1, node.left)
-            return add(i + 1, node.right)
+            res[i] = node._item
+            i = add(i + 1, node._left)
+            return add(i + 1, node._right)
         add(0, self.__root)
         return res
 
