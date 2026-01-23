@@ -34,7 +34,6 @@ class TestMergeSort(TestCase):
         sorted_list = mergesort(ArrayR.from_list(reverse_sorted), lambda x: -x)
         self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
 
-
 class TestInsertionSort(TestCase):
     def test_sort(self):
         seed = time.time_ns()
@@ -70,7 +69,6 @@ class TestInsertionSort(TestCase):
         self.assertIs(type(al_sorted), ArrayList)
         self.assertNotEqual([x for x in ll], sorted(unsorted_list))
         self.assertNotEqual([x for x in al], sorted(unsorted_list))
-
 
     def test_sort_empty(self):
         empty_array = ArrayR.from_list([])

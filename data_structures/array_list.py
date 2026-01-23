@@ -1,16 +1,16 @@
 from data_structures.abstract_list import *
 from data_structures.referential_array import ArrayR
 
-
 class ArrayList(List[T]):
     """ Implementation of a generic list with arrays. """
 
     def __init__(self, initial_capacity: int = 1) -> None:
         if initial_capacity < 0:
             raise ValueError("Capacity cannot be negative.")
-        
-        self.__array = ArrayR(initial_capacity)
-        self.__length = 0
+
+        List.__init__(self)
+        self._array = ArrayR(initial_capacity)
+        self._length = 0
 
     def insert(self, index: int, item: T) -> None:
         """ Insert item at the given index.
@@ -29,7 +29,7 @@ class ArrayList(List[T]):
             self.__resize()
 
         self.__shuffle_right(index)
-        self.__length += 1
+        self._length += 1
         self[index] = item
 
     def delete_at_index(self, index: int) -> T:
@@ -40,7 +40,7 @@ class ArrayList(List[T]):
         """
         item = self[index]
         self.__shuffle_left(index)
-        self.__length -= 1
+        self._length -= 1
         return item
 
     def index(self, item: T) -> int:
@@ -61,7 +61,7 @@ class ArrayList(List[T]):
         """ Returns true if the list is full
         :complexity: O(1)
         """
-        return len(self) == len(self.__array)
+        return len(self) == len(self._array)
 
     def clear(self):
         """ Clear the list.
@@ -69,7 +69,7 @@ class ArrayList(List[T]):
         write over the existing array.
         """
         List.clear(self)
-        self.__length = 0
+        self._length = 0
 
     def __shuffle_right(self, index: int) -> None:
         """ Shuffles all the items to the right from index
@@ -78,7 +78,7 @@ class ArrayList(List[T]):
         where N is the number of items in the list
         """
         for i in range(len(self), index, -1):
-            self.__array[i] = self.__array[i - 1]
+            self._array[i] = self._array[i - 1]
 
     def __shuffle_left(self, index: int) -> None:
         """ Shuffles all the items to the left from index
@@ -87,7 +87,7 @@ class ArrayList(List[T]):
         where N is the number of items in the list
         """
         for i in range(index, len(self) - 1):
-            self.__array[i] = self.__array[i + 1]
+            self._array[i] = self._array[i + 1]
 
     def __resize(self) -> None:
         """
@@ -98,13 +98,13 @@ class ArrayList(List[T]):
         :complexity: Worst case O(N), for list of length N.
         """
         if self.is_full():
-            new_cap = int(2 * len(self.__array)) + 1
+            new_cap = int(2 * len(self._array)) + 1
             new_array = ArrayR(new_cap)
             for i in range(len(self)):
                 new_array[i] = self[i]
-            self.__array = new_array
+            self._array = new_array
         assert len(self) < len(
-            self.__array
+            self._array
         ), "Capacity not greater than length after __resize."
 
     def __getitem__(self, index: int) -> T:
@@ -117,7 +117,7 @@ class ArrayList(List[T]):
             raise IndexError("Out of bounds access in list.")
         if index < 0:
             index = len(self) + index
-        return self.__array[index]
+        return self._array[index]
 
     def __setitem__(self, index: int, value: T) -> None:
         """ Set the item at index to value
@@ -129,11 +129,11 @@ class ArrayList(List[T]):
             raise IndexError("Out of bounds access in list.")
         if index < 0:
             index = len(self) + index
-        self.__array[index] = value
+        self._array[index] = value
 
     def __len__(self) -> int:
         """ Return the length of the list. """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """ Returns a string representation of the list. """
