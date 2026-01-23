@@ -153,6 +153,8 @@ class TestLinkedQueue(TestCase):
         self._queue.serve()
         self.assertEqual(self._queue.peek_node()._item, 2)
         self.assertEqual(self._queue.peek_node()._link, None)
+                self.assertEqual(self.queue.peek(), i + 2)
+        self.assertTrue(self.queue.is_empty())
     
     def test_is_empty(self):
         self.assertTrue(self._queue.is_empty())

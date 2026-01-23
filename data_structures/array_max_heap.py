@@ -99,15 +99,17 @@ class ArrayMaxHeap(AbstractHeap[T]):
 
         self._array[k] = sinking_item
 
-    @staticmethod
-    def heapify(items: Iterable[T]) -> ArrayMaxHeap[T]:
+    @classmethod
+    def heapify(cls, items: Iterable[T], min_capacity: int = 1) -> ArrayMaxHeap[T]:
         """ Construct a heap from an iterable of items. 
+        :param min_capacity: Specifies the minimum capacity of the returned heap.
+            If the iterable has more items than `min_capacity` the heap's capacity will grow to fit the items in the iterable.
         :returns: A heap containing items in the iterable.
         :complexity: O(n) where n is the number of items in the iterable.
         """
         try: #call len(iterable) to avoid having to resize a temporary array
             length = len(items)
-            array = ArrayR(length + 1)
+            array = ArrayR(max(min_capacity, length) + 1)
             for i, item in enumerate(items):
                 array[i + 1] = item
             
@@ -118,8 +120,8 @@ class ArrayMaxHeap(AbstractHeap[T]):
                 for i in range(len(array)):
                     new_array[i] = array[i]
                 return new_array
-            
-            array = ArrayR(2)
+
+            array = ArrayR(max(min_capacity + 1, 1))
             i = -1
             for i, item in enumerate(items):
                 if i + 1 >= len(array):
@@ -136,6 +138,16 @@ class ArrayMaxHeap(AbstractHeap[T]):
             heap._sink(i)
         
         return heap
+    
+    def values(self):
+        """
+        Returns all the items in the heap in no particular order.
+        :complexity: O(n) where n is the number of items in the heap.
+        """
+        res = ArrayR(len(self))
+        for i in range(len(self)):
+            res[i] = self.__array[i + 1]
+        return res
 
     def __len__(self) -> int:
         return self._length

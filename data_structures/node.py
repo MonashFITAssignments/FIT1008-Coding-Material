@@ -1,6 +1,5 @@
 from typing import TypeVar, Generic
 T = TypeVar('T')
-K = TypeVar('K')
 
 class Node(Generic[T]):
     """ Simple linked node.
@@ -29,3 +28,4 @@ class BinaryNode(Generic[K, T]):
 
     def __str__(self):
         return f"BinaryNode({self._item}, {self._key}, {self._size}, {'...' if self._left else 'None'}, {'...' if self._right else 'None'})"
+        return f"Node({self.item}, {'...' if self.link else 'None'})"

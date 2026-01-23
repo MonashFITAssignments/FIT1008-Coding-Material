@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Literal, Iterable
 from abc import abstractmethod, ABC
+from data_structures.dunder_protected import DunderProtected
+from data_structures.referential_array import ArrayR
 
 T = TypeVar('T')
 
@@ -43,3 +45,7 @@ class AbstractHeap(Generic[T], ABC):
 
     def __repr__(self) -> str:
         return str(self)
+
+    @abstractmethod
+    def values(self) -> ArrayR[T]:
+        pass

@@ -2,6 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Tuple
 from data_structures.node import BinaryNode
+from data_structures.dunder_protected import DunderProtected
+from data_structures.node_binary import BinaryNode
 from data_structures.referential_array import ArrayR
 
 K = TypeVar('K')
