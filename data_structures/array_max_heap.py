@@ -4,21 +4,22 @@ from data_structures.abstract_heap import AbstractHeap, T
 from typing import Iterable
 
 class ArrayMaxHeap(AbstractHeap[T]):
-    def __init__(self, max_items:int = 1):
-        if not max_items >= 0:
+    def __init__(self, initial_capacity:int = 1):
+        if not initial_capacity >= 0:
             raise ValueError("Heap must store 0 or more items.")
-        AbstractHeap.__init__(self)
-        self._array = ArrayR[T](max_items + 1)
+        self._array = ArrayR[T](initial_capacity + 1)
         self._length:int = 0
 
     def add(self, item: T) -> None:
         """ Add an item to the heap.
-        :raises ValueError: if the heap's array is full
         :complexity best: O(1) the item is adding to the end of the array (no rising required)
         :complexity worst: O(logN) Need to rise the item to the top of the heap (N is the size of the heap)
         """
         if self.is_full():
-            raise ValueError("Cannot add to full heap.")
+            new_array = ArrayR(len(self._array) * 2)
+            for i, old_item in enumerate(self._array):
+                new_array[i] = old_item
+            self._array = new_array
 
         self._length += 1
         self._array[len(self)] = item
