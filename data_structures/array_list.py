@@ -21,6 +21,7 @@ class ArrayList(List[T]):
                      is the number of items in the list.
         """
         # Ensure index is valid
+        index = self._absolute_index(index)
         if index < 0 or index > len(self):
             raise IndexError("Index out of bounds")
 
@@ -35,11 +36,12 @@ class ArrayList(List[T]):
     def delete_at_index(self, index: int) -> T:
         """ Delete item at the given index.
         It will shuffle all the items to the left from index to fill the empty spot.
-        :pre: index is 0 <= index < len(self) - this is checked by __getitem__() !
+        :pre: index is -len(self) <= index < len(self) - this is checked by __getitem__() !
         :complexity: See __shuffle_left()
         """
         item = self[index]
-        self.__shuffle_left(index)
+        pos_index = self._absolute_index(index)
+        self.__shuffle_left(pos_index)
         self._length -= 1
         return item
 
@@ -113,10 +115,9 @@ class ArrayList(List[T]):
         :complexity: O(1)
         :pre: index must be between [-self(len), len(self)]
         """
-        if index < -1 * len(self) or index >= len(self):
+        index = self._absolute_index(index)
+        if index < 0 or index >= len(self):
             raise IndexError("Out of bounds access in list.")
-        if index < 0:
-            index = len(self) + index
         return self._array[index]
 
     def __setitem__(self, index: int, value: T) -> None:

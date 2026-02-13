@@ -74,7 +74,8 @@ class LinkedList(List[T]):
             Worst: O(N) Deleting the last item in the list, where N is the number of items in the list.
         """
         if not self.is_empty():
-            if index > 0:
+            index = self._absolute_index(index)
+            if index > 0 and index < len(self):
                 previous_node = self.__get_node_at_index(index-1)
                 item = previous_node._link._item
                 previous_node._link = previous_node._link._link
@@ -83,7 +84,7 @@ class LinkedList(List[T]):
                 self._head = self._head._link
                 previous_node = self._head
             else:
-                raise ValueError("Index out of bounds")
+                raise IndexError("Index out of bounds")
 
             if index == len(self) - 1:
                 self._rear = previous_node
@@ -119,10 +120,9 @@ class LinkedList(List[T]):
             Worst: O(N) where N is the number of items in the list. Happens when the item is close
                 to the end of the list or it doesn't exist in the list.
         """
-        if -1 * len(self) <= index and index < len(self):
-            if index < 0:
-                index = len(self) + index
-            elif index == len(self) - 1:
+        index = self._absolute_index(index)
+        if 0 <= index and index < len(self):
+            if index == len(self) - 1:
                 return self._rear
             current = self._head
             for _ in range(index):
