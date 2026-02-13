@@ -2,7 +2,6 @@ from __future__ import annotations
 from data_structures.referential_array import ArrayR
 from data_structures.hash_table_quadratic_probing import QuadraticProbeTable
 
-
 class DoubleHashingTable(QuadraticProbeTable):
     """
     Double Hashing Probe Table.
@@ -30,13 +29,13 @@ class DoubleHashingTable(QuadraticProbeTable):
         step = self.hash2(key)
 
         for _ in range(self.table_size):
-            if self.__array[position] is None:
+            if self._array[position] is None:
                 # Empty spot. Am I upserting or retrieving?
                 if is_insert:
                     return position
                 else:
                     raise KeyError(key)
-            elif self.__array[position][0] == key:
+            elif self._array[position][0] == key:
                 return position
             else:
                 # Taken by something else. Time to linear probe.

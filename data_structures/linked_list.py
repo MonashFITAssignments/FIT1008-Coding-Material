@@ -1,31 +1,30 @@
 from data_structures.abstract_list import List, T
 from data_structures.node import Node
 
-
 class LinkedListIterator:
     """ Iterator for LinkedList. """
     def __init__(self, head_node: Node):
-        self.__current = head_node
+        self._current = head_node
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.__current is None:
+        if self._current is None:
             raise StopIteration
         else:
-            item = self.__current.item
-            self.__current = self.__current.link
+            item = self._current._item
+            self._current = self._current._link
             return item
-
 
 class LinkedList(List[T]):
     """ Linked-node based implementation of List ADT. """
 
     def __init__(self):
-        self.__head = None
-        self.__rear = None
-        self.__length = 0
+        List.__init__(self)
+        self._head = None
+        self._rear = None
+        self._length = 0
 
     def insert(self, index: int, item: T) -> None:
         """
@@ -39,33 +38,33 @@ class LinkedList(List[T]):
         else:
             new_node = Node(item)
             if index == 0:
-                new_node.link = self.__head
-                self.__head = new_node
+                new_node._link = self._head
+                self._head = new_node
             else:
                 previous_node = self.__get_node_at_index(index-1)
-                new_node.link = previous_node.link
-                previous_node.link = new_node
+                new_node._link = previous_node._link
+                previous_node._link = new_node
 
-            self.__length += 1
+            self._length += 1
 
     def append(self, item: T) -> None:
         """ Append the item to the end of the list.
         :complexity: Given we have a reference to the rear of the list, this is O(1).
         """
         new_node = Node(item)
-        if self.__head is None:
-            self.__head = new_node
+        if self._head is None:
+            self._head = new_node
         else:
-            self.__rear.link = new_node
-        self.__rear = new_node
-        self.__length += 1
+            self._rear._link = new_node
+        self._rear = new_node
+        self._length += 1
 
     def clear(self):
         """ Clear the list. """
         List.clear(self)
-        self.__head = None
-        self.__rear = None
-        self.__length = 0
+        self._head = None
+        self._rear = None
+        self._length = 0
 
     def delete_at_index(self, index: int) -> T:
         """
@@ -78,19 +77,19 @@ class LinkedList(List[T]):
             index = self._absolute_index(index)
             if index > 0 and index < len(self):
                 previous_node = self.__get_node_at_index(index-1)
-                item = previous_node.link.item
-                previous_node.link = previous_node.link.link
+                item = previous_node._link._item
+                previous_node._link = previous_node._link._link
             elif index == 0:
-                item = self.__head.item
-                self.__head = self.__head.link
-                previous_node = self.__head
+                item = self._head._item
+                self._head = self._head._link
+                previous_node = self._head
             else:
                 raise IndexError("Index out of bounds")
 
             if index == len(self) - 1:
-                self.__rear = previous_node
+                self._rear = previous_node
 
-            self.__length -= 1
+            self._length -= 1
             return item
         else:
             raise ValueError("Index out of bounds: list is empty")
@@ -103,10 +102,10 @@ class LinkedList(List[T]):
             Worst: O(N) where N is the number of items in the list. Happens when the item is at
                 the end of the list or it doesn't exist in the list.
         """
-        current = self.__head
+        current = self._head
         index = 0
-        while current is not None and current.item != item:
-            current = current.link
+        while current is not None and current._item != item:
+            current = current._link
             index += 1
         if current is None:
             raise ValueError('Item is not in list')
@@ -124,10 +123,10 @@ class LinkedList(List[T]):
         index = self._absolute_index(index)
         if 0 <= index and index < len(self):
             if index == len(self) - 1:
-                return self.__rear
-            current = self.__head
+                return self._rear
+            current = self._head
             for _ in range(index):
-                current = current.link
+                current = current._link
             return current
         else:
             raise IndexError('Out of bounds access in list.')
@@ -137,22 +136,22 @@ class LinkedList(List[T]):
         :complexity: See self.__get_node_at_index().
         """
         node_at_index = self.__get_node_at_index(index)
-        return node_at_index.item
+        return node_at_index._item
 
     def __setitem__(self, index: int, item: T) -> None:
         """ Insert the item at a given position.
         :complexity: See self.__get_node_at_index().
         """
         node_at_index = self.__get_node_at_index(index)
-        node_at_index.item = item
+        node_at_index._item = item
 
     def __iter__(self):
         """ Iterate through the list. """
-        return LinkedListIterator(self.__head)
+        return LinkedListIterator(self._head)
 
     def __len__(self) -> int:
         """ Return the length of the list. """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         if not len(self):

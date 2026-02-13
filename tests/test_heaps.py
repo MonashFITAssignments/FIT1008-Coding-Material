@@ -6,15 +6,14 @@ from data_structures.in_review.linked_heap import MinLinkedHeap
 from data_structures.in_review.array_unordered_heap import ArrayUnorderedHeap
 from data_structures.array_max_heap import ArrayMaxHeap
 
+
 def check_heap_ordering(heap, ordering):
-    
-    heap_array = heap._ArrayUnorderedHeap__array if isinstance(heap, ArrayUnorderedHeap) else heap._ArrayMaxHeap__array
     bound = len(heap)
     for i in range(1, len(heap)):
-        valid = (2*i     > bound or ordering(heap_array[i], heap_array[2*i    ])) and \
-                (2*i + 1 > bound or ordering(heap_array[i], heap_array[2*i + 1]))
+        valid = (2*i     > bound or ordering(heap._array[i], heap._array[2*i    ])) and \
+                (2*i + 1 > bound or ordering(heap._array[i], heap._array[2*i + 1]))
         if not valid: 
-            print(heap_array, i)
+            print(heap._array, i)
             return False
 
     return True
@@ -61,6 +60,14 @@ class TestMinArrayHeap(TestCase):
 
 class TestMaxArrayHeap(TestCase):
 
+    def test_add_resize(self):
+        heap = ArrayMaxHeap(2)
+        for i in range(20):
+            heap.add(i)
+        items = [heap.extract_max() for _ in range(20)]
+        self.assertEqual(items, list(range(19, -1, -1)))
+
+
     def test_heapify_resize(self):
         generator = (i for i in range(10))
         self.assertRaises(TypeError, lambda: len(generator))
@@ -94,26 +101,29 @@ class TestUnorderedHeap(TestCase):
 class TestArrayHeaps(TestCase):
     CAPACITY = 10
     def setUp(self) -> None:
-        self.heaps:list[ArrayUnorderedHeap]  = [ArrayMaxHeap(self.CAPACITY), ArrayMaxHeap_(self.CAPACITY), ArrayHeap(self.CAPACITY, 'max'), ArrayMinHeap(self.CAPACITY), ArrayHeap(self.CAPACITY, 'min')]
-        self.orders = ['max', 'max', 'max', 'min', 'min']
-        self.max_ordering = lambda a, b: a >= b
-        self.min_ordering = lambda a, b: a <= b
+        self._heaps:list[ArrayUnorderedHeap]  = [ArrayMaxHeap(self.CAPACITY), ArrayMaxHeap_(self.CAPACITY), ArrayHeap(self.CAPACITY, 'max'), ArrayMinHeap(self.CAPACITY), ArrayHeap(self.CAPACITY, 'min')]
+        self._orders = ['max', 'max', 'max', 'min', 'min']
+        self._max_ordering = lambda a, b: a >= b
+        self._min_ordering = lambda a, b: a <= b
     
     def test_add(self):
-        for heap_order, heap in zip(self.orders, self.heaps):
-            ordering = self.min_ordering if heap_order == 'min' else self.max_ordering
+        for heap_order, heap in zip(self._orders, self._heaps):
+            ordering = self._min_ordering if heap_order == 'min' else self._max_ordering
             for i in range(self.CAPACITY):
                 self.assertEqual(i, len(heap))
                 heap.add(i)
                 self.assertTrue(check_heap_ordering(heap, ordering), str(heap))
             self.assertEqual(self.CAPACITY, len(heap), str(heap))
 
-            self.assertRaises(ValueError, lambda: heap.add(1))
+            if type(heap) is not ArrayMaxHeap:
+                self.assertRaises(ValueError, lambda: heap.add(1))
+            else:
+                heap.add(1)
     
     
     def test_extract(self):
-        for heap_order, heap in zip(self.orders, self.heaps):
-            ordering = self.min_ordering if heap_order == 'min' else self.max_ordering
+        for heap_order, heap in zip(self._orders, self._heaps):
+            ordering = self._min_ordering if heap_order == 'min' else self._max_ordering
 
             self.assertRaises(ValueError, heap.extract_root)
             
@@ -131,7 +141,7 @@ class TestArrayHeaps(TestCase):
             self.assertRaises(ValueError, heap.extract_root)
 
     def test_peek(self):
-        for heap_order, heap in zip(self.orders, self.heaps):
+        for heap_order, heap in zip(self._orders, self._heaps):
             self.assertRaises(ValueError, heap.peek)
 
             for i in range(self.CAPACITY):
@@ -147,7 +157,7 @@ class TestArrayHeaps(TestCase):
             self.assertRaises(ValueError, heap.peek)
 
     def test_heapify(self):
-        for heap_order, heap in zip(['max', 'max', 'min'], [self.heaps[0], self.heaps[1], self.heaps[3]]):
+        for heap_order, heap in zip(['max', 'max', 'min'], [self._heaps[0], self._heaps[1], self._heaps[3]]):
             num_items = self.CAPACITY
             heap_class = type(heap)
             items1 = list(range(num_items))
@@ -168,7 +178,7 @@ class TestArrayHeaps(TestCase):
             self.assertEqual(act_items2, items1, heap_class.__name__)
         
         #Separate ArrayHeap as heapify needs extra parameters
-        for heap_order, heap in zip(['max', 'min'], [self.heaps[2], self.heaps[4]]):
+        for heap_order, heap in zip(['max', 'min'], [self._heaps[2], self._heaps[4]]):
             num_items = 10
             heap_class = type(heap)
             items1 = list(range(num_items))
@@ -189,6 +199,44 @@ class TestArrayHeaps(TestCase):
             self.assertEqual(act_items2, items1)
 
         ArrayHeap.heapify([], 'max')
+    
+    def test_heapify_min_capacity(self):
+        for heap in [0,1,3]:
+            heap = self._heaps[heap]
+            Heap = type(heap)
+            lengthed = list(range(12))
+            unlengthed = lambda: (i for i in range(12))
+            length_no_min = Heap.heapify(lengthed)
+            length_wi_min = Heap.heapify(lengthed, 30)
+            unlengthed_no_min = Heap.heapify(unlengthed())
+            unlengthed_wi_min = Heap.heapify(unlengthed(), 30)
+            self.assertEqual(len(length_no_min._array), 13)
+            self.assertEqual(len(length_wi_min._array), 31)
+            self.assertEqual(len(unlengthed_no_min._array), 16)
+            self.assertEqual(len(unlengthed_wi_min._array), 31)
+        for heap in [2,4]:
+            heap = self._heaps[heap]
+            Heap = type(heap)
+            lengthed = list(range(12))
+            unlengthed = lambda: (i for i in range(12))
+            length_no_min = Heap.heapify(lengthed, 'min')
+            length_wi_min = Heap.heapify(lengthed, 'min', 30)
+            unlengthed_no_min = Heap.heapify(unlengthed(), 'min')
+            unlengthed_wi_min = Heap.heapify(unlengthed(), 'min', 30)
+            self.assertEqual(len(length_no_min._array), 13)
+            self.assertEqual(len(length_wi_min._array), 31)
+            self.assertEqual(len(unlengthed_no_min._array), 16)
+            self.assertEqual(len(unlengthed_wi_min._array), 31)
+
+    def test_values(self):
+        for heap in self._heaps:
+            for i in range(self.CAPACITY):
+                heap.add(i)
+            values = heap.values()
+            self.assertEqual(len(values), self.CAPACITY)
+            for i in range(self.CAPACITY):
+                self.assertIn(i, values)
+
 
     def test_str(self):
         heap = ArrayHeap(10, 'min')
@@ -221,10 +269,10 @@ class TestLinkedHeap(TestCase):
         num = 34
         for i in range(num):
             lh.add(i)
-            tree = lh._MinLinkedHeap__root
-            rank = tree.key
+            tree = lh._root
+            rank = tree._key
             for _ in range(rank):
-                tree = tree.right
+                tree = tree._right
             self.assertIsNone(tree)
         
         self.assertEqual(len(lh), num)
@@ -245,7 +293,7 @@ class TestLinkedHeap(TestCase):
         lh = MinLinkedHeap()
         for i in range(20, 0, -1):
             lh.add(i)
-            self.assertEqual(lh._MinLinkedHeap__root.key, 1)
+            self.assertEqual(lh._root._key, 1)
         
     def test_heapify(self):
         items = list(range(10))

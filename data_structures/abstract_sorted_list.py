@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 K = TypeVar('K')
 
-
-class SortedList(ABC, Generic[T], DunderProtected):
+class SortedList(ABC, Generic[T]):
     """ Sorted List ADT.
     Defines a generic abstract sorted list with the standard methods.
     Items to store should be of time ListItem.
@@ -65,13 +63,9 @@ class SortedList(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ Returns a string representation of the list. """
-        result = '['
-        for i in range(len(self)):
-            if i > 0:
-                result += ', '
-            result += str(self[i]) if type(self[i]) != str else f"'{self[i]}'"
-        result += ']'
-        return result
+        strings = (str(item) for item in self)
+
+        return '[' + ', '.join(strings) + ']'
 
     def __repr__(self) -> str:
         return str(self)

@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 
-
-class List(ABC, Generic[T], DunderProtected):
+class List(ABC, Generic[T]):
     """ List ADT. 
     Defines a generic abstract list with the standard methods.
     """
@@ -73,13 +71,9 @@ class List(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ String representation of the list object. """
-        result = '['
-        for i in range(len(self)):
-            if i > 0:
-                result += ', '
-            result += str(self[i]) if type(self[i]) != str else f"'{self[i]}'"
-        result += ']'
-        return result
+        strings = (str(item) for item in (self))
+
+        return '[' + ', '.join(strings) + ']'
 
     def __repr__(self) -> str:
         return str(self)

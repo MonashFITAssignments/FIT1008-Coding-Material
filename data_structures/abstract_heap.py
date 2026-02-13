@@ -1,17 +1,17 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Literal, Iterable
 from abc import abstractmethod, ABC
-from data_structures.dunder_protected import DunderProtected
+from data_structures.referential_array import ArrayR
 
 T = TypeVar('T')
 
-class AbstractHeap(Generic[T], ABC, DunderProtected):
+class AbstractHeap(Generic[T], ABC):
     """
     Abstract class for min and max heaps
     """
 
     @abstractmethod
-    def __init__(self, ordering: Literal['min', 'max']) -> None:
+    def __init__(self) -> None:
         pass
     
     @abstractmethod
@@ -44,3 +44,7 @@ class AbstractHeap(Generic[T], ABC, DunderProtected):
 
     def __repr__(self) -> str:
         return str(self)
+
+    @abstractmethod
+    def values(self) -> ArrayR[T]:
+        pass

@@ -7,9 +7,9 @@ from data_structures.array_sorted_list import ArraySortedList
 from data_structures.referential_array import ArrayR
 from data_structures.abstract_list import List
 
-class BaseListtests(TestCase):
+class BaseListTests(TestCase):
     def setUp(self):
-        self.list:List
+        self.list: List
 
     def test_append(self):
         self.list.append(1)
@@ -161,7 +161,7 @@ class BaseListtests(TestCase):
         for i in range(5):
             self.assertIn(i, array)
 
-class TestArrayList(BaseListtests):
+class TestArrayList(BaseListTests):
     def setUp(self):
         self.list = ArrayList()
     
@@ -309,7 +309,7 @@ class TestSortedList(TestCase):
         self.list.add(2)
         self.assertEqual(str(self.list), '<ArraySortedList [1, 2]>')
 
-class TestLinkedList(BaseListtests):
+class TestLinkedList(BaseListTests):
     def setUp(self):
         self.list = LinkedList()
     

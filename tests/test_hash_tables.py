@@ -6,22 +6,21 @@ from data_structures.hash_table_double_hashing import DoubleHashingTable
 from data_structures.hash_table_separate_chaining import HashTableSeparateChaining
 from data_structures.binary_search_tree import BinarySearchTree
 
-
 class TestLinearProbeTable(TestCase):
     def setUp(self):
-        self.table = LinearProbeTable()
+        self._table = LinearProbeTable()
 
 class TestQuadraticProbeTable(TestCase):
     def setUp(self):
-        self.table = QuadraticProbeTable()
+        self._table = QuadraticProbeTable()
 
 class TestDoubleHashingProbeTable(TestCase):
     def setUp(self):
-        self.table = DoubleHashingTable()
+        self._table = DoubleHashingTable()
 
 class TestHashTableSeparateChaining(TestCase):
     def setUp(self):
-        self.table = HashTableSeparateChaining()
+        self._table = HashTableSeparateChaining()
 
 class TestHashTables(TestCase):
     def setUp(self):

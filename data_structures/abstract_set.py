@@ -2,13 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 from data_structures.referential_array import ArrayR
 
 T = TypeVar('T')
 
-
-class Set(ABC, Generic[T], DunderProtected):
+class Set(ABC, Generic[T]):
     """ Set ADT.
     Defines a generic abstract set with the usual methods.
     """
@@ -30,7 +28,7 @@ class Set(ABC, Generic[T], DunderProtected):
         pass
 
     @abstractmethod
-    def values(self) -> Generic[T]:
+    def values(self) -> ArrayR[T]:
         """
         Returns an array of all the items in the set in no particular order.
         """
@@ -85,7 +83,9 @@ class Set(ABC, Generic[T], DunderProtected):
 
     def __str__(self) -> str:
         """ Returns a string representation of the set. """
-        values = [str(value) for value in self.values()]
+        values = self.values()
+        for i in range(len(values)):
+            values[i] = str(values[i])
         return '{' + ', '.join(values) + '}'
 
     def __repr__(self) -> str:

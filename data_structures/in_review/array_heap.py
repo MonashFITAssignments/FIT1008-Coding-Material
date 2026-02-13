@@ -13,31 +13,31 @@ class ArrayHeap(ArrayUnorderedHeap[T]):
         ArrayUnorderedHeap.__init__(self, max_items)
 
         if ordering == 'min':
-            self.__heap_order = ArrayHeap.MIN_ORDERING
+            self._heap_order = ArrayHeap.MIN_ORDERING
         elif ordering == 'max':
-            self.__heap_order = ArrayHeap.MAX_ORDERING
+            self._heap_order = ArrayHeap.MAX_ORDERING
         else:
             raise ValueError("Array heap received invalid heap ordering: " + ordering)
     
     def _should_rise(self, below:T, above:T) -> bool:
-        if self.__heap_order == ArrayHeap.MIN_ORDERING:
+        if self._heap_order == ArrayHeap.MIN_ORDERING:
             return below < above
         else:
             return below > above 
         
     def _should_sink(self, above:T, below:T ) -> bool:
-        if self.__heap_order == ArrayHeap.MIN_ORDERING:
+        if self._heap_order == ArrayHeap.MIN_ORDERING:
             return above > below
         else:
             return above < below
         
     @classmethod
-    def heapify(cls, items: Iterable[T], ordering:HeapOrders) -> ArrayHeap[T]:
+    def heapify(cls, items: Iterable[T], ordering:HeapOrders, min_capacity:int = 1) -> ArrayHeap[T]:
         """ Construct a heap from an iterable of items. 
         returns: A heap containing all of the items in the iterable.
         complexity: O(n) where n is the number of items in the iterable.
         """
-        return ArrayHeap(0, ordering)._heapify(items)
+        return ArrayHeap(0, ordering)._heapify(items, min_capacity)
     
     def __str__(self):
-        return "<ArrayHeap(" + ("min, " if self.__heap_order == ArrayHeap.MIN_ORDERING else "max, ") + ArrayUnorderedHeap.__str__(self) + ')>'
+        return "<ArrayHeap(" + ("min, " if self._heap_order == ArrayHeap.MIN_ORDERING else "max, ") + ArrayUnorderedHeap.__str__(self) + ')>'

@@ -5,17 +5,16 @@ from data_structures.array_set import ArraySet
 from data_structures.bit_vector_set import BitVectorSet
 from data_structures.array_sorted_set import ArraySortedSet
 
-
 class TestArraySet(TestCase):
     def setUp(self):
-        self.set = ArraySet(10)
+        self._set = ArraySet(10)
 
     def test_contains(self):
-        self.assertFalse(1 in self.set)
-        self.set.add(1)
-        self.assertTrue(1 in self.set)
-        self.set.remove(1)
-        self.assertFalse(1 in self.set)
+        self.assertFalse(1 in self._set)
+        self._set.add(1)
+        self.assertTrue(1 in self._set)
+        self._set.remove(1)
+        self.assertFalse(1 in self._set)
     
     def test_union(self):
         set1 = ArraySet(10)
@@ -69,33 +68,33 @@ class TestArraySet(TestCase):
             self.assertFalse(i in difference)
     
     def test_values(self):
-        self.set.add('hi')
-        self.set.add('hello')
-        self.set.add('goodbye')
+        self._set.add('hi')
+        self._set.add('hello')
+        self._set.add('goodbye')
         
-        value_array = self.set.values()
+        value_array = self._set.values()
         self.assertIn('hi', value_array)
         self.assertIn('hello', value_array)
         self.assertIn('goodbye', value_array)
 
     def test_string(self):
-        self.assertEqual(str(self.set), '<ArraySet {}>')
+        self.assertEqual(str(self._set), '<ArraySet {}>')
 
-        self.set.add(1)
-        self.set.add(1)
-        self.set.add(3)
-        self.assertEqual(str(self.set), '<ArraySet {1, 3}>')
+        self._set.add(1)
+        self._set.add(1)
+        self._set.add(3)
+        self.assertEqual(str(self._set), '<ArraySet {1, 3}>')
 
 class TestSortedArraySet(TestCase):
     def setUp(self):
-        self.set = ArraySortedSet(10)
+        self._set = ArraySortedSet(10)
     
     def test_contains(self):
-        self.assertFalse(1 in self.set)
-        self.set.add(1)
-        self.assertTrue(1 in self.set)
-        self.set.remove(1)
-        self.assertFalse(1 in self.set)
+        self.assertFalse(1 in self._set)
+        self._set.add(1)
+        self.assertTrue(1 in self._set)
+        self._set.remove(1)
+        self.assertFalse(1 in self._set)
     
     def test_union(self):
         set1 = ArraySortedSet(10)
@@ -200,32 +199,32 @@ class TestSortedArraySet(TestCase):
             self.assertFalse(i in difference)
 
     def test_values(self):
-        self.set.add('hi')
-        self.set.add('hello')
-        self.set.add('goodbye')
+        self._set.add('hi')
+        self._set.add('hello')
+        self._set.add('goodbye')
         
-        value_array = self.set.values()
+        value_array = self._set.values()
         self.assertIn('hi', value_array)
         self.assertIn('hello', value_array)
         self.assertIn('goodbye', value_array)
 
     def test_string(self):
-        self.assertEqual(str(self.set), '<ArraySortedSet {}>')
+        self.assertEqual(str(self._set), '<ArraySortedSet {}>')
 
-        self.set.add(3)
-        self.set.add(1)
-        self.assertEqual(str(self.set), '<ArraySortedSet {1, 3}>')
+        self._set.add(3)
+        self._set.add(1)
+        self.assertEqual(str(self._set), '<ArraySortedSet {1, 3}>')
 
 class TestBitVectorSet(TestCase):
     def setUp(self):
-        self.set = BitVectorSet()
+        self._set = BitVectorSet()
     
     def test_contains(self):
-        self.assertFalse(1 in self.set)
-        self.set.add(1)
-        self.assertTrue(1 in self.set)
-        self.set.remove(1)
-        self.assertFalse(1 in self.set)
+        self.assertFalse(1 in self._set)
+        self._set.add(1)
+        self.assertTrue(1 in self._set)
+        self._set.remove(1)
+        self.assertFalse(1 in self._set)
     
     def test_union(self):
         set1 = BitVectorSet()
@@ -279,27 +278,26 @@ class TestBitVectorSet(TestCase):
             self.assertFalse(i in difference)
 
     def test_invalid_entry_types(self):
-        self.assertRaises(TypeError, self.set.add, 0)
-        self.assertRaises(TypeError, self.set.add, -1)
-        self.assertRaises(TypeError, self.set.add, 0.5)
+        self.assertRaises(TypeError, self._set.add, 0)
+        self.assertRaises(TypeError, self._set.add, -1)
+        self.assertRaises(TypeError, self._set.add, 0.5)
     
     def test_string(self):
-        self.assertEqual(str(self.set), '<BitVectorSet {}>')
+        self.assertEqual(str(self._set), '<BitVectorSet {}>')
 
-        self.set.add(1)
-        self.set.add(1)
-        self.set.add(3)
-        self.assertEqual(str(self.set), '<BitVectorSet {1, 3}>')
+        self._set.add(1)
+        self._set.add(1)
+        self._set.add(3)
+        self.assertEqual(str(self._set), '<BitVectorSet {1, 3}>')
 
 
 class TestSets(TestCase):
     CAPACITY = 10
     def setUp(self):
-        self.sets:list[Set] = [ArraySet(self.CAPACITY), ArraySortedSet(self.CAPACITY), BitVectorSet()]
-    
-    
+        self._sets:list[Set] = [ArraySet(self.CAPACITY), ArraySortedSet(self.CAPACITY), BitVectorSet()]
+
     def test_add(self):
-        for set_ in self.sets:
+        for set_ in self._sets:
             set_.add(1)
             self.assertEqual(len(set_), 1)
             set_.add(2)
@@ -310,7 +308,7 @@ class TestSets(TestCase):
             self.assertFalse(3 in set_)
     
     def test_add_duplicates(self):
-        for set_ in self.sets:
+        for set_ in self._sets:
             set_.add(1)
             self.assertEqual(len(set_), 1)
             set_.add(1)
@@ -319,7 +317,7 @@ class TestSets(TestCase):
                 set_.add(1)
     
     def test_remove(self):
-        for set_ in self.sets:
+        for set_ in self._sets:
             set_.add(3)
             set_.add(1)
             set_.add(2)
@@ -344,10 +342,9 @@ class TestSets(TestCase):
             self.assertFalse(3 in set_)
 
             self.assertRaises(KeyError, lambda: set_.remove(5))
-        
-        
+
     def test_clear(self):
-        for set_ in self.sets:
+        for set_ in self._sets:
             for i in range(1, 11):
                 set_.add(i)
             self.assertEqual(len(set_), 10)
@@ -360,7 +357,7 @@ class TestSets(TestCase):
                 set_.add(i)
 
     def test_values(self):
-        for set_ in self.sets:
+        for set_ in self._sets:
             set_.add(4)
             set_.add(15)
             set_.add(23)

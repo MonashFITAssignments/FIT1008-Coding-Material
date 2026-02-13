@@ -4,7 +4,6 @@ from data_structures.abstract_sorted_list import SortedList, T
 __author__ = 'Maria Garcia de la Banda and Brendon Taylor. Modified by Alexey Ignatiev'
 __docformat__ = 'reStructuredText'
 
-
 class ArraySortedList(SortedList[T]):
     """ Array-based implementation of the Abstract Sorted List. """
 
@@ -12,8 +11,9 @@ class ArraySortedList(SortedList[T]):
         if initial_capacity < 0:
             raise ValueError("Capacity cannot be negative.")
 
-        self.__array = ArrayR(initial_capacity)
-        self.__length = 0
+        SortedList.__init__(self)
+        self._array = ArrayR(initial_capacity)
+        self._length = 0
 
     def add(self, item: T) -> None:
         """
@@ -27,8 +27,8 @@ class ArraySortedList(SortedList[T]):
             self.__resize()
         index = self.__index_to_add(item)
         self.__shuffle_right(index)
-        self.__array[index] = item
-        self.__length += 1
+        self._array[index] = item
+        self._length += 1
 
     def delete_at_index(self, index: int) -> T:
         """
@@ -41,7 +41,7 @@ class ArraySortedList(SortedList[T]):
         item = self[index]
         index = self._absolute_index(index)
         self.__shuffle_left(index)
-        self.__length -= 1
+        self._length -= 1
         return item
 
     def index(self, item: T) -> int:
@@ -54,45 +54,45 @@ class ArraySortedList(SortedList[T]):
         # Try finding the index
         index = self.__index_to_add(item)
 
-        if index < len(self) and self.__array[index] == item:
+        if index < len(self) and self._array[index] == item:
             return index
 
         raise ValueError(f"{item} not found")
 
     def is_full(self) -> bool:
         """ Check if the list of full. """
-        return len(self) == len(self.__array)
+        return len(self) == len(self._array)
 
     def clear(self) -> None:
         """ Clear the list. """
-        self.__length = 0
+        self._length = 0
 
     def __shuffle_right(self, index: int) -> None:
         """
         Shuffle items to the right up to a given position.
         """
         for i in range(len(self), index, -1):
-            self.__array[i] = self.__array[i - 1]
+            self._array[i] = self._array[i - 1]
 
     def __shuffle_left(self, index: int) -> None:
         """
         Shuffle items starting at the given position to the left.
         """
         for i in range(index, len(self) - 1):
-            self.__array[i] = self.__array[i + 1]
+            self._array[i] = self._array[i + 1]
 
     def __resize(self) -> None:
         """ Resize the list.
         It only sizes up, so should only be called when adding new items.
         """
         if self.is_full():
-            new_cap = int(2 * len(self.__array)) + 1
+            new_cap = int(2 * len(self._array)) + 1
             new_array = ArrayR(new_cap)
             for i in range(len(self)):
-                new_array[i] = self.__array[i]
-            self.__array = new_array
+                new_array[i] = self._array[i]
+            self._array = new_array
         assert len(self) < len(
-            self.__array
+            self._array
         ), "Capacity not greater than length after __resize."
 
     def __index_to_add(self, item: T) -> int:
@@ -126,7 +126,7 @@ class ArraySortedList(SortedList[T]):
 
     def __len__(self) -> int:
         """ Return the length of the list. """
-        return self.__length
+        return self._length
 
     def __getitem__(self, index: int) -> T:
         """ Return the element at the given position.
@@ -136,7 +136,7 @@ class ArraySortedList(SortedList[T]):
         index = self._absolute_index(index)
         if index < 0 or index >= len(self):
             raise IndexError('Out of bounds access in list.')
-        return self.__array[index]
+        return self._array[index]
 
     def __str__(self) -> str:
         """ Returns a string representation of the list. """
