@@ -7,7 +7,9 @@ from data_structures.array_sorted_list import ArraySortedList
 from data_structures.referential_array import ArrayR
 from data_structures.abstract_list import List
 
-class BaseListTests(TestCase):
+
+# The reason this is called Checks instead of Tests is so we can exclude it from test discovery. We don't want it run.
+class BaseListChecks(TestCase):
     def setUp(self):
         self.list: List
 
@@ -161,7 +163,7 @@ class BaseListTests(TestCase):
         for i in range(5):
             self.assertIn(i, array)
 
-class TestArrayList(BaseListTests):
+class TestArrayList(BaseListChecks):
     def setUp(self):
         self.list = ArrayList()
     
@@ -309,7 +311,7 @@ class TestSortedList(TestCase):
         self.list.add(2)
         self.assertEqual(str(self.list), '<ArraySortedList [1, 2]>')
 
-class TestLinkedList(BaseListTests):
+class TestLinkedList(BaseListChecks):
     def setUp(self):
         self.list = LinkedList()
     
