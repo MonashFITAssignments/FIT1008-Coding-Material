@@ -99,10 +99,9 @@ class ArraySortedList(SortedList[T]):
         """
         Find the position where the new item should be placed.
         :complexity: 
-            Best: O(Comp) happens when item is the middle element
-            Worst: O(Log N * comp) happens when item is the first or the last element
+            Best: O(1) happens when item is the middle element
+            Worst: O(Log N) happens when item is the first or the last element
             
-            Comp - cost of comparision - can be assumed O(1) for simple types like numbers
             N - length of the list
         """
 

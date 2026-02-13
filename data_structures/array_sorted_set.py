@@ -32,9 +32,8 @@ class ArraySortedSet(Set[T]):
     def remove(self, item: T) -> None:
         """
         Removes an item from the set
-        :complexity best: O(logn * comp) Item is at end of array
-        :complexity worst: O(logn * comp + n) Item is at front of array
-            comp - cost of comparision
+        :complexity best: O(logn) Item is at end of array
+        :complexity worst: O(logn + n) Item is at front of array
             n - size of the set
         """
         index = self.__index_of_item(item)
@@ -99,9 +98,8 @@ class ArraySortedSet(Set[T]):
     def __index_of_item(self, item: T) -> int:
         """
         Find the position where the new item should be placed.
-        :complexity best: O(comp)   item is the middle element
-        :complexity worst: O(logn * comp)  first or last element
-            comp - cost of comparision
+        :complexity best: O(1)   item is the middle element
+        :complexity worst: O(logn)  first or last element
             n - size of the set
         """
 
