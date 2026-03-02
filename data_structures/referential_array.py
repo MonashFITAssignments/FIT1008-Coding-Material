@@ -65,7 +65,8 @@ class ArrayR(Generic[T]):
         :complexity: O(n) where n is the length of the list
         """
         new_array = cls(len(lst))
-        new_array._array[:] = lst
+        for i, item in enumerate(lst):
+            new_array._array[i] = item
         return new_array
 
     def to_list(self) -> list[T]:
