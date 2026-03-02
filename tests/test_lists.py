@@ -1,5 +1,6 @@
 from unittest import TestCase
 from abc import ABC, abstractmethod
+from time import time
 
 from data_structures.linked_list import LinkedList
 from data_structures.array_list import ArrayList
@@ -162,6 +163,20 @@ class BaseListChecks(TestCase):
         self.assertEqual(len(array), 5)
         for i in range(5):
             self.assertIn(i, array)
+
+    def test_time_convert_to_arrayR(self):
+        for i in range(100):
+            self.list.append(i)
+        t_start = time()
+        ArrayR.from_list(self.list)
+        short_time = time() - t_start
+        for i in range(900):
+            self.list.append(i)
+        t_start = time()
+        ArrayR.from_list(self.list)
+        long_time =  time() - t_start
+        self.assertGreaterEqual(short_time * 20, long_time)
+
 
 class TestArrayList(BaseListChecks):
     def setUp(self):
