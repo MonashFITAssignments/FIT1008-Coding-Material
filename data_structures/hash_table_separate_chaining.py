@@ -1,9 +1,7 @@
-from data_structures.abstract_hash_table import HashTable
+from data_structures.abstract_hash_table import HashTable, V
 from data_structures.referential_array import ArrayR
 from data_structures.linked_list import LinkedList
-from typing import TypeVar, Tuple
-
-V = TypeVar('V')
+from typing import Tuple
 
 class HashTableSeparateChaining(HashTable[str, V]):
     """
@@ -15,8 +13,8 @@ class HashTableSeparateChaining(HashTable[str, V]):
         DEFAULT_HASH_TABLE: default hash base used for the hash function
 
     attributes:
-        length: number of elements in the hash table
-        array: used to represent our internal array
+        _table: used to represent our internal array
+        _length: number of elements in the hash table
     """
 
     DEFAULT_TABLE_SIZE = 17
@@ -28,9 +26,10 @@ class HashTableSeparateChaining(HashTable[str, V]):
         """
         if table_size <= 0:
             raise ValueError("Table size should be larger than 0.")
-        
-        self.__table: ArrayR[LinkedList | None] = ArrayR(table_size)
-        self.__length = 0
+
+        HashTable.__init__(self)
+        self._table: ArrayR[LinkedList[Tuple[str, V]] | None] = ArrayR(table_size)
+        self._length = 0
 
     def hash(self, key: str) -> int:
         """
@@ -41,8 +40,8 @@ class HashTableSeparateChaining(HashTable[str, V]):
         value = 0
         a = 31415
         for char in key:
-            value = (ord(char) + a * value) % len(self.__table)
-            a = (a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self.__table) - 1)) + 1
+            value = (ord(char) + a * value) % len(self._table)
+            a = (a * HashTableSeparateChaining.DEFAULT_HASH_BASE % (len(self._table) - 1)) + 1
         return value
 
     @property
@@ -57,9 +56,9 @@ class HashTableSeparateChaining(HashTable[str, V]):
         is not variable (e.g. it's always using the default size), then S can be ignored as
         a constant, simplifying the complexity to O(N).
         """
-        res = ArrayR(self.__length)
+        res = ArrayR(self._length)
         i = 0
-        for list in self.__table:
+        for list in self._table:
             if list is not None:
                 for item in list:
                     res[i] = item
@@ -71,7 +70,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
         Returns whether the hash table is empty
         :complexity: O(1)
         """
-        return self.__length == 0
+        return self._length == 0
 
     def is_full(self) -> bool:
         """
@@ -91,17 +90,17 @@ class HashTableSeparateChaining(HashTable[str, V]):
                 Happens when the position has many elements and we have to traverse the linked list.
         """
         position = self.hash(key)
-        if self.__table[position] is None:
+        if self._table[position] is None:
             raise KeyError(key)
 
-        for index, item in enumerate(self.__table[position]):
+        for index, item in enumerate(self._table[position]):
             if item[0] == key:
-                if len(self.__table[position]) <= 1:
-                    self.__table[position] = None
+                if len(self._table[position]) <= 1:
+                    self._table[position] = None
                 else:
-                    self.__table[position].delete_at_index(index)
+                    self._table[position].delete_at_index(index)
 
-                self.__length -= 1
+                self._length -= 1
                 return
 
         raise KeyError(key)
@@ -117,9 +116,9 @@ class HashTableSeparateChaining(HashTable[str, V]):
                 Happens when we have to traverse a long chain to find the key.
         """
         position = self.hash(key)
-        if self.__table[position] is None:
+        if self._table[position] is None:
             raise KeyError(key)
-        for item in self.__table[position]:
+        for item in self._table[position]:
             if item[0] == key:
                 return item[1]
 
@@ -134,20 +133,20 @@ class HashTableSeparateChaining(HashTable[str, V]):
                 Happens when the position is not empty and we have to traverse the linked list.
         """
         position = self.hash(key)
-        if self.__table[position] is None:
-            self.__table[position] = LinkedList()
+        if self._table[position] is None:
+            self._table[position] = LinkedList()
 
         # Attempt to find the key in our linked list
-        if len(self.__table[position]) > 0:
-            for index, item in enumerate(self.__table[position]):
+        if len(self._table[position]) > 0:
+            for index, item in enumerate(self._table[position]):
                 if item[0] == key:
                     # If found update the data
-                    self.__table[position][index] = (key, data)
+                    self._table[position][index] = (key, data)
                     return
 
         # Insert at the beginning for better time complexity
-        self.__table[position].insert(0, (key, data))
-        self.__length += 1
+        self._table[position].insert(0, (key, data))
+        self._length += 1
 
     def __iter__(self):
         """
@@ -157,7 +156,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
             Worst: O(N) where N is the table capacity, when we have to skip over many empty spots
             in the table until we find the next non-empty list.
         """
-        for list in self.__table:
+        for list in self._table:
             if list is not None:
                 for item in list:
                     yield item[1]
@@ -166,7 +165,7 @@ class HashTableSeparateChaining(HashTable[str, V]):
         """
         Returns number of elements in the hash table
         """
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """

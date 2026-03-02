@@ -102,7 +102,6 @@ class TestInsertionSort(TestCase):
         self.assertNotEqual([x for x in ll], sorted(unsorted_list))
         self.assertNotEqual([x for x in al], sorted(unsorted_list))
 
-
     def test_sort_empty(self):
         empty_array = ArrayR.from_list([])
         result_array = insertion_sort(empty_array)
@@ -112,4 +111,3 @@ class TestInsertionSort(TestCase):
         reverse_sorted = list(range(10))
         sorted_list = insertion_sort(ArrayR.from_list(reverse_sorted), lambda x: -x)
         self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
-

@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 K = TypeVar('K')
 
-
-class SortedList(ABC, Generic[T], DunderProtected):
+class SortedList(ABC, Generic[T]):
     """ Sorted List ADT.
     Defines a generic abstract sorted list with the standard methods.
     Items to store should be of time ListItem.
@@ -15,6 +13,12 @@ class SortedList(ABC, Generic[T], DunderProtected):
     def add(self, item: T) -> None:
         """ Add new element to the list. """
         pass
+
+    def _absolute_index(self, index):
+        """ Convert negative index into positive index """
+        if index < 0:
+            return len(self) + index
+        return index
 
     @abstractmethod
     def delete_at_index(self, index: int) -> T:

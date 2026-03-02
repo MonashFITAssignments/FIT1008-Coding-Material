@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
-from data_structures.dunder_protected import DunderProtected
 
 T = TypeVar('T')
 
-
-class List(ABC, Generic[T], DunderProtected):
+class List(ABC, Generic[T]):
     """ List ADT. 
     Defines a generic abstract list with the standard methods.
     """
@@ -41,6 +39,12 @@ class List(ABC, Generic[T], DunderProtected):
     def clear(self) -> None:
         """ Clear the list. """
         pass
+
+    def _absolute_index(self, index):
+        """ Convert negative index into positive index """
+        if index < 0:
+            return len(self) + index
+        return index
 
     @abstractmethod
     def __getitem__(self, index: int) -> T:

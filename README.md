@@ -9,7 +9,7 @@ Changes needed? Feel free to tag the team or open a PR!
 You can run the tests by running:
 
 ```
-python -m unittest
+python -m unittest -k Test
 ```
 
 ### Todo Items

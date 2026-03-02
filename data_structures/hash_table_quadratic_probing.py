@@ -2,7 +2,6 @@ from __future__ import annotations
 from data_structures.referential_array import ArrayR
 from data_structures.hash_table_linear_probing import LinearProbeTable
 
-
 class QuadraticProbeTable(LinearProbeTable):
     """
     Quadratic Probe Table.
@@ -28,13 +27,13 @@ class QuadraticProbeTable(LinearProbeTable):
         step = 1
 
         for _ in range(self.table_size):
-            if self.__array[position] is None:
+            if self._array[position] is None:
                 # Empty spot. Am I upserting or retrieving?
                 if is_insert:
                     return position
                 else:
                     raise KeyError(key)
-            elif self.__array[position][0] == key:
+            elif self._array[position][0] == key:
                 return position
             else:
                 # Taken by something else. Time to linear probe.
@@ -60,12 +59,12 @@ class QuadraticProbeTable(LinearProbeTable):
         :raises KeyError: when the key doesn't exist.
         """
         position = self.__handle_probing(key, False)
-        self.__array[position] = None
-        self.__length -= 1
+        self._array[position] = None
+        self._length -= 1
 
-        old_array = self.__array
-        self.__array = ArrayR(self.table_size)
-        self.__length = 0
+        old_array = self._array
+        self._array = ArrayR(self.table_size)
+        self._length = 0
         for item in old_array:
             if item is not None:
                 key, value = item

@@ -1,7 +1,6 @@
 from data_structures.abstract_stack import Stack
 from data_structures.referential_array import ArrayR, T
 
-
 class ArrayStack(Stack[T]):
     """ Implementation of a stack with arrays.
 
@@ -19,8 +18,9 @@ class ArrayStack(Stack[T]):
         if max_capacity <= 0:
             raise ValueError("Capacity should be larger than 0.")
 
-        self.__array = ArrayR(max_capacity)
-        self.__length = 0
+        Stack.__init__(self)
+        self._array = ArrayR(max_capacity)
+        self._length = 0
 
     def push(self, item: T) -> None:
         """ Pushes an element to the top of the stack.
@@ -29,8 +29,8 @@ class ArrayStack(Stack[T]):
         """
         if self.is_full():
             raise Exception("Stack is full")
-        self.__array[len(self)] = item
-        self.__length += 1
+        self._array[len(self)] = item
+        self._length += 1
 
     def pop(self) -> T:
         """ Pops the element at the top of the stack.
@@ -39,8 +39,8 @@ class ArrayStack(Stack[T]):
         """
         if self.is_empty():
             raise Exception("Stack is empty")
-        self.__length -= 1
-        return self.__array[self.__length]
+        self._length -= 1
+        return self._array[self._length]
 
     def peek(self) -> T:
         """ Returns the element at the top, without popping it from stack.
@@ -49,21 +49,21 @@ class ArrayStack(Stack[T]):
         """
         if self.is_empty():
             raise Exception("Stack is empty")
-        return self.__array[self.__length-1]
+        return self._array[self._length - 1]
 
     def is_full(self) -> bool:
         """ True if the stack is full and no element can be pushed. """
-        return len(self) == len(self.__array)
+        return len(self) == len(self._array)
 
     def clear(self):
-        self.__length = 0
+        self._length = 0
 
     def __len__(self) -> int:
         """ Returns the number of items in the stack"""
-        return self.__length
+        return self._length
 
     def __str__(self) -> str:
         """ Returns the string representation of the stack """
         return '<ArrayStack [' + ', '.join(
-            str(self.__array[i]) for i in range(len(self))
+            str(self._array[i]) for i in range(len(self))
         ) + ']>'
