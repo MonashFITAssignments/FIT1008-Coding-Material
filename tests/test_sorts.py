@@ -1,5 +1,5 @@
 from unittest import TestCase
-from algorithms.mergesort import mergesort
+from algorithms.mergesort import mergesort, merge
 from algorithms.insertionsort import insertion_sort
 from data_structures.referential_array import ArrayR
 from data_structures.linked_list import LinkedList
@@ -33,6 +33,38 @@ class TestMergeSort(TestCase):
         reverse_sorted = list(range(10))
         sorted_list = mergesort(ArrayR.from_list(reverse_sorted), lambda x: -x)
         self.assertEqual([x for x in sorted_list], list(reversed(range(10))))
+
+    def test_linked(self):
+        seed = time.time_ns()
+        random.seed(seed)
+        
+        # Generate a random list of integers
+        random_list = [random.randint(0, 100) for _ in range(random.randint(0, 100))]
+
+        ll = LinkedList()
+        for i in random_list:
+            ll.append(i)
+        
+        res = mergesort(ll)
+        self.assertIs(type(res), LinkedList)
+        actual = sorted(random_list)
+        for i, item in enumerate(res):
+            self.assertEqual(item, actual[i])
+
+    def test_type_errors(self):
+        arr = ArrayR(1)
+        arr[0] = 0
+        al = ArrayList(1)
+        al.append(1)
+        ll = LinkedList()
+        ll.append(2)
+        self.assertRaises(ValueError, merge, arr, al)
+        self.assertRaises(ValueError, merge, arr, ll)
+        self.assertRaises(ValueError, merge, al, ll)
+        self.assertRaises(ValueError, merge, al, arr)
+        self.assertRaises(ValueError, merge, ll, arr)
+        self.assertRaises(ValueError, merge, ll, al)
+
 
 class TestInsertionSort(TestCase):
     def test_sort(self):
