@@ -25,7 +25,7 @@ class ArraySortedList(SortedList[T]):
         """
         if self.is_full():
             self.__resize()
-        index = self.__index_to_add(item)
+        index = self.index_to_add(item)
         self.__shuffle_right(index)
         self._array[index] = item
         self._length += 1
@@ -52,7 +52,7 @@ class ArraySortedList(SortedList[T]):
         :complexity: See __index_to_add()
         """
         # Try finding the index
-        index = self.__index_to_add(item)
+        index = self.index_to_add(item)
 
         if index < len(self) and self._array[index] == item:
             return index
@@ -95,7 +95,7 @@ class ArraySortedList(SortedList[T]):
             self._array
         ), "Capacity not greater than length after __resize."
 
-    def __index_to_add(self, item: T) -> int:
+    def index_to_add(self, item: T) -> int:
         """
         Find the position where the new item should be placed.
         :complexity: 
