@@ -47,9 +47,9 @@ class ArraySortedList(SortedList[T]):
     def index(self, item: T) -> int:
         """
         Find the position of a given item in the list,
-        by means of calling the __index_to_add() method.
+        by means of calling the index_to_add() method.
         :raises ValueError: if the item is not found.
-        :complexity: See __index_to_add()
+        :complexity: See index_to_add()
         """
         # Try finding the index
         index = self.index_to_add(item)
