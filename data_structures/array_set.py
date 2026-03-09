@@ -41,9 +41,9 @@ class ArraySet(Set[T]):
             if item == self._array[i]:
                 self._array[i] = self._array[self._length - 1]
                 self._length -= 1
-                break
-        else:
-            raise KeyError(item)
+                return
+        
+        raise KeyError(item)
     
     def values(self) -> ArrayR[T]:
         """
